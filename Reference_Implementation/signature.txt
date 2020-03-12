@@ -4,4 +4,4 @@ pk size: 148992
 hash size: 32
 signature size: 64
 
-RAINBOW(16,32,32,32) - classic signature = 198a273ab3a6b622f4d2b92d12dc8eb85780efc58d2cae8decfe1b851f30bbe35cf2c9fed70fa154f9439eeb15ccb26d8ab97614a83fcdd75fe523c771f4033e
+RAINBOW(16,32,32,32) - classic signature = 4d800b552fb81edd659f593ffbe4c7a35526a602bb9ecfc81451144762394f44216b169e062baa03979ab925d44e790d8661ef1b44721ece0a8b27bb2e35c6e9

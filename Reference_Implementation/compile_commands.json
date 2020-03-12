@@ -1,0 +1,482 @@
+[
+ {
+  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
+  "arguments": [
+   "gcc", 
+   "-O2", 
+   "-std=c11", 
+   "-Wall", 
+   "-Wextra", 
+   "-fno-omit-frame-pointer", 
+   "-D", 
+   "aligned_alloc(x,y)=malloc(y)", 
+   "-I/usr/local/include", 
+   "-I/opt/local/include", 
+   "-I/usr/include", 
+   "-IIa_Classic", 
+   "-c", 
+   "rainbow-sign.c"
+  ], 
+  "file": "rainbow-sign.c"
+ }, 
+ {
+  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
+  "arguments": [
+   "gcc", 
+   "-O2", 
+   "-std=c11", 
+   "-Wall", 
+   "-Wextra", 
+   "-fno-omit-frame-pointer", 
+   "-D", 
+   "aligned_alloc(x,y)=malloc(y)", 
+   "-I/usr/local/include", 
+   "-I/opt/local/include", 
+   "-I/usr/include", 
+   "-IIa_Classic", 
+   "-c", 
+   "rainbow-genkey.c"
+  ], 
+  "file": "rainbow-genkey.c"
+ }, 
+ {
+  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
+  "arguments": [
+   "gcc", 
+   "-O2", 
+   "-std=c11", 
+   "-Wall", 
+   "-Wextra", 
+   "-fno-omit-frame-pointer", 
+   "-D", 
+   "aligned_alloc(x,y)=malloc(y)", 
+   "-I/usr/local/include", 
+   "-I/opt/local/include", 
+   "-I/usr/include", 
+   "-IIa_Cyclic", 
+   "-c", 
+   "Ia_Cyclic/rng.c"
+  ], 
+  "file": "Ia_Cyclic/rng.c"
+ }, 
+ {
+  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
+  "arguments": [
+   "gcc", 
+   "-O2", 
+   "-std=c11", 
+   "-Wall", 
+   "-Wextra", 
+   "-fno-omit-frame-pointer", 
+   "-D", 
+   "aligned_alloc(x,y)=malloc(y)", 
+   "-I/usr/local/include", 
+   "-I/opt/local/include", 
+   "-I/usr/include", 
+   "-IIa_Classic", 
+   "-c", 
+   "Ia_Classic/utils_prng.c"
+  ], 
+  "file": "Ia_Classic/utils_prng.c"
+ }, 
+ {
+  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
+  "arguments": [
+   "gcc", 
+   "-O2", 
+   "-std=c11", 
+   "-Wall", 
+   "-Wextra", 
+   "-fno-omit-frame-pointer", 
+   "-D", 
+   "aligned_alloc(x,y)=malloc(y)", 
+   "-I/usr/local/include", 
+   "-I/opt/local/include", 
+   "-I/usr/include", 
+   "-IIa_Cyclic", 
+   "-c", 
+   "Ia_Cyclic/rainbow_keypair_computation.c"
+  ], 
+  "file": "Ia_Cyclic/rainbow_keypair_computation.c"
+ }, 
+ {
+  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
+  "arguments": [
+   "gcc", 
+   "-O2", 
+   "-std=c11", 
+   "-Wall", 
+   "-Wextra", 
+   "-fno-omit-frame-pointer", 
+   "-D", 
+   "aligned_alloc(x,y)=malloc(y)", 
+   "-I/usr/local/include", 
+   "-I/opt/local/include", 
+   "-I/usr/include", 
+   "-IIa_Cyclic", 
+   "-c", 
+   "Ia_Cyclic/blas_comm.c"
+  ], 
+  "file": "Ia_Cyclic/blas_comm.c"
+ }, 
+ {
+  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
+  "arguments": [
+   "gcc", 
+   "-O2", 
+   "-std=c11", 
+   "-Wall", 
+   "-Wextra", 
+   "-fno-omit-frame-pointer", 
+   "-D", 
+   "aligned_alloc(x,y)=malloc(y)", 
+   "-I/usr/local/include", 
+   "-I/opt/local/include", 
+   "-I/usr/include", 
+   "-IIa_Classic", 
+   "-c", 
+   "PQCgenKAT_sign.c"
+  ], 
+  "file": "PQCgenKAT_sign.c"
+ }, 
+ {
+  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
+  "arguments": [
+   "gcc", 
+   "-O2", 
+   "-std=c11", 
+   "-Wall", 
+   "-Wextra", 
+   "-fno-omit-frame-pointer", 
+   "-D", 
+   "aligned_alloc(x,y)=malloc(y)", 
+   "-I/usr/local/include", 
+   "-I/opt/local/include", 
+   "-I/usr/include", 
+   "-IIa_Classic", 
+   "-c", 
+   "Ia_Classic/utils_hash.c"
+  ], 
+  "file": "Ia_Classic/utils_hash.c"
+ }, 
+ {
+  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
+  "arguments": [
+   "gcc", 
+   "-O2", 
+   "-std=c11", 
+   "-Wall", 
+   "-Wextra", 
+   "-fno-omit-frame-pointer", 
+   "-D", 
+   "aligned_alloc(x,y)=malloc(y)", 
+   "-I/usr/local/include", 
+   "-I/opt/local/include", 
+   "-I/usr/include", 
+   "-IIa_Classic", 
+   "-c", 
+   "Ia_Classic/rainbow_keypair_computation.c"
+  ], 
+  "file": "Ia_Classic/rainbow_keypair_computation.c"
+ }, 
+ {
+  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
+  "arguments": [
+   "gcc", 
+   "-O2", 
+   "-std=c11", 
+   "-Wall", 
+   "-Wextra", 
+   "-fno-omit-frame-pointer", 
+   "-D", 
+   "aligned_alloc(x,y)=malloc(y)", 
+   "-I/usr/local/include", 
+   "-I/opt/local/include", 
+   "-I/usr/include", 
+   "-IIa_Cyclic", 
+   "-c", 
+   "Ia_Cyclic/parallel_matrix_op.c"
+  ], 
+  "file": "Ia_Cyclic/parallel_matrix_op.c"
+ }, 
+ {
+  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
+  "arguments": [
+   "gcc", 
+   "-O2", 
+   "-std=c11", 
+   "-Wall", 
+   "-Wextra", 
+   "-fno-omit-frame-pointer", 
+   "-D", 
+   "aligned_alloc(x,y)=malloc(y)", 
+   "-I/usr/local/include", 
+   "-I/opt/local/include", 
+   "-I/usr/include", 
+   "-IIa_Cyclic", 
+   "-c", 
+   "Ia_Cyclic/utils_prng.c"
+  ], 
+  "file": "Ia_Cyclic/utils_prng.c"
+ }, 
+ {
+  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
+  "arguments": [
+   "gcc", 
+   "-O2", 
+   "-std=c11", 
+   "-Wall", 
+   "-Wextra", 
+   "-fno-omit-frame-pointer", 
+   "-D", 
+   "aligned_alloc(x,y)=malloc(y)", 
+   "-I/usr/local/include", 
+   "-I/opt/local/include", 
+   "-I/usr/include", 
+   "-IIa_Classic", 
+   "-c", 
+   "rainbow-verify.c"
+  ], 
+  "file": "rainbow-verify.c"
+ }, 
+ {
+  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
+  "arguments": [
+   "gcc", 
+   "-O2", 
+   "-std=c11", 
+   "-Wall", 
+   "-Wextra", 
+   "-fno-omit-frame-pointer", 
+   "-D", 
+   "aligned_alloc(x,y)=malloc(y)", 
+   "-I/usr/local/include", 
+   "-I/opt/local/include", 
+   "-I/usr/include", 
+   "-IIa_Cyclic", 
+   "-c", 
+   "Ia_Cyclic/utils_hash.c"
+  ], 
+  "file": "Ia_Cyclic/utils_hash.c"
+ }, 
+ {
+  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
+  "arguments": [
+   "gcc", 
+   "-O2", 
+   "-std=c11", 
+   "-Wall", 
+   "-Wextra", 
+   "-fno-omit-frame-pointer", 
+   "-D", 
+   "aligned_alloc(x,y)=malloc(y)", 
+   "-I/usr/local/include", 
+   "-I/opt/local/include", 
+   "-I/usr/include", 
+   "-IIa_Classic", 
+   "-c", 
+   "Ia_Classic/blas_comm.c"
+  ], 
+  "file": "Ia_Classic/blas_comm.c"
+ }, 
+ {
+  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
+  "arguments": [
+   "gcc", 
+   "-O2", 
+   "-std=c11", 
+   "-Wall", 
+   "-Wextra", 
+   "-fno-omit-frame-pointer", 
+   "-D", 
+   "aligned_alloc(x,y)=malloc(y)", 
+   "-I/usr/local/include", 
+   "-I/opt/local/include", 
+   "-I/usr/include", 
+   "-IIa_Cyclic", 
+   "-c", 
+   "Ia_Cyclic/rainbow_keypair.c"
+  ], 
+  "file": "Ia_Cyclic/rainbow_keypair.c"
+ }, 
+ {
+  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
+  "arguments": [
+   "gcc", 
+   "-O2", 
+   "-std=c11", 
+   "-Wall", 
+   "-Wextra", 
+   "-fno-omit-frame-pointer", 
+   "-D", 
+   "aligned_alloc(x,y)=malloc(y)", 
+   "-I/usr/local/include", 
+   "-I/opt/local/include", 
+   "-I/usr/include", 
+   "-IIa_Classic", 
+   "-c", 
+   "Ia_Classic/rainbow.c"
+  ], 
+  "file": "Ia_Classic/rainbow.c"
+ }, 
+ {
+  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
+  "arguments": [
+   "gcc", 
+   "-O2", 
+   "-std=c11", 
+   "-Wall", 
+   "-Wextra", 
+   "-fno-omit-frame-pointer", 
+   "-D", 
+   "aligned_alloc(x,y)=malloc(y)", 
+   "-I/usr/local/include", 
+   "-I/opt/local/include", 
+   "-I/usr/include", 
+   "-IIa_Cyclic", 
+   "-c", 
+   "Ia_Cyclic/sign.c"
+  ], 
+  "file": "Ia_Cyclic/sign.c"
+ }, 
+ {
+  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
+  "arguments": [
+   "gcc", 
+   "-O2", 
+   "-std=c11", 
+   "-Wall", 
+   "-Wextra", 
+   "-fno-omit-frame-pointer", 
+   "-D", 
+   "aligned_alloc(x,y)=malloc(y)", 
+   "-I/usr/local/include", 
+   "-I/opt/local/include", 
+   "-I/usr/include", 
+   "-IIa_Cyclic", 
+   "-c", 
+   "Ia_Cyclic/rainbow.c"
+  ], 
+  "file": "Ia_Cyclic/rainbow.c"
+ }, 
+ {
+  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
+  "arguments": [
+   "gcc", 
+   "-O2", 
+   "-std=c11", 
+   "-Wall", 
+   "-Wextra", 
+   "-fno-omit-frame-pointer", 
+   "-D", 
+   "aligned_alloc(x,y)=malloc(y)", 
+   "-I/usr/local/include", 
+   "-I/opt/local/include", 
+   "-I/usr/include", 
+   "-IIa_Cyclic", 
+   "-c", 
+   "Ia_Cyclic/utils.c"
+  ], 
+  "file": "Ia_Cyclic/utils.c"
+ }, 
+ {
+  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
+  "arguments": [
+   "gcc", 
+   "-O2", 
+   "-std=c11", 
+   "-Wall", 
+   "-Wextra", 
+   "-fno-omit-frame-pointer", 
+   "-D", 
+   "aligned_alloc(x,y)=malloc(y)", 
+   "-I/usr/local/include", 
+   "-I/opt/local/include", 
+   "-I/usr/include", 
+   "-IIa_Classic", 
+   "-c", 
+   "Ia_Classic/utils.c"
+  ], 
+  "file": "Ia_Classic/utils.c"
+ }, 
+ {
+  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
+  "arguments": [
+   "gcc", 
+   "-O2", 
+   "-std=c11", 
+   "-Wall", 
+   "-Wextra", 
+   "-fno-omit-frame-pointer", 
+   "-D", 
+   "aligned_alloc(x,y)=malloc(y)", 
+   "-I/usr/local/include", 
+   "-I/opt/local/include", 
+   "-I/usr/include", 
+   "-IIa_Classic", 
+   "-c", 
+   "Ia_Classic/rng.c"
+  ], 
+  "file": "Ia_Classic/rng.c"
+ }, 
+ {
+  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
+  "arguments": [
+   "gcc", 
+   "-O2", 
+   "-std=c11", 
+   "-Wall", 
+   "-Wextra", 
+   "-fno-omit-frame-pointer", 
+   "-D", 
+   "aligned_alloc(x,y)=malloc(y)", 
+   "-I/usr/local/include", 
+   "-I/opt/local/include", 
+   "-I/usr/include", 
+   "-IIa_Classic", 
+   "-c", 
+   "Ia_Classic/parallel_matrix_op.c"
+  ], 
+  "file": "Ia_Classic/parallel_matrix_op.c"
+ }, 
+ {
+  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
+  "arguments": [
+   "gcc", 
+   "-O2", 
+   "-std=c11", 
+   "-Wall", 
+   "-Wextra", 
+   "-fno-omit-frame-pointer", 
+   "-D", 
+   "aligned_alloc(x,y)=malloc(y)", 
+   "-I/usr/local/include", 
+   "-I/opt/local/include", 
+   "-I/usr/include", 
+   "-IIa_Classic", 
+   "-c", 
+   "Ia_Classic/rainbow_keypair.c"
+  ], 
+  "file": "Ia_Classic/rainbow_keypair.c"
+ }, 
+ {
+  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
+  "arguments": [
+   "gcc", 
+   "-O2", 
+   "-std=c11", 
+   "-Wall", 
+   "-Wextra", 
+   "-fno-omit-frame-pointer", 
+   "-D", 
+   "aligned_alloc(x,y)=malloc(y)", 
+   "-I/usr/local/include", 
+   "-I/opt/local/include", 
+   "-I/usr/include", 
+   "-IIa_Classic", 
+   "-c", 
+   "Ia_Classic/sign.c"
+  ], 
+  "file": "Ia_Classic/sign.c"
+ }
+]

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CLionExternalBuildManager">
+    <target id="5e4ecf31-0b87-4be5-a8bf-cb3622cb849b" name="Rainbow" projectName="Reference_Implementation">
+      <configuration id="c69fb856-1d86-4e5b-8352-eab9e8f83a87" name="Rainbow">
+        <build type="TOOL">
+          <tool actionId="Tool_External Tools_build_with_make" />
+        </build>
+        <clean type="TOOL">
+          <tool actionId="Tool_External Tools_clean_with_make" />
+        </clean>
+      </configuration>
+    </target>
+  </component>
+</project>
