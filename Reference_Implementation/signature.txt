@@ -1,7 +1,0 @@
-RAINBOW(16,32,32,32) - classic
-sk size: 92960
-pk size: 148992
-hash size: 32
-signature size: 64
-
-RAINBOW(16,32,32,32) - classic signature = 9a61f2b0876e67437f31dd82907eda67815bf4e441e26b14fd3afe1a0093c29fbb0df46e8181fefa70f92bfbd7086107bbebef8953b6bce174eb466dc9fd5f6b
