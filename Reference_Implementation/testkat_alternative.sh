@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Test submissions all at once
+type=sign
+the_dirs=`ls -d */`
+for i in ${the_dirs}
+do
+    make clean
+    rm *.req 
+    rm *.rsp 
+    echo "DIRECTORY=`pwd`"
+    #cp $KATPATH/PQCgenKAT_${type}.c ${i}PQCgenKAT_${type}.c
+#    cd ${i}
+    make PROJ_DIR=${i} > /dev/null 2>&1
+    echo "Testing ${i}"
+    ./PQCgenKAT_${type} 100 0
+    NEWKATOUT=`ls *.rsp`
+    echo "NEWKATOUT.=${NEWKATOUT}"
+    OLDDIR=`pwd`
+    while [ `pwd` != '/' ] && [  ! -d "./KAT" ]
+    do
+	pwd
+#	echo "FAIL"
+	cd ..
+    done
+
+    echo "find ./KAT/${i}/ -name \"*.rsp\""
+    OLDKATOUT=`find ./KAT/${i}/ -name "*.rsp"`
+    #echo "OLDKATOUT.=${OLDKATOUT}"
+    echo "Checking diff for ${i}"
+    # ${OLDKATOUT}," ${OLDDIR}/${NEWKATOUT}
+    #echo $OLDDIR/${NEWKATOUT}
+    #echo ${OLDKATOUT}
+    diff $OLDKATOUT $OLDDIR/${NEWKATOUT}
+    echo "Done checking diff for ${i}"
+    cd $OLDDIR
+done
+
