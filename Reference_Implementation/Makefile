@@ -38,6 +38,7 @@ LIBS=    -lcrypto
 ifeq ($(PROJ_DIR),avx2)
 CFLAGS += -mavx2
 CXXFLAGS += -mavx2
+LDFLAGS= -fsanitize=address
 endif
 
 
@@ -56,7 +57,7 @@ CSRC= $(wildcard *.c)
 
 ifdef DEBUG
         CFLAGS=  -D_DEBUG_ -g -O1 -mavx2 -std=c99 -Wall -Wextra -fsanitize=address -fno-omit-frame-pointer
-        CXXFLAGS= -D_DEBUG_ -g -O1 -mavx2 -Wall -Wextra -fno-exceptions -fno-rtti -nostdinc++
+        CXXFLAGS= -D_DEBUG_ -g -O1 -mavx2 -Wall -Wextra -fsanitize=address -fno-exceptions -fno-rtti -nostdinc++
 endif
 
 ifdef GPROF
