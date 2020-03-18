@@ -19,7 +19,7 @@ extern  "C" {
 typedef AES256_CTR_DRBG_struct prng_t;
 
 #else
-#include "hash_utils.h"
+#include "utils_hash.h"
 
 typedef
 struct prng_context {
