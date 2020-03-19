@@ -58,6 +58,14 @@ struct rainbow_secretkey {
 } sk_t;
 
 
+/// @brief identity for ID-Rainbow
+///
+/// identity for ID-Rainbow
+///
+typedef
+struct rainbow_identity {
+    unsigned char identity[_HASH_LEN];
+} id;
 
 
 /// @brief public key for cyclic rainbow
@@ -100,7 +108,7 @@ struct rainbow_secretkey_cyclic {
 /// @param[out] sk        - the secret key.
 /// @param[in]  sk_seed   - seed for generating the secret key.
 ///
-void generate_keypair( pk_t * pk, sk_t* sk, const unsigned char *sk_seed );
+void generate_keypair(pk_t *pk, sk_t *sk, const unsigned char *sk_seed, const unsigned char *id);
 
 ///
 /// @brief Generate key pairs for cyclic rainbow.
@@ -151,7 +159,7 @@ void generate_secretkey_cyclic( sk_t* sk, const unsigned char *pk_seed , const u
 ///
 void cpk_to_pk( pk_t * pk , const cpk_t * cpk );
 
-
+void generate_identity_hash(unsigned char *digest, const unsigned char *id);
 
 
 

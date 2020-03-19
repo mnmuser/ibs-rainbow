@@ -22,11 +22,16 @@ int
 crypto_sign_keypair(unsigned char *pk, unsigned char *sk)
 {
     unsigned char sk_seed[LEN_SKSEED] = {0};
-    randombytes( sk_seed , LEN_SKSEED );
+    randombytes(sk_seed, LEN_SKSEED);
 
 #if defined _RAINBOW_CLASSIC
 
-    generate_keypair( (pk_t*) pk , (sk_t*) sk , sk_seed );
+    //for testing ID
+
+    const unsigned char test_id = 5;
+
+    generate_keypair((pk_t *) pk, (sk_t *) sk, sk_seed, &test_id);
+
 
 #elif defined _RAINBOW_CYCLIC
 
