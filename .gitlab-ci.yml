@@ -2,6 +2,10 @@ image: gcc
 # The official gcc image, based on debian
 # see https://hub.docker.com/_/gcc/
 
+stages:
+  - build
+  - test
+
 build:
   stage: build
   before_script:
@@ -24,3 +28,11 @@ test:
   script:
     - cd Reference_Implementation
     - bash test-comm.sh
+    
+# gitlab codequality-check
+include:
+  - template: Code-Quality.gitlab-ci.yml
+
+code_quality:
+  artifacts:
+    paths: [gl-code-quality-report.json]
