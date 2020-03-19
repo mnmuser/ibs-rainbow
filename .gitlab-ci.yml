@@ -25,6 +25,8 @@ build:
 # run tests using the binary built before
 test:
   stage: test
+  variables:
+    DOCKER_TLS_CERTDIR: ""
   script:
     - cd Reference_Implementation
     - bash test-comm.sh
