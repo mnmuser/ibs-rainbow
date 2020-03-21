@@ -1,33 +1,40 @@
-# This file is a template, and might need editing before it works on your project.
-# use the official gcc image, based on debian
-# can use verions as well, like gcc:5.2
-# see https://hub.docker.com/_/gcc/
 image: gcc
+# The official gcc image, based on debian
+# see https://hub.docker.com/_/gcc/
+
+stages:
+  - build
+  - test
 
 build:
   stage: build
-  # instead of calling g++ directly you can also use some build toolkit like make
-  # install the necessary build tools when needed
-  # before_script:
-  #   - apt update && apt -y install make autoconf
+  before_script:
+    - apt update && apt -y install make autoconf
   script:
     - cd Reference_Implementation
     - make
-
   artifacts:
     paths:
       - "Reference_Implementation/rainbow-genkey"
       - "Reference_Implementation/rainbow-verify"
       - "Reference_Implementation/rainbow-sign"
-    
   cache:
     paths:
-      - "*Reference_Implementation/.o"
-
+      - "*Reference_Implementation/*.o"
 
 # run tests using the binary built before
 test:
   stage: test
+  variables:
+    DOCKER_TLS_CERTDIR: ""
   script:
     - cd Reference_Implementation
     - bash test-comm.sh
+    
+# gitlab codequality-check
+include:
+  - template: Code-Quality.gitlab-ci.yml
+
+code_quality:
+  artifacts:
+    paths: [gl-code-quality-report.json]
