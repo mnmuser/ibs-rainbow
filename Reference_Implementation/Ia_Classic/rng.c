@@ -236,7 +236,7 @@ randombytes_init_with_state( AES256_CTR_DRBG_struct * states, unsigned char *ent
 }
 
 int
-randombytes_with_state( AES256_CTR_DRBG_struct * states, unsigned char *x, unsigned long long xlen)
+randombytes_with_state(AES256_CTR_DRBG_struct *states, unsigned char *x, unsigned long long xlen)
 {
 
     unsigned char   block[16];
