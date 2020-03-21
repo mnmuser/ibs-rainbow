@@ -2,6 +2,9 @@
 
 based on the code of NIST-candidate Rainbow (Round 2)
 
+working currently only on Reference_Implementation
+
+
 ## How-To
 
 You can use the compiled artifacts in this repository to try it on your linux machine (tested on Ubuntu 19.10).
@@ -22,3 +25,7 @@ Download the artifacts and run them in your shell:
 ```
 ./rainbow-genkey pk.txt signature.txt message.txt
 ```
+
+## Choose method
+
+At the moment you can choose security level and method in api.h and rainbow_config.h

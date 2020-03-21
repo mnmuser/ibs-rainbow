@@ -19,12 +19,4 @@ run_test()
 
 echo " ================ generate KATs ================"
 
-run_test Ia_Classic
-run_test Ia_Cyclic
-run_test Ia_CompressedCyclic
-run_test IIIc_Classic
-run_test IIIc_Cyclic
-run_test IIIc_CompressedCyclic
-run_test Vc_Classic
-run_test Vc_Cyclic
-run_test Vc_CompressedCyclic
+run_test rainbow_intern
