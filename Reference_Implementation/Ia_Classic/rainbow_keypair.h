@@ -50,14 +50,22 @@ struct rainbow_secretkey {
     unsigned char l1_F2[_O1_BYTE * _V1*_O1];                ///< part of C-map, F2, Layer1
 
     unsigned char l2_F1[_O2_BYTE * N_TRIANGLE_TERMS(_V1)];  ///< part of C-map, F1, Layer2
-    unsigned char l2_F2[_O2_BYTE * _V1*_O1];                ///< part of C-map, F2, Layer2
+    unsigned char l2_F2[_O2_BYTE * _V1 * _O1];                ///< part of C-map, F2, Layer2
 
-    unsigned char l2_F3[_O2_BYTE * _V1*_O2];                ///< part of C-map, F3, Layer2
+    unsigned char l2_F3[_O2_BYTE * _V1 * _O2];                ///< part of C-map, F3, Layer2
     unsigned char l2_F5[_O2_BYTE * N_TRIANGLE_TERMS(_O1)];  ///< part of C-map, F5, Layer2
-    unsigned char l2_F6[_O2_BYTE * _O1*_O2];                ///< part of C-map, F6, Layer2
+    unsigned char l2_F6[_O2_BYTE * _O1 * _O2];                ///< part of C-map, F6, Layer2
 } sk_t;
 
 
+///// @brief identity for ID-Rainbow
+/////
+///// identity for ID-Rainbow
+/////
+//typedef
+//struct rainbow_identity {
+//    unsigned char identity[_HASH_LEN];
+//} id;
 
 
 /// @brief public key for cyclic rainbow
@@ -100,7 +108,7 @@ struct rainbow_secretkey_cyclic {
 /// @param[out] sk        - the secret key.
 /// @param[in]  sk_seed   - seed for generating the secret key.
 ///
-void generate_keypair( pk_t * pk, sk_t* sk, const unsigned char *sk_seed );
+void generate_keypair(pk_t *pk, sk_t *sk, const unsigned char *sk_seed, const unsigned char *id);
 
 ///
 /// @brief Generate key pairs for cyclic rainbow.
@@ -130,7 +138,7 @@ void generate_compact_keypair_cyclic( cpk_t * pk, csk_t* sk, const unsigned char
 /// @param[out] sk        - the secret key.
 /// @param[in]  sk_seed   - seed for generating the secret key.
 ///
-void generate_secretkey( sk_t* sk, const unsigned char *sk_seed );
+void generate_secretkey(sk_t *sk, const unsigned char *sk_seed, unsigned char *id_digest);
 
 ///
 /// @brief Generate secret key for cyclic rainbow.
@@ -151,7 +159,7 @@ void generate_secretkey_cyclic( sk_t* sk, const unsigned char *pk_seed , const u
 ///
 void cpk_to_pk( pk_t * pk , const cpk_t * cpk );
 
-
+void generate_identity_hash(unsigned char *digest, const unsigned char *id);
 
 
 

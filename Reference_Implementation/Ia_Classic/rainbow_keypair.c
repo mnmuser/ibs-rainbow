@@ -9,7 +9,6 @@
 #include "rainbow_blas.h"
 
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
 
 
@@ -17,6 +16,7 @@
 
 
 #include "utils_prng.h"
+#include "utils_hash.h"
 
 
 static
@@ -32,6 +32,12 @@ void generate_S_T( unsigned char * s_and_t , prng_t * prng0 )
 }
 
 
+/**
+ * Generate Layer 1 F1 and F2 for F
+ * @param sk
+ * @param prng0
+ * @return
+ */
 static
 unsigned generate_l1_F12( unsigned char * sk, prng_t * prng0 )
 {
@@ -75,12 +81,11 @@ unsigned generate_l2_F12356( unsigned char * sk, prng_t * prng0 )
     return n_byte_generated;
 }
 
-
+//TODO: Hier entsteht F
 static
-void generate_B1_B2( unsigned char * sk , prng_t * prng0 )
-{
-    sk += generate_l1_F12( sk , prng0 );
-    generate_l2_F12356( sk , prng0 );
+void generate_B1_B2( unsigned char * sk , prng_t * prng0 ) {
+    sk += generate_l1_F12(sk, prng0); //Layer 1
+    generate_l2_F12356(sk, prng0); // Layer 2
 }
 
 
@@ -154,50 +159,51 @@ void obsfucate_l1_polys( unsigned char * l1_polys , const unsigned char * l2_pol
 
 
 static
-void _generate_secretkey( sk_t* sk, const unsigned char *sk_seed )
-{
-    memcpy( sk->sk_seed , sk_seed , LEN_SKSEED );
+void _generate_secretkey(sk_t *sk, const unsigned char *sk_seed, unsigned char *id_digest) {
+    memcpy(sk->sk_seed, sk_seed, LEN_SKSEED);
 
     // set up prng
     prng_t prng0;
-    prng_set( &prng0 , sk_seed , LEN_SKSEED );
+    prng_set(&prng0, sk_seed, LEN_SKSEED);
 
     // generating secret key with prng.
-    generate_S_T( sk->s1 , &prng0 );
-    generate_B1_B2( sk->l1_F1 , &prng0 );
+    generate_S_T(sk->s1, &prng0);
+    generate_B1_B2(sk->l1_F1, &prng0);
 
     // clean prng
     memset( &prng0 , 0 , sizeof(prng_t) );
 }
 
 
-void generate_secretkey( sk_t* sk, const unsigned char *sk_seed )
-{
-    _generate_secretkey( sk , sk_seed );
-    calculate_t4( sk->t4 , sk->t1 , sk->t3 );
+void generate_secretkey(sk_t *sk, const unsigned char *sk_seed, unsigned char *id_digest) {
+    _generate_secretkey(sk, sk_seed, id_digest);
+    calculate_t4(sk->t4, sk->t1, sk->t3);
 }
 
 
+void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed, const unsigned char *id) {
 
-void generate_keypair( pk_t * rpk, sk_t* sk, const unsigned char *sk_seed )
-{
-    _generate_secretkey( sk , sk_seed );
+    unsigned char id_digest[_PUB_N]; // number of variables
+    generate_identity_hash(id_digest, id);
+
+
+    _generate_secretkey(sk, sk_seed, id_digest);
 
     // set up a temporary structure ext_cpk_t for calculating public key.
-    ext_cpk_t * pk = (ext_cpk_t*) aligned_alloc( 32 , sizeof(ext_cpk_t) );
-    calculate_Q_from_F( pk, sk , sk );   // compute the public key in ext_cpk_t format.
-    calculate_t4( sk->t4 , sk->t1 , sk->t3 );
+    ext_cpk_t *pk = (ext_cpk_t *) aligned_alloc(32, sizeof(ext_cpk_t));
+    calculate_Q_from_F(pk, sk, sk);   // compute the public key in ext_cpk_t format.
+    calculate_t4(sk->t4, sk->t1, sk->t3);
 
-    obsfucate_l1_polys( pk->l1_Q1 , pk->l2_Q1 , N_TRIANGLE_TERMS(_V1) , sk->s1 );
-    obsfucate_l1_polys( pk->l1_Q2 , pk->l2_Q2 , _V1*_O1 , sk->s1 );
-    obsfucate_l1_polys( pk->l1_Q3 , pk->l2_Q3 , _V1*_O2 , sk->s1 );
-    obsfucate_l1_polys( pk->l1_Q5 , pk->l2_Q5 , N_TRIANGLE_TERMS(_O1) , sk->s1 );
-    obsfucate_l1_polys( pk->l1_Q6 , pk->l2_Q6 , _O1*_O2 , sk->s1 );
-    obsfucate_l1_polys( pk->l1_Q9 , pk->l2_Q9 , N_TRIANGLE_TERMS(_O2) , sk->s1 );
+    obsfucate_l1_polys(pk->l1_Q1, pk->l2_Q1, N_TRIANGLE_TERMS(_V1), sk->s1);
+    obsfucate_l1_polys(pk->l1_Q2, pk->l2_Q2, _V1 * _O1, sk->s1);
+    obsfucate_l1_polys(pk->l1_Q3, pk->l2_Q3, _V1 * _O2, sk->s1);
+    obsfucate_l1_polys(pk->l1_Q5, pk->l2_Q5, N_TRIANGLE_TERMS(_O1), sk->s1);
+    obsfucate_l1_polys(pk->l1_Q6, pk->l2_Q6, _O1 * _O2, sk->s1);
+    obsfucate_l1_polys(pk->l1_Q9, pk->l2_Q9, N_TRIANGLE_TERMS(_O2), sk->s1);
     // so far, the pk contains the full pk but in ext_cpk_t format.
 
-    extcpk_to_pk( rpk , pk );     // convert the public key from ext_cpk_t to pk_t.
-    free( pk );
+    extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to pk_t.
+    free(pk);
 }
 
 
@@ -277,18 +283,24 @@ void generate_keypair_cyclic( cpk_t * pk, sk_t* sk, const unsigned char *pk_seed
 }
 
 
+void
+generate_compact_keypair_cyclic(cpk_t *pk, csk_t *rsk, const unsigned char *pk_seed, const unsigned char *sk_seed) {
+    memcpy(rsk->pk_seed, pk_seed, LEN_PKSEED);
+    memcpy(rsk->sk_seed, sk_seed, LEN_SKSEED);
 
-void generate_compact_keypair_cyclic( cpk_t * pk, csk_t* rsk, const unsigned char *pk_seed , const unsigned char *sk_seed )
-{
-    memcpy( rsk->pk_seed , pk_seed , LEN_PKSEED );
-    memcpy( rsk->sk_seed , sk_seed , LEN_SKSEED );
-
-    sk_t * sk = (sk_t *) aligned_alloc( 32 , sizeof(sk_t) );
-    generate_keypair_cyclic( pk , sk , pk_seed , sk_seed );
-    memset( sk , 0 , sizeof(sk_t) );
-    free( sk );    // dispose of sk. don't need to output.
+    sk_t *sk = (sk_t *) aligned_alloc(32, sizeof(sk_t));
+    generate_keypair_cyclic(pk, sk, pk_seed, sk_seed);
+    memset(sk, 0, sizeof(sk_t));
+    free(sk);    // dispose of sk. don't need to output.
 }
 
+////////////////////// IDENTITY ///////////////////////////
+
+void generate_identity_hash(unsigned char *digest, const unsigned char *id) {
+    unsigned long long int id_length;
+    id_length = sizeof(*id);
+    hash_msg(digest, sizeof(*digest), id, id_length); // for simplicity I use the hash-function for messages
+}
 
 
 

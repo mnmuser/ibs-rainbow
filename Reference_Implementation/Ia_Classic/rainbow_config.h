@@ -53,19 +53,17 @@ error here.
 #define _S_NAME THE_NAME(_GFSIZE,_V1,_O1,_O2)
 
 
-/// size of N, in # of gf elements.
+/// size of N (# variables), in # of gf elements.
 #define _PUB_N  (_V1+_O1+_O2)
 
-/// size of M, in # gf elements.
+/// size of M (# equations), in # gf elements.
 #define _PUB_M  (_O1+_O2)
 
 
 /// size of variables, in # bytes.
-
-
 #ifdef _USE_GF16
 // GF16
-#define _V1_BYTE (_V1/2)
+#define _V1_BYTE (_V1/2) //TODO: why /2 ?
 #define _V2_BYTE (_V2/2)
 #define _O1_BYTE (_O1/2)
 #define _O2_BYTE (_O2/2)
