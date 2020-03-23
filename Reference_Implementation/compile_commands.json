@@ -35,9 +35,9 @@
       "-I/usr/include",
       "-Irainbow_intern",
       "-c",
-      "rainbow_intern/utils.c"
+      "rainbow_intern/sign.c"
     ],
-    "file": "rainbow_intern/utils.c"
+    "file": "rainbow_intern/sign.c"
   },
   {
     "directory": "/home/david/Dokumente/rainbow/Reference_Implementation",
@@ -55,9 +55,9 @@
       "-I/usr/include",
       "-Irainbow_intern",
       "-c",
-      "rainbow_intern/parallel_matrix_op.c"
+      "rainbow_intern/utils.c"
     ],
-    "file": "rainbow_intern/parallel_matrix_op.c"
+    "file": "rainbow_intern/utils.c"
   },
   {
     "directory": "/home/david/Dokumente/rainbow/Reference_Implementation",
@@ -155,29 +155,9 @@
       "-I/usr/include",
       "-Irainbow_intern",
       "-c",
-      "rainbow_intern/sign.c"
+      "rainbow_intern/utils_prng.c"
     ],
-    "file": "rainbow_intern/sign.c"
-  },
-  {
-    "directory": "/home/david/Dokumente/rainbow/Reference_Implementation",
-    "arguments": [
-      "gcc",
-      "-O2",
-      "-std=c11",
-      "-Wall",
-      "-Wextra",
-      "-fno-omit-frame-pointer",
-      "-D",
-      "aligned_alloc(x,y)=malloc(y)",
-      "-I/usr/local/include",
-      "-I/opt/local/include",
-      "-I/usr/include",
-      "-Irainbow_intern",
-      "-c",
-      "PQCgenKAT_sign.c"
-    ],
-    "file": "PQCgenKAT_sign.c"
+    "file": "rainbow_intern/utils_prng.c"
   },
   {
     "directory": "/home/david/Dokumente/rainbow/Reference_Implementation",
@@ -215,9 +195,29 @@
       "-I/usr/include",
       "-Irainbow_intern",
       "-c",
-      "rainbow_intern/utils_prng.c"
+      "PQCgenKAT_sign.c"
     ],
-    "file": "rainbow_intern/utils_prng.c"
+    "file": "PQCgenKAT_sign.c"
+  },
+  {
+    "directory": "/home/david/Dokumente/rainbow/Reference_Implementation",
+    "arguments": [
+      "gcc",
+      "-O2",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-fno-omit-frame-pointer",
+      "-D",
+      "aligned_alloc(x,y)=malloc(y)",
+      "-I/usr/local/include",
+      "-I/opt/local/include",
+      "-I/usr/include",
+      "-Irainbow_intern",
+      "-c",
+      "rainbow_intern/parallel_matrix_op.c"
+    ],
+    "file": "rainbow_intern/parallel_matrix_op.c"
   },
   {
     "directory": "/home/david/Dokumente/rainbow/Reference_Implementation",
@@ -238,45 +238,45 @@
       "rainbow_intern/utils_hash.c"
     ],
     "file": "rainbow_intern/utils_hash.c"
- }, 
- {
-  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
-  "arguments": [
-    "gcc",
-    "-O2",
-    "-std=c11",
-    "-Wall",
-    "-Wextra",
-    "-fno-omit-frame-pointer",
-    "-D",
-    "aligned_alloc(x,y)=malloc(y)",
-    "-I/usr/local/include",
-    "-I/opt/local/include",
-    "-I/usr/include",
-    "-Irainbow_intern",
-    "-c",
-    "rainbow-verify.c"
-  ],
-   "file": "rainbow-verify.c"
- }, 
- {
-  "directory": "/home/david/Dokumente/rainbow/Reference_Implementation", 
-  "arguments": [
-    "gcc",
-    "-O2",
-    "-std=c11",
-    "-Wall",
-    "-Wextra",
-    "-fno-omit-frame-pointer",
-    "-D",
-    "aligned_alloc(x,y)=malloc(y)",
-    "-I/usr/local/include",
-    "-I/opt/local/include",
-    "-I/usr/include",
-    "-Irainbow_intern",
-    "-c",
-    "rainbow_intern/rainbow_keypair_computation.c"
-  ],
-   "file": "rainbow_intern/rainbow_keypair_computation.c"
- }
+  },
+  {
+    "directory": "/home/david/Dokumente/rainbow/Reference_Implementation",
+    "arguments": [
+      "gcc",
+      "-O2",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-fno-omit-frame-pointer",
+      "-D",
+      "aligned_alloc(x,y)=malloc(y)",
+      "-I/usr/local/include",
+      "-I/opt/local/include",
+      "-I/usr/include",
+      "-Irainbow_intern",
+      "-c",
+      "rainbow-verify.c"
+    ],
+    "file": "rainbow-verify.c"
+  },
+  {
+    "directory": "/home/david/Dokumente/rainbow/Reference_Implementation",
+    "arguments": [
+      "gcc",
+      "-O2",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-fno-omit-frame-pointer",
+      "-D",
+      "aligned_alloc(x,y)=malloc(y)",
+      "-I/usr/local/include",
+      "-I/opt/local/include",
+      "-I/usr/include",
+      "-Irainbow_intern",
+      "-c",
+      "rainbow_intern/rainbow_keypair_computation.c"
+    ],
+    "file": "rainbow_intern/rainbow_keypair_computation.c"
+  }
 ]

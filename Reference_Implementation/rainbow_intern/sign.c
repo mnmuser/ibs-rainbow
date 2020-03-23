@@ -28,7 +28,7 @@ crypto_sign_keypair(unsigned char *pk, unsigned char *sk)
 
     //for testing ID
 
-    const unsigned char test_id = 5;
+    unsigned char test_id = 5;
 
     generate_keypair((pk_t *) pk, (sk_t *) sk, sk_seed, &test_id);
 

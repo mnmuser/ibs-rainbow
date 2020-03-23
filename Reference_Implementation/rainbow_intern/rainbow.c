@@ -54,25 +54,27 @@ int rainbow_sign( uint8_t * signature , const sk_t * sk , const uint8_t * _diges
     uint8_t vinegar[_V1_BYTE];
     unsigned n_attempt = 0;
     unsigned l1_succ = 0;
-    while( !l1_succ ) {
-        if( MAX_ATTEMPT_FRMAT <= n_attempt ) break;
-        prng_gen( &prng_sign , vinegar , _V1_BYTE );                       // generating vinegars
-        gfmat_prod( mat_l1 , sk->l1_F2 , _O1*_O1_BYTE , _V1 , vinegar );   // generating the linear equations for layer 1
-        l1_succ = gfmat_inv( mat_l1 , mat_l1 , _O1 , mat_buffer );         // check if the linear equation solvable
-        n_attempt ++;
+    while (!l1_succ) {
+        if (MAX_ATTEMPT_FRMAT <= n_attempt) break;
+        prng_gen(&prng_sign, vinegar, _V1_BYTE);                       // generating vinegars
+        gfmat_prod(mat_l1, sk->l1_F2, _O1 * _O1_BYTE, _V1,
+                   vinegar);   // generating the linear equations for layer 1 (write vinegar variables in mat_l1)
+        l1_succ = gfmat_inv(mat_l1, mat_l1, _O1,
+                            mat_buffer);         // check if the linear equation solvable (with gauss)
+        n_attempt++;
     }
 
     // Given the vinegars, pre-compute variables needed for layer 2
-    uint8_t r_l1_F1[_O1_BYTE] = {0};
+    uint8_t r_l1_F1[_O1_BYTE] = {0}; // TODO: what is r?
     uint8_t r_l2_F1[_O2_BYTE] = {0};
-    batch_quad_trimat_eval( r_l1_F1, sk->l1_F1, vinegar, _V1, _O1_BYTE );
-    batch_quad_trimat_eval( r_l2_F1, sk->l2_F1, vinegar, _V1, _O2_BYTE );
-    uint8_t * mat_l2_F3 = aligned_alloc( 32 , _O2*_O2_BYTE );
-    uint8_t * mat_l2_F2 = aligned_alloc( 32 , _O1*_O2_BYTE );
-    gfmat_prod( mat_l2_F3 , sk->l2_F3 , _O2*_O2_BYTE , _V1 , vinegar );
-    gfmat_prod( mat_l2_F2 , sk->l2_F2 , _O1*_O2_BYTE , _V1 , vinegar );
+    batch_quad_trimat_eval(r_l1_F1, sk->l1_F1, vinegar, _V1, _O1_BYTE);
+    batch_quad_trimat_eval(r_l2_F1, sk->l2_F1, vinegar, _V1, _O2_BYTE);
+    uint8_t *mat_l2_F3 = aligned_alloc(32, _O2 * _O2_BYTE);
+    uint8_t *mat_l2_F2 = aligned_alloc(32, _O1 * _O2_BYTE);
+    gfmat_prod(mat_l2_F3, sk->l2_F3, _O2 * _O2_BYTE, _V1, vinegar);
+    gfmat_prod(mat_l2_F2, sk->l2_F2, _O1 * _O2_BYTE, _V1, vinegar);
 
-    // Some local variables.
+    // "Some" local variables.
     uint8_t _z[_PUB_M_BYTE];
     uint8_t y[_PUB_M_BYTE];
     uint8_t * x_v1 = vinegar;

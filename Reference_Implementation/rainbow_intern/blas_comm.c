@@ -45,12 +45,20 @@ void gf256v_polymul(uint8_t *c, const uint8_t *a, const uint8_t *b, unsigned _nu
 
 ///////////  matrix-vector
 
+/**
+ *
+ * @param c pointer to destination-matrix
+ * @param matA pointer to part of the secret key (e.g. l1_f2)
+ * @param n_A_vec_byte size of o-bytes (?) (e.g. o1*o1_byte)
+ * @param n_A_width number of variables to generate (e.g. V1)
+ * @param b pointer to vinegar-array
+ */
 static
 void gf16mat_prod_ref(uint8_t *c, const uint8_t *matA, unsigned n_A_vec_byte, unsigned n_A_width, const uint8_t *b) {
-    gf256v_set_zero(c, n_A_vec_byte);
-    for (unsigned i = 0; i < n_A_width; i++) {
-        uint8_t bb = gf16v_get_ele(b, i);
-        gf16v_madd(c, matA, bb, n_A_vec_byte);
+    gf256v_set_zero(c, n_A_vec_byte); //set number of O1-bytes in matrix to 0
+    for (unsigned i = 0; i < n_A_width; i++) { // loop over number of vinegars
+        uint8_t bb = gf16v_get_ele(b, i); //get element i from vinegar-array
+        gf16v_madd(c, matA, bb, n_A_vec_byte); // -> _gf16v_madd_u32
         matA += n_A_vec_byte;
     }
 }

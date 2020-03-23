@@ -22,33 +22,27 @@
 static
 void generate_S_T( unsigned char * s_and_t , prng_t * prng0 )
 {
-    prng_gen( prng0 , s_and_t , _O1_BYTE*_O2 ); // S1
-    s_and_t += _O1_BYTE*_O2;
-    prng_gen( prng0 , s_and_t , _V1_BYTE*_O1 ); // T1
-    s_and_t += _V1_BYTE*_O1;
-    prng_gen( prng0 , s_and_t , _V1_BYTE*_O2 ); // T2
-    s_and_t += _V1_BYTE*_O2;
-    prng_gen( prng0 , s_and_t , _O1_BYTE*_O2 ); // T3
+    prng_gen(prng0, s_and_t, _O1_BYTE * _O2); // S1  => 16*32 = 512
+    s_and_t += _O1_BYTE * _O2;
+    prng_gen(prng0, s_and_t, _V1_BYTE * _O1); // T1
+    s_and_t += _V1_BYTE * _O1;
+    prng_gen(prng0, s_and_t, _V1_BYTE * _O2); // T2
+    s_and_t += _V1_BYTE * _O2;
+    prng_gen(prng0, s_and_t, _O1_BYTE * _O2); // T3
 }
 
 
-/**
- * Generate Layer 1 F1 and F2 for F
- * @param sk
- * @param prng0
- * @return
- */
-static
-unsigned generate_l1_F12( unsigned char * sk, prng_t * prng0 )
-{
+unsigned generate_l1_F12( unsigned char * sk, prng_t * prng0 ) {
     unsigned n_byte_generated = 0;
-    prng_gen( prng0 , sk , _O1_BYTE * N_TRIANGLE_TERMS(_V1) ); // l1_F1
+    prng_gen(prng0, sk, _O1_BYTE * N_TRIANGLE_TERMS(_V1)); // l1_F1 => 16* (32 * (32 *(32+1)/2)) = 270336
+    /// Triangle: (n_var) (n_var*(n_var+1)/2)
     sk += _O1_BYTE * N_TRIANGLE_TERMS(_V1);
-    n_byte_generated += _O1_BYTE * N_TRIANGLE_TERMS(_V1);
+    n_byte_generated += _O1_BYTE * N_TRIANGLE_TERMS(_V1); // 8448
 
-    prng_gen( prng0 , sk , _O1_BYTE * _V1*_O1 );  // l1_F2
-    sk += _O1_BYTE * _V1*_O1;
-    n_byte_generated += _O1_BYTE * _V1*_O1;
+    prng_gen(prng0, sk, _O1_BYTE * _V1 * _O1);  // l1_F2
+    sk += _O1_BYTE * _V1 * _O1;
+    n_byte_generated += _O1_BYTE * _V1 * _O1; // 24832
+    printf("%d\n", n_byte_generated);
 
     return n_byte_generated;
 }

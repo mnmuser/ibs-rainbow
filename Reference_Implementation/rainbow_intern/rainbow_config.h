@@ -63,7 +63,7 @@ error here.
 /// size of variables, in # bytes.
 #ifdef _USE_GF16
 // GF16
-#define _V1_BYTE (_V1/2) //TODO: why /2 ?
+#define _V1_BYTE (_V1/2) //TODO: why /2 ?, but =16
 #define _V2_BYTE (_V2/2)
 #define _O1_BYTE (_O1/2)
 #define _O2_BYTE (_O2/2)

@@ -2,9 +2,24 @@
 
 ## needed for MA
 
-- Integrate ID to hash function
-- integrate ID in F, S and T and in P
+- integrate ID to hash function ✔️
+- construct Master Secret Key ✔
+    - keep sk-generating
+    - sk -> msk
+    - (add S' and T' (based on ID?))
+- construct user secret key _**-> in progress**_
+    - multiply sk-parts with ID-hash
+    - (build real key with S' and T'...)
+    - (base S and T on ID)
+- construct master pk
+    - keep everything
+- construct user public key
+    - multiply pk-parts with ID-hash (like sk)
+- check verifying
 - check if this is working
+
+msk = S, S', F, T', T   
+usk = S * S', S'⁻1 * F * T'⁻1 , T' * T
 
 ## optional things
 
