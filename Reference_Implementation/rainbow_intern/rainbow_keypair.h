@@ -58,15 +58,6 @@ struct rainbow_secretkey {
 } sk_t;
 
 
-///// @brief identity for ID-Rainbow
-/////
-///// identity for ID-Rainbow
-/////
-//typedef
-//struct rainbow_identity {
-//    unsigned char identity[_HASH_LEN];
-//} id;
-
 
 /// @brief public key for cyclic rainbow
 ///
@@ -76,9 +67,9 @@ typedef
 struct rainbow_publickey_cyclic {
     unsigned char pk_seed[LEN_PKSEED];                      ///< seed for generating l1_Q1,l1_Q2,l2_Q1,l2_Q2,l2_Q3,l2_Q5,l2_Q6
 
-    unsigned char l1_Q3[_O1_BYTE * _V1*_O2];                ///< Q3, layer1
+    unsigned char l1_Q3[_O1_BYTE * _V1 * _O2];                ///< Q3, layer1
     unsigned char l1_Q5[_O1_BYTE * N_TRIANGLE_TERMS(_O1)];  ///< Q5, layer1
-    unsigned char l1_Q6[_O1_BYTE * _O1*_O2];                ///< Q6, layer1
+    unsigned char l1_Q6[_O1_BYTE * _O1 * _O2];                ///< Q6, layer1
     unsigned char l1_Q9[_O1_BYTE * N_TRIANGLE_TERMS(_O2)];  ///< Q9, layer1
 
     unsigned char l2_Q9[_O2_BYTE * N_TRIANGLE_TERMS(_O2)];  ///< Q9, layer2

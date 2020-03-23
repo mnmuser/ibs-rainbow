@@ -296,5 +296,7 @@ void generate_identity_hash(unsigned char *digest, const unsigned char *id) {
     hash_msg(digest, sizeof(*digest), id, id_length); // for simplicity I use the hash-function for messages
 }
 
-
-
+void multiply_identity_sk(sk_t *usk, unsigned char *id_hash, sk_t *msk) {
+    // TODO: Loop over sk
+    usk->l1_F1[0] = id_hash[0] * msk->l1_F1[0];// to show the idea
+}
