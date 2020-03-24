@@ -152,7 +152,7 @@ void cpk_to_pk( pk_t * pk , const cpk_t * cpk );
 
 void generate_identity_hash(unsigned char *digest, const unsigned char *id);
 
-
+void multiply_identity_sk(sk_t *usk, unsigned char *id_hash, sk_t *msk);
 
 
 

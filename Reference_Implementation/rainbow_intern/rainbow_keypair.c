@@ -34,15 +34,14 @@ void generate_S_T( unsigned char * s_and_t , prng_t * prng0 )
 
 unsigned generate_l1_F12( unsigned char * sk, prng_t * prng0 ) {
     unsigned n_byte_generated = 0;
-    prng_gen(prng0, sk, _O1_BYTE * N_TRIANGLE_TERMS(_V1)); // l1_F1 => 16* (32 * (32 *(32+1)/2)) = 270336
+    prng_gen(prng0, sk, _O1_BYTE * N_TRIANGLE_TERMS(_V1));
     /// Triangle: (n_var) (n_var*(n_var+1)/2)
     sk += _O1_BYTE * N_TRIANGLE_TERMS(_V1);
-    n_byte_generated += _O1_BYTE * N_TRIANGLE_TERMS(_V1); // 8448
+    n_byte_generated += _O1_BYTE * N_TRIANGLE_TERMS(_V1); // 8448 bytes
 
     prng_gen(prng0, sk, _O1_BYTE * _V1 * _O1);  // l1_F2
     sk += _O1_BYTE * _V1 * _O1;
-    n_byte_generated += _O1_BYTE * _V1 * _O1; // 24832
-    printf("%d\n", n_byte_generated);
+    n_byte_generated += _O1_BYTE * _V1 * _O1; // 24832 bytes
 
     return n_byte_generated;
 }
@@ -195,6 +194,13 @@ void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed, const u
     obsfucate_l1_polys(pk->l1_Q6, pk->l2_Q6, _O1 * _O2, sk->s1);
     obsfucate_l1_polys(pk->l1_Q9, pk->l2_Q9, N_TRIANGLE_TERMS(_O2), sk->s1);
     // so far, the pk contains the full pk but in ext_cpk_t format.
+
+    ///////////////TEST/////////////////
+    unsigned char *id_ptr = &id_digest;
+    sk_t *usk = malloc(sizeof(sk_t));
+    multiply_identity_sk(usk, id_ptr, sk);
+    free(usk);
+    ///////////////TEST/////////////////
 
     extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to pk_t.
     free(pk);
