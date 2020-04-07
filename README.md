@@ -7,7 +7,7 @@ working currently only on Reference_Implementation
 
 ## How-To
 
-You can use the compiled artifacts in this repository to try it on your linux machine (tested on Ubuntu 19.10).
+You can use the compiled artifacts in this repository to try it on your linux machine (tested on Fedora 31).
 Download the artifacts and run them in your shell:
 
 ### Generate Keys

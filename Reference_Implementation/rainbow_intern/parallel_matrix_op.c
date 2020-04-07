@@ -247,16 +247,17 @@ void batch_quad_trimat_eval_gf16( unsigned char * y, const unsigned char * trima
     unsigned char tmp[256];
 
     unsigned char _x[256];
-    for(unsigned i=0;i<dim;i++) _x[i] = gf16v_get_ele( x , i );
-
-    gf256v_set_zero( y , size_batch );
-    for(unsigned i=0;i<dim;i++) {
-        gf256v_set_zero( tmp , size_batch );
-        for(unsigned j=i;j<dim;j++) {
-           gf16v_madd( tmp , trimat , _x[j] , size_batch );
-           trimat += size_batch;
+    for (unsigned i = 0; i < dim; i++) {
+        _x[i] = gf16v_get_ele(x, i);
+    }
+    gf256v_set_zero(y, size_batch);
+    for (unsigned i = 0; i < dim; i++) {
+        gf256v_set_zero(tmp, size_batch);
+        for (unsigned j = i; j < dim; j++) {
+            gf16v_madd(tmp, trimat, _x[j], size_batch);
+            trimat += size_batch;
         }
-        gf16v_madd( y , tmp , _x[i] , size_batch );
+        gf16v_madd(y, tmp, _x[i], size_batch);
     }
 }
 

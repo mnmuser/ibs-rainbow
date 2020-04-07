@@ -13,12 +13,16 @@ static inline void _gf256v_add_u32(uint8_t *accu_b, const uint8_t *a, unsigned _
     unsigned n_u32 = _num_byte >> 2;
     uint32_t *b_u32 = (uint32_t *) accu_b;
     const uint32_t *a_u32 = (const uint32_t *) a;
-    for (unsigned i = 0; i < n_u32; i++) b_u32[i] ^= a_u32[i];
+    for (unsigned i = 0; i < n_u32; i++) {
+        b_u32[i] ^= a_u32[i];
+    }
 
     a += (n_u32 << 2);
     accu_b += (n_u32 << 2);
     unsigned rem = _num_byte & 3;
-    for (unsigned i = 0; i < rem; i++) accu_b[i] ^= a[i];
+    for (unsigned i = 0; i < rem; i++) {
+        accu_b[i] ^= a[i];
+    }
 }
 
 static inline void _gf256v_predicated_add_u32(uint8_t *accu_b, uint8_t predicate, const uint8_t *a, unsigned _num_byte) {
@@ -72,12 +76,15 @@ static inline void _gf256v_mul_scalar_u32(uint8_t *a, uint8_t b, unsigned _num_b
 
 /////////////////////////////////////
 
-static inline void _gf16v_madd_u32(uint8_t *accu_c, const uint8_t *a, uint8_t gf16_b, unsigned _num_byte) {
-    unsigned n_u32 = _num_byte >> 2;
+static inline void
+_gf16v_madd_u32(uint8_t *accu_c, const uint8_t *a, uint8_t gf16_b, unsigned _num_byte) { // 3. Variable in 2. einsetzen
+    unsigned n_u32 = _num_byte >> 2; // = num_byte * 2^(2)
     uint32_t *c_u32 = (uint32_t *) accu_c;
     const uint32_t *a_u32 = (const uint32_t *) a;
-    for (unsigned i = 0; i < n_u32; i++) c_u32[i] ^= gf16v_mul_u32(a_u32[i], gf16_b);
-
+    for (unsigned i = 0; i < n_u32; i++) {
+        c_u32[i] ^= gf16v_mul_u32(a_u32[i],
+                                  gf16_b); // zeilenweise gf_16_b in a(_u32) einsetzen, dann XOR (nichts, wenn accu_c null)
+    }
     union tmp_32 {
         uint8_t u8[4];
         uint32_t u32;

@@ -8,8 +8,9 @@
 
 
 #include "rainbow_config.h"
+#include <stdint.h>
 
-
+/// Number of quadratic polynomials in n_var
 #define N_TRIANGLE_TERMS(n_var) (n_var*(n_var+1)/2)
 
 
@@ -25,7 +26,13 @@ extern  "C" {
 ///
 typedef
 struct rainbow_publickey {
-    unsigned char pk[(_PUB_M_BYTE) * N_TRIANGLE_TERMS(_PUB_N)];
+    unsigned char pk[(_PUB_M_BYTE) * N_TRIANGLE_TERMS(_PUB_N)]; // thanks for this self-describing struct
+    /// _Pub_M_Byte = (O1+O2)/2 = 32
+    /// _ PUB_N = V1+O1+O2 = 32+32+32= 96
+    /// ((O1+O2)/2) * ((V1+O1+O2)*(V1+O1+O2+1)/2)
+    /// 32 * (96 * 97 / 2)
+    /// =unsigned char[148992] [CHECKED]
+    /// p.16 in documentation 
 } pk_t;
 
 
@@ -58,6 +65,7 @@ struct rainbow_secretkey {
 } sk_t;
 
 
+////////// CYCLIC ///////////////////////
 
 /// @brief public key for cyclic rainbow
 ///
@@ -65,7 +73,7 @@ struct rainbow_secretkey {
 ///
 typedef
 struct rainbow_publickey_cyclic {
-    unsigned char pk_seed[LEN_PKSEED];                      ///< seed for generating l1_Q1,l1_Q2,l2_Q1,l2_Q2,l2_Q3,l2_Q5,l2_Q6
+    unsigned char pk_seed[LEN_PKSEED];                      ///< seed for generating l1_Q1,l1_Q2,l2_Q1,l2_Q2,l2_Q3,l2_Q5,l2_Q6 //TODO
 
     unsigned char l1_Q3[_O1_BYTE * _V1 * _O2];                ///< Q3, layer1
     unsigned char l1_Q5[_O1_BYTE * N_TRIANGLE_TERMS(_O1)];  ///< Q5, layer1
@@ -129,7 +137,7 @@ void generate_compact_keypair_cyclic( cpk_t * pk, csk_t* sk, const unsigned char
 /// @param[out] sk        - the secret key.
 /// @param[in]  sk_seed   - seed for generating the secret key.
 ///
-void generate_secretkey(sk_t *sk, const unsigned char *sk_seed, unsigned char *id_digest);
+void generate_secretkey(sk_t *sk, const unsigned char *sk_seed);
 
 ///
 /// @brief Generate secret key for cyclic rainbow.
@@ -152,9 +160,16 @@ void cpk_to_pk( pk_t * pk , const cpk_t * cpk );
 
 void generate_identity_hash(unsigned char *digest, const unsigned char *id);
 
-void multiply_identity_sk(sk_t *usk, unsigned char *id_hash, sk_t *msk);
+void multiply_identity_sk(sk_t *usk, const unsigned char *id_hash, sk_t *msk);
 
-
+/// Function for multiplying ID bitwise over the whole keys to get USK and UPK in GF16
+/// \param usk
+/// \param upk
+/// \param id_hash
+/// \param msk
+/// \param mpk
+void multiply_identity_GF16(uint8_t *usk, uint8_t *upk, const unsigned char *id_hash, const uint8_t *msk,
+                            const uint8_t *mpk);
 
 
 

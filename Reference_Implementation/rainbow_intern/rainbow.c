@@ -145,23 +145,26 @@ int rainbow_sign( uint8_t * signature , const sk_t * sk , const uint8_t * _diges
     memset( &prng_sign , 0 , sizeof(prng_t) );
     memset( vinegar , 0 , _V1_BYTE );
     memset( r_l1_F1 , 0 , _O1_BYTE );
-    memset( r_l2_F1 , 0 , _O2_BYTE );
-    memset( mat_l2_F3 , 0 , _O2*_O2_BYTE );  free( mat_l2_F3 );
-    memset( mat_l2_F2 , 0 , _O1*_O2_BYTE );  free( mat_l2_F2 );
-    memset( _z , 0 , _PUB_M_BYTE );
-    memset( y , 0 , _PUB_M_BYTE );
-    memset( x_o1 , 0 , _O1_BYTE );
-    memset( x_o2 , 0 , _O2_BYTE );
-    memset( temp_o , 0 , sizeof(temp_o) );
+    memset(r_l2_F1, 0, _O2_BYTE);
+    memset(mat_l2_F3, 0, _O2 * _O2_BYTE);
+    free(mat_l2_F3);
+    memset(mat_l2_F2, 0, _O1 * _O2_BYTE);
+    free(mat_l2_F2);
+    memset(_z, 0, _PUB_M_BYTE);
+    memset(y, 0, _PUB_M_BYTE);
+    memset(x_o1, 0, _O1_BYTE);
+    memset(x_o2, 0, _O2_BYTE);
+    memset(temp_o, 0, sizeof(temp_o));
 
     // return: copy w and salt to the signature.
-    if( MAX_ATTEMPT_FRMAT <= n_attempt ) return -1;
-    gf256v_add( signature , w , _PUB_N_BYTE );
-    gf256v_add( signature + _PUB_N_BYTE , salt , _SALT_BYTE );
+    if (MAX_ATTEMPT_FRMAT <= n_attempt) {
+        printf("%s", "Max Attempts for signing extended\n");
+        return -1;
+    }
+    gf256v_add(signature, w, _PUB_N_BYTE); // Todo: Hier ansetzen für ID in GF reinhauen?
+    gf256v_add(signature + _PUB_N_BYTE, salt, _SALT_BYTE);
     return 0;
 }
-
-
 
 
 

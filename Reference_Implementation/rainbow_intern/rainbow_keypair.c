@@ -11,17 +11,19 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "utils_prng.h"
+#include "utils_hash.h"
+
+#include "api.h"
 
 /////////////////////////////////////////////////////////////////
 
 
-#include "utils_prng.h"
-#include "utils_hash.h"
+
 
 
 static
-void generate_S_T( unsigned char * s_and_t , prng_t * prng0 )
-{
+void generate_S_T(unsigned char *s_and_t, prng_t *prng0) {
     prng_gen(prng0, s_and_t, _O1_BYTE * _O2); // S1  => 16*32 = 512
     s_and_t += _O1_BYTE * _O2;
     prng_gen(prng0, s_and_t, _V1_BYTE * _O1); // T1
@@ -152,7 +154,7 @@ void obsfucate_l1_polys( unsigned char * l1_polys , const unsigned char * l2_pol
 
 
 static
-void _generate_secretkey(sk_t *sk, const unsigned char *sk_seed, unsigned char *id_digest) {
+void _generate_secretkey(sk_t *sk, const unsigned char *sk_seed) {
     memcpy(sk->sk_seed, sk_seed, LEN_SKSEED);
 
     // set up prng
@@ -168,19 +170,15 @@ void _generate_secretkey(sk_t *sk, const unsigned char *sk_seed, unsigned char *
 }
 
 
-void generate_secretkey(sk_t *sk, const unsigned char *sk_seed, unsigned char *id_digest) {
-    _generate_secretkey(sk, sk_seed, id_digest);
+void generate_secretkey(sk_t *sk, const unsigned char *sk_seed) {
+    _generate_secretkey(sk, sk_seed);
     calculate_t4(sk->t4, sk->t1, sk->t3);
 }
 
 
 void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed, const unsigned char *id) {
 
-    unsigned char id_digest[_PUB_N]; // number of variables
-    generate_identity_hash(id_digest, id);
-
-
-    _generate_secretkey(sk, sk_seed, id_digest);
+    _generate_secretkey(sk, sk_seed);
 
     // set up a temporary structure ext_cpk_t for calculating public key.
     ext_cpk_t *pk = (ext_cpk_t *) aligned_alloc(32, sizeof(ext_cpk_t));
@@ -195,14 +193,29 @@ void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed, const u
     obsfucate_l1_polys(pk->l1_Q9, pk->l2_Q9, N_TRIANGLE_TERMS(_O2), sk->s1);
     // so far, the pk contains the full pk but in ext_cpk_t format.
 
+
     ///////////////TEST/////////////////
-    unsigned char *id_ptr = &id_digest;
-    sk_t *usk = malloc(sizeof(sk_t));
-    multiply_identity_sk(usk, id_ptr, sk);
+    extcpk_to_pk(rpk, pk);
+    ///////////////ID/////////////////
+    unsigned char id_digest[16]; // in GF 16
+    generate_identity_hash(id_digest, id);
+    printf("%s", "ID-Hash[1]:\n");
+    printf("%d", id_digest[1]);
+    printf("%s", "\n");
+    ///////////////ID/////////////////
+
+    unsigned char *id_ptr = (unsigned char *) &id_digest;
+    sk_t *usk = malloc(CRYPTO_SECRETKEYBYTES);
+    pk_t *upk = malloc(CRYPTO_PUBLICKEYBYTES);
+
+    multiply_identity_GF16(usk, upk, id_ptr, sk, rpk);
+    memcpy(rpk, upk, CRYPTO_PUBLICKEYBYTES);
+    memcpy(sk, usk, CRYPTO_SECRETKEYBYTES);
     free(usk);
+    free(upk);
     ///////////////TEST/////////////////
 
-    extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to pk_t.
+//    extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to pk_t.
     free(pk);
 }
 
@@ -302,7 +315,57 @@ void generate_identity_hash(unsigned char *digest, const unsigned char *id) {
     hash_msg(digest, sizeof(*digest), id, id_length); // for simplicity I use the hash-function for messages
 }
 
-void multiply_identity_sk(sk_t *usk, unsigned char *id_hash, sk_t *msk) {
+void multiply_identity_sk(sk_t *usk, const unsigned char *id_hash, sk_t *msk) {
     // TODO: Loop over sk
-    usk->l1_F1[0] = id_hash[0] * msk->l1_F1[0];// to show the idea
+    for (int i = 0; i < sizeof(msk->l1_F1); ++i) {
+        usk->l1_F1[i] = id_hash[i] * msk->l1_F1[i];
+    }
+    // to show the idea
+}
+
+
+void multiply_identity_GF16(uint8_t *usk, uint8_t *upk, const unsigned char *id_hash, const uint8_t *msk,
+                            const uint8_t *mpk) {
+    gf256v_set_zero(usk, CRYPTO_SECRETKEYBYTES);
+    gf256v_set_zero(upk, CRYPTO_PUBLICKEYBYTES);
+
+    //Loop over sk
+    for (unsigned long i = 0; i < CRYPTO_SECRETKEYBYTES; i++) {
+        uint8_t m = msk[i];
+        uint8_t m0 = m & 15; // first 4 bits
+        uint8_t m1 = m >> 4;
+
+        uint8_t id = id_hash[m0];
+        uint8_t id0 = id & 15; // first 4 bits
+
+        id = id_hash[m1];
+        uint8_t id1 = id >> 4;
+
+        uint8_t m0id0 = gf16_mul(m0, id0);
+        uint8_t m1id1 = gf16_mul(m1, id1);
+
+        usk[i] = m0id0 ^ m1id1;
+
+        printf("%s", "ID-Hash[m0]:\n");
+        printf("%d", id0);
+        printf("%s", "\n");
+    }
+
+    //Loop over pk
+    for (unsigned long i = 0; i < CRYPTO_PUBLICKEYBYTES; i++) {
+        uint8_t m = mpk[i];
+        uint8_t m0 = m & 15; // first 4 bits
+        uint8_t m1 = m >> 4;
+
+        uint8_t id = id_hash[m0];
+        uint8_t id0 = id & 15; // first 4 bits
+
+        id = id_hash[m1];
+        uint8_t id1 = id >> 4;
+
+        uint8_t m0id0 = gf16_mul(m0, id0);
+        uint8_t m1id1 = gf16_mul(m1, id1);
+
+        upk[i] = m0id0 ^ m1id1;
+    }
 }

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectTasksOptions">
     <enabled-global>
-      <option value="Makefile_watcher" />
+      <option value="MakeFile_Watcher" />
     </enabled-global>
   </component>
 </project>

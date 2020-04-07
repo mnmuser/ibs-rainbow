@@ -7,8 +7,10 @@
     - keep sk-generating
     - sk -> msk
     - (add S' and T' (based on ID?))
-- construct user secret key _**-> in progress**_
+- construct user secret key 
     - multiply sk-parts with ID-hash
+    - _Problem: Platzhalter für ID in pk_
+    - Bilde endlichen Körper (GF16) auf ID-Hash ab?
     - (build real key with S' and T'...)
     - (base S and T on ID)
 - construct master pk
