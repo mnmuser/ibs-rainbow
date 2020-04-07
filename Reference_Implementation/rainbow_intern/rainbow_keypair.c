@@ -197,20 +197,22 @@ void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed, const u
     ///////////////TEST/////////////////
     extcpk_to_pk(rpk, pk);
     ///////////////ID/////////////////
-    unsigned char id_digest[16]; // in GF 16
+    unsigned char id_digest[8]; // in GF 16
     generate_identity_hash(id_digest, id);
     printf("%s", "ID-Hash[1]:\n");
     printf("%d", id_digest[1]);
     printf("%s", "\n");
     ///////////////ID/////////////////
+    int sk_size = _O1_BYTE * N_TRIANGLE_TERMS(_V1) + _O1_BYTE * _V1 * _O1 + _O2_BYTE * N_TRIANGLE_TERMS(_V1) +
+                  _O2_BYTE * _V1 * _O1 + _O2_BYTE * _V1 * _O2 + _O2_BYTE * N_TRIANGLE_TERMS(_O1) + _O2_BYTE * _O1 * _O2;
 
     unsigned char *id_ptr = (unsigned char *) &id_digest;
-    sk_t *usk = malloc(CRYPTO_SECRETKEYBYTES);
+    sk_t *usk = malloc(sk_size);
     pk_t *upk = malloc(CRYPTO_PUBLICKEYBYTES);
 
-    multiply_identity_GF16(usk, upk, id_ptr, sk, rpk);
+    multiply_identity_GF16(usk, upk, id_ptr, sk->l1_F1, rpk->pk);
     memcpy(rpk, upk, CRYPTO_PUBLICKEYBYTES);
-    memcpy(sk, usk, CRYPTO_SECRETKEYBYTES);
+    memcpy(sk->l1_F1, usk, sk_size);
     free(usk);
     free(upk);
     ///////////////TEST/////////////////
@@ -326,20 +328,20 @@ void multiply_identity_sk(sk_t *usk, const unsigned char *id_hash, sk_t *msk) {
 
 void multiply_identity_GF16(uint8_t *usk, uint8_t *upk, const unsigned char *id_hash, const uint8_t *msk,
                             const uint8_t *mpk) {
-    gf256v_set_zero(usk, CRYPTO_SECRETKEYBYTES);
-    gf256v_set_zero(upk, CRYPTO_PUBLICKEYBYTES);
+//    gf256v_set_zero(usk, CRYPTO_SECRETKEYBYTES);
+//    gf256v_set_zero(upk, CRYPTO_PUBLICKEYBYTES);
+
+    int sk_size = _O1_BYTE * N_TRIANGLE_TERMS(_V1) + _O1_BYTE * _V1 * _O1 + _O2_BYTE * N_TRIANGLE_TERMS(_V1) +
+                  _O2_BYTE * _V1 * _O1 + _O2_BYTE * _V1 * _O2 + _O2_BYTE * N_TRIANGLE_TERMS(_O1) + _O2_BYTE * _O1 * _O2;
 
     //Loop over sk
-    for (unsigned long i = 0; i < CRYPTO_SECRETKEYBYTES; i++) {
+    for (int i = 0; i < sk_size; i++) {
         uint8_t m = msk[i];
-        uint8_t m0 = m & 15; // first 4 bits
-        uint8_t m1 = m >> 4;
+        uint8_t m0 = m & 15; // least significant 4 bits
+        uint8_t m1 = m >> 4; // left 4 bits
 
-        uint8_t id = id_hash[m0];
-        uint8_t id0 = id & 15; // first 4 bits
-
-        id = id_hash[m1];
-        uint8_t id1 = id >> 4;
+        uint8_t id0 = get_ele_ID_hash(id_hash, m0);
+        uint8_t id1 = get_ele_ID_hash(id_hash, m1);
 
         uint8_t m0id0 = gf16_mul(m0, id0);
         uint8_t m1id1 = gf16_mul(m1, id1);
@@ -357,15 +359,20 @@ void multiply_identity_GF16(uint8_t *usk, uint8_t *upk, const unsigned char *id_
         uint8_t m0 = m & 15; // first 4 bits
         uint8_t m1 = m >> 4;
 
-        uint8_t id = id_hash[m0];
-        uint8_t id0 = id & 15; // first 4 bits
-
-        id = id_hash[m1];
-        uint8_t id1 = id >> 4;
+        uint8_t id0 = get_ele_ID_hash(id_hash, m0);
+        uint8_t id1 = get_ele_ID_hash(id_hash, m1);
 
         uint8_t m0id0 = gf16_mul(m0, id0);
         uint8_t m1id1 = gf16_mul(m1, id1);
 
         upk[i] = m0id0 ^ m1id1;
+    }
+}
+
+uint8_t get_ele_ID_hash(const unsigned char *id_hash, uint32_t number) {
+    if (number % 2) { //is odd?
+        return id_hash[(number - 1) / 2] >> 4;
+    } else {
+        return id_hash[number / 2] & 15;
     }
 }

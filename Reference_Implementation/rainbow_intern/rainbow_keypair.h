@@ -171,7 +171,7 @@ void multiply_identity_sk(sk_t *usk, const unsigned char *id_hash, sk_t *msk);
 void multiply_identity_GF16(uint8_t *usk, uint8_t *upk, const unsigned char *id_hash, const uint8_t *msk,
                             const uint8_t *mpk);
 
-
+uint8_t get_ele_ID_hash(const unsigned char *id_hash, uint32_t number);
 
 
 #ifdef  __cplusplus

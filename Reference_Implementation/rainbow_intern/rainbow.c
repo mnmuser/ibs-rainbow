@@ -161,7 +161,7 @@ int rainbow_sign( uint8_t * signature , const sk_t * sk , const uint8_t * _diges
         printf("%s", "Max Attempts for signing extended\n");
         return -1;
     }
-    gf256v_add(signature, w, _PUB_N_BYTE); // Todo: Hier ansetzen für ID in GF reinhauen?
+    gf256v_add(signature, w, _PUB_N_BYTE);
     gf256v_add(signature + _PUB_N_BYTE, salt, _SALT_BYTE);
     return 0;
 }
