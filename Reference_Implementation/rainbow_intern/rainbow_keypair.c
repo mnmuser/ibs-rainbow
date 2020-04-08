@@ -194,9 +194,9 @@ void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed, const u
     obsfucate_l1_polys(pk->l1_Q9, pk->l2_Q9, N_TRIANGLE_TERMS(_O2), sk->s1);
     // so far, the pk contains the full pk but in ext_cpk_t format.
 
-
+    extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to pk_t.
     ///////////////TEST/////////////////
-    extcpk_to_pk(rpk, pk);
+
     ///////////////ID/////////////////
     unsigned char id_digest[8]; // in GF 16
     generate_identity_hash(id_digest, id);
@@ -204,21 +204,16 @@ void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed, const u
     int sk_size = sizeof(sk_t) - offsetof(sk_t, l1_F1);
 
 
-    unsigned char *id_ptr = (unsigned char *) &id_digest;
-    sk_t *usk = malloc(sk_size);
-    pk_t *upk = malloc(CRYPTO_PUBLICKEYBYTES);
+    unsigned char usk[sk_size];
+    pk_t upk;
 
-    multiply_identity_GF16(usk, upk, id_ptr, sk->l1_F1, rpk);
+    multiply_identity_GF16(usk, &upk, &id_digest, sk->l1_F1, rpk);
 
-    memcpy(rpk, upk, CRYPTO_PUBLICKEYBYTES);
+    memcpy(rpk, &upk, CRYPTO_PUBLICKEYBYTES);
     memcpy(sk->l1_F1, usk, sk_size);
-
-
-    free(usk); //raise ERROR
-    free(upk); //raise ERROR
     ///////////////TEST/////////////////
 
-//    extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to pk_t.
+
     free(pk);
 }
 
@@ -318,15 +313,6 @@ void generate_identity_hash(unsigned char *digest, const unsigned char *id) {
     hash_msg(digest, sizeof(*digest), id, id_length); // for simplicity I use the hash-function for messages
 }
 
-void multiply_identity_sk(sk_t *usk, const unsigned char *id_hash, sk_t *msk) {
-    // TODO: Loop over sk
-    for (int i = 0; i < sizeof(msk->l1_F1); ++i) {
-        usk->l1_F1[i] = id_hash[i] * msk->l1_F1[i];
-    }
-    // to show the idea
-}
-
-
 void multiply_identity_GF16(uint8_t *usk, uint8_t *upk, const unsigned char *id_hash, const uint8_t *msk,
                             const uint8_t *mpk) {
     int sk_size = sizeof(sk_t) - offsetof(sk_t, l1_F1);
@@ -347,7 +333,8 @@ void multiply_ID_over_key(uint8_t *dest_key, const uint8_t *key, const long key_
         //get corresponding element out of ID-Hash
         uint8_t ID_for_element = gf16v_get_ele(id_hash, key_element);
         //multiply them
-        uint8_t product = gf16_mul(key_element, ID_for_element); //works with 1, 2 and 3
+        //TODO: find a way to multiply ID in key (a quadratic function?)
+        uint8_t product = gf16_mul(key_element, 5); //works with 1, 2 and 3; but not ID_for_element
         //set them for the user key
         gf16v_set_ele(dest_key, i, product);
     }
