@@ -199,22 +199,22 @@ void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed, const u
     ///////////////ID/////////////////
     unsigned char id_digest[8]; // in GF 16
     generate_identity_hash(id_digest, id);
-    printf("%s", "ID-Hash[1]:\n");
-    printf("%d", id_digest[1]);
-    printf("%s", "\n");
     ///////////////ID/////////////////
     int sk_size = _O1_BYTE * N_TRIANGLE_TERMS(_V1) + _O1_BYTE * _V1 * _O1 + _O2_BYTE * N_TRIANGLE_TERMS(_V1) +
                   _O2_BYTE * _V1 * _O1 + _O2_BYTE * _V1 * _O2 + _O2_BYTE * N_TRIANGLE_TERMS(_O1) + _O2_BYTE * _O1 * _O2;
 
     unsigned char *id_ptr = (unsigned char *) &id_digest;
-    sk_t *usk = malloc(sk_size);
+    sk_t *usk = malloc(CRYPTO_SECRETKEYBYTES);
     pk_t *upk = malloc(CRYPTO_PUBLICKEYBYTES);
 
-    multiply_identity_GF16(usk, upk, id_ptr, sk->l1_F1, rpk->pk);
+    multiply_identity_GF16(usk, upk, id_ptr, sk, rpk);
+
     memcpy(rpk, upk, CRYPTO_PUBLICKEYBYTES);
-    memcpy(sk->l1_F1, usk, sk_size);
-    free(usk);
-    free(upk);
+    memcpy(sk, usk, CRYPTO_SECRETKEYBYTES);
+
+
+    free(usk); //raise ERROR
+    free(upk); //raise ERROR
     ///////////////TEST/////////////////
 
 //    extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to pk_t.
@@ -328,51 +328,53 @@ void multiply_identity_sk(sk_t *usk, const unsigned char *id_hash, sk_t *msk) {
 
 void multiply_identity_GF16(uint8_t *usk, uint8_t *upk, const unsigned char *id_hash, const uint8_t *msk,
                             const uint8_t *mpk) {
-//    gf256v_set_zero(usk, CRYPTO_SECRETKEYBYTES);
-//    gf256v_set_zero(upk, CRYPTO_PUBLICKEYBYTES);
-
-    int sk_size = _O1_BYTE * N_TRIANGLE_TERMS(_V1) + _O1_BYTE * _V1 * _O1 + _O2_BYTE * N_TRIANGLE_TERMS(_V1) +
-                  _O2_BYTE * _V1 * _O1 + _O2_BYTE * _V1 * _O2 + _O2_BYTE * N_TRIANGLE_TERMS(_O1) + _O2_BYTE * _O1 * _O2;
-
     //Loop over sk
-    for (int i = 0; i < sk_size; i++) {
-        uint8_t m = msk[i];
-        uint8_t m0 = m & 15; // least significant 4 bits
-        uint8_t m1 = m >> 4; // left 4 bits
-
-        uint8_t id0 = get_ele_ID_hash(id_hash, m0);
-        uint8_t id1 = get_ele_ID_hash(id_hash, m1);
-
-        uint8_t m0id0 = gf16_mul(m0, id0);
-        uint8_t m1id1 = gf16_mul(m1, id1);
-
-        usk[i] = m0id0 ^ m1id1;
-
-        printf("%s", "ID-Hash[m0]:\n");
-        printf("%d", id0);
-        printf("%s", "\n");
-    }
+    multiply_ID_over_key(usk, msk, CRYPTO_SECRETKEYBYTES, id_hash);
 
     //Loop over pk
-    for (unsigned long i = 0; i < CRYPTO_PUBLICKEYBYTES; i++) {
-        uint8_t m = mpk[i];
-        uint8_t m0 = m & 15; // first 4 bits
-        uint8_t m1 = m >> 4;
-
-        uint8_t id0 = get_ele_ID_hash(id_hash, m0);
-        uint8_t id1 = get_ele_ID_hash(id_hash, m1);
-
-        uint8_t m0id0 = gf16_mul(m0, id0);
-        uint8_t m1id1 = gf16_mul(m1, id1);
-
-        upk[i] = m0id0 ^ m1id1;
-    }
+    multiply_ID_over_key(upk, mpk, CRYPTO_PUBLICKEYBYTES, id_hash);
 }
 
-uint8_t get_ele_ID_hash(const unsigned char *id_hash, uint32_t number) {
-    if (number % 2) { //is odd?
-        return id_hash[(number - 1) / 2] >> 4;
-    } else {
-        return id_hash[number / 2] & 15;
+void multiply_ID_over_key(uint8_t *dest_key, const uint8_t *key, const long key_length, const unsigned char *id_hash) {
+    for (int i = 0; i < key_length * 2; i++) {
+        uint8_t key_element = gf16v_get_ele(key, i);
+
+        uint8_t ID_for_element = gf16v_get_ele(id_hash, key_element);
+
+        uint8_t product = gf16_mul(key_element, ID_for_element);
+
+        gf16v_set_ele(dest_key, i, product);
+
+//        printf("%s", "msk[i]:\n");
+//        printf("%d", key[i]);
+//        printf("%s", "\n");
+//
+//        printf("%s", "key_element:\n");
+//        printf("%d", key_element);
+//        printf("%s", "\n");
+//
+//        printf("%s", "m1:\n");
+//        printf("%d", m1);
+//        printf("%s", "\n");
+//
+//        printf("%s", "ID-Hash[key_element]:\n");
+//        printf("%d", id0);
+//        printf("%s", "\n");
+//
+//        printf("%s", "ID-Hash[m1]:\n");
+//        printf("%d", id1);
+//        printf("%s", "\n");
+//
+//        printf("%s", "usk[i]:\n");
+//        printf("%d", dest_key[i]);
+//        printf("%s", "\n");
+//
+//        printf("%s", "usk1:\n");
+//        printf("%d", dest_key[i] & 15);
+//        printf("%s", "\n");
+//
+//        printf("%s", "usk2:\n");
+//        printf("%d", dest_key[i] >> 4);
+//        printf("%s", "\n");
     }
 }
