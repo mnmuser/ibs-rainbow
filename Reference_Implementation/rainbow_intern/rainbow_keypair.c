@@ -10,6 +10,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stddef.h>
 
 #include "utils_prng.h"
 #include "utils_hash.h"
@@ -200,17 +201,17 @@ void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed, const u
     unsigned char id_digest[8]; // in GF 16
     generate_identity_hash(id_digest, id);
     ///////////////ID/////////////////
-    int sk_size = _O1_BYTE * N_TRIANGLE_TERMS(_V1) + _O1_BYTE * _V1 * _O1 + _O2_BYTE * N_TRIANGLE_TERMS(_V1) +
-                  _O2_BYTE * _V1 * _O1 + _O2_BYTE * _V1 * _O2 + _O2_BYTE * N_TRIANGLE_TERMS(_O1) + _O2_BYTE * _O1 * _O2;
+    int sk_size = sizeof(sk_t) - offsetof(sk_t, l1_F1);
+
 
     unsigned char *id_ptr = (unsigned char *) &id_digest;
-    sk_t *usk = malloc(CRYPTO_SECRETKEYBYTES);
+    sk_t *usk = malloc(sk_size);
     pk_t *upk = malloc(CRYPTO_PUBLICKEYBYTES);
 
-    multiply_identity_GF16(usk, upk, id_ptr, sk, rpk);
+    multiply_identity_GF16(usk, upk, id_ptr, sk->l1_F1, rpk);
 
     memcpy(rpk, upk, CRYPTO_PUBLICKEYBYTES);
-    memcpy(sk, usk, CRYPTO_SECRETKEYBYTES);
+    memcpy(sk->l1_F1, usk, sk_size);
 
 
     free(usk); //raise ERROR
@@ -328,53 +329,26 @@ void multiply_identity_sk(sk_t *usk, const unsigned char *id_hash, sk_t *msk) {
 
 void multiply_identity_GF16(uint8_t *usk, uint8_t *upk, const unsigned char *id_hash, const uint8_t *msk,
                             const uint8_t *mpk) {
+    int sk_size = sizeof(sk_t) - offsetof(sk_t, l1_F1);
+
     //Loop over sk
-    multiply_ID_over_key(usk, msk, CRYPTO_SECRETKEYBYTES, id_hash);
+    multiply_ID_over_key(usk, msk, sk_size, id_hash);
 
     //Loop over pk
     multiply_ID_over_key(upk, mpk, CRYPTO_PUBLICKEYBYTES, id_hash);
 }
 
 void multiply_ID_over_key(uint8_t *dest_key, const uint8_t *key, const long key_length, const unsigned char *id_hash) {
-    for (int i = 0; i < key_length * 2; i++) {
+    long length_in_elements = key_length * 2;
+
+    for (int i = 0; i < length_in_elements; i++) {
+        //get element from key at i
         uint8_t key_element = gf16v_get_ele(key, i);
-
+        //get corresponding element out of ID-Hash
         uint8_t ID_for_element = gf16v_get_ele(id_hash, key_element);
-
-        uint8_t product = gf16_mul(key_element, ID_for_element);
-
+        //multiply them
+        uint8_t product = gf16_mul(key_element, ID_for_element); //works with 1, 2 and 3
+        //set them for the user key
         gf16v_set_ele(dest_key, i, product);
-
-//        printf("%s", "msk[i]:\n");
-//        printf("%d", key[i]);
-//        printf("%s", "\n");
-//
-//        printf("%s", "key_element:\n");
-//        printf("%d", key_element);
-//        printf("%s", "\n");
-//
-//        printf("%s", "m1:\n");
-//        printf("%d", m1);
-//        printf("%s", "\n");
-//
-//        printf("%s", "ID-Hash[key_element]:\n");
-//        printf("%d", id0);
-//        printf("%s", "\n");
-//
-//        printf("%s", "ID-Hash[m1]:\n");
-//        printf("%d", id1);
-//        printf("%s", "\n");
-//
-//        printf("%s", "usk[i]:\n");
-//        printf("%d", dest_key[i]);
-//        printf("%s", "\n");
-//
-//        printf("%s", "usk1:\n");
-//        printf("%d", dest_key[i] & 15);
-//        printf("%s", "\n");
-//
-//        printf("%s", "usk2:\n");
-//        printf("%d", dest_key[i] >> 4);
-//        printf("%s", "\n");
     }
 }

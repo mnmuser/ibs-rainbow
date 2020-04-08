@@ -34,7 +34,7 @@ int main( int argc , char ** argv )
     randombytes_init(rnd_seed, NULL, 256);
 
 
-    uint8_t *_sk = (uint8_t *) malloc(CRYPTO_SECRETKEYBYTES); //platz mallocen
+    uint8_t *_sk = (uint8_t *) malloc(CRYPTO_SECRETKEYBYTES);
     uint8_t *_pk = (uint8_t *) malloc(CRYPTO_PUBLICKEYBYTES);
     FILE *fp;
 
