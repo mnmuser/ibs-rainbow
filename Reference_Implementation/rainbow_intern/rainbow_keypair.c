@@ -324,17 +324,22 @@ void multiply_identity_GF16(uint8_t *usk, uint8_t *upk, const unsigned char *id_
     multiply_ID_over_key(upk, mpk, CRYPTO_PUBLICKEYBYTES, id_hash);
 }
 
-void multiply_ID_over_key(uint8_t *dest_key, const uint8_t *key, const long key_length, const unsigned char *id_hash) {
+void multiply_ID_over_key(unsigned char *dest_key, const unsigned char *key, const long key_length,
+                          const unsigned char *id_hash) {
     long length_in_elements = key_length * 2;
 
     for (int i = 0; i < length_in_elements; i++) {
         //get element from key at i
         uint8_t key_element = gf16v_get_ele(key, i);
-        //get corresponding element out of ID-Hash
-        uint8_t ID_for_element = gf16v_get_ele(id_hash, key_element);
         //multiply them
-        //TODO: find a way to multiply ID in key (a quadratic function?)
-        uint8_t product = gf16_mul(key_element, 5); //works with 1, 2 and 3; but not ID_for_element
+        /// TODO: With that way we only have 16 identities
+        /// XOR is not working
+        /// addition is not working
+        /// corresponding element out of ID-Hash is not working
+        /// multiply with a integer in GF16 works
+        uint8_t product = gf16_mul(key_element, gf16v_get_ele(id_hash, 0));
+        printf("%d", product);
+        printf("%s", "\n");
         //set them for the user key
         gf16v_set_ele(dest_key, i, product);
     }
