@@ -39,7 +39,7 @@ struct rainbow_extend_publickey {
     unsigned char l2_Q5[_O2_BYTE * N_TRIANGLE_TERMS(_O1)];
     unsigned char l2_Q6[_O2_BYTE * _O1 * _O2];
     unsigned char l2_Q9[_O2_BYTE * N_TRIANGLE_TERMS(_O2)];
-} ext_cpk_t; /// size: unsigned char[148992]
+} ext_cpk_t;
 
 
 

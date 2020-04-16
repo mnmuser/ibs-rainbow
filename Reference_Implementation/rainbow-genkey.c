@@ -15,10 +15,10 @@
 
 int main( int argc , char ** argv )
 {
-	printf( "%s\n", CRYPTO_ALGNAME );
+    printf("%s\n", CRYPTO_ALGNAME);
 
-    printf("sk size: %lu\n", CRYPTO_SECRETKEYBYTES);
-    printf("pk size: %lu\n", CRYPTO_PUBLICKEYBYTES);
+    printf("msk size: %lu\n", CRYPTO_SECRETKEYBYTES);
+    printf("mpk size: %lu\n", CRYPTO_PUBLICKEYBYTES);
     printf("hash size: %d\n", _HASH_LEN);
     printf("signature size: %d\n\n", CRYPTO_BYTES);
 
@@ -62,7 +62,7 @@ int main( int argc , char ** argv )
     byte_fdump(fp, CRYPTO_ALGNAME " secret key", _sk, CRYPTO_SECRETKEYBYTES); // sk speichern und beschriften
     fclose(fp);
 
-    printf("generate %s pk/sk success.\n", CRYPTO_ALGNAME);
+    printf("generate %s mpk/msk success.\n", CRYPTO_ALGNAME);
 
     free(_sk);
     free(_pk);

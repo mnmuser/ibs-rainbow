@@ -13,11 +13,13 @@
 /// Number of quadratic polynomials in n_var
 #define N_TRIANGLE_TERMS(n_var) (n_var*(n_var+1)/2)
 
+/// for ID
+#define N_PUB_QUAT_POLY(n_var) ((n_var+1)*(n_var+2)*(n_var+3)*(n_var+4)/24)
+
 
 #ifdef  __cplusplus
 extern  "C" {
 #endif
-
 
 
 /// @brief public key for classic rainbow
@@ -26,12 +28,13 @@ extern  "C" {
 ///
 typedef
 struct rainbow_publickey {
-    unsigned char pk[(_PUB_M_BYTE) * N_TRIANGLE_TERMS(_PUB_N)]; // thanks for this self-describing struct
-    /// _Pub_M_Byte = (O1+O2)/2 = 32
-    /// _ PUB_N = V1+O1+O2 = 32+32+32= 96
+    unsigned char pk[(_PUB_M_BYTE) * N_TRIANGLE_TERMS(_PUB_N) * N_PUB_QUAT_POLY(_ID)]; // -> seems legit
+    /// _Pub_M_Byte = (O1+O2)/2 = 32 -> Anzahl der Gleichungen (O1+O2) durch 2 wg GF16
+    /// _ PUB_N = V1+O1+O2 = 32+32+32= 96 ->
     /// ((O1+O2)/2) * ((V1+O1+O2)*(V1+O1+O2+1)/2)
     /// 32 * (96 * 97 / 2)
     /// =unsigned char[148992] [CHECKED]
+    /// * ID_len in QUAT_POLY
     /// p.16 in documentation 
 } pk_t;
 
@@ -42,7 +45,7 @@ struct rainbow_publickey {
 ///
 typedef
 struct rainbow_secretkey {
-    ///
+    /// * ID_LEN...
     /// seed for generating secret key.
     /// Generating S, T, and F for classic rainbow.
     /// Generating S and T only for cyclic rainbow.
@@ -172,7 +175,8 @@ void multiply_identity_GF16(uint8_t *usk, uint8_t *upk, const unsigned char *id_
                             const uint8_t *mpk);
 
 
-void multiply_ID_over_key(uint8_t *dest_key, const uint8_t *key, const long key_length, const unsigned char *id_hash);
+void
+multiply_ID_over_key(uint8_t *dest_key, const uint8_t *key, unsigned long key_length, const unsigned char *id_hash);
 
 #ifdef  __cplusplus
 }

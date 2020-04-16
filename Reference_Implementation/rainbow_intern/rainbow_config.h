@@ -10,7 +10,7 @@
 #define _H_RAINBOW_CONFIG_H_
 
 
-// TODO Dependecy on makefile for Levels
+// TODO Dependency on makefile for Levels
 /// the defined parameter
 #if (!defined(_RAINBOW16_32_32_32)) && (!defined(_RAINBOW256_68_36_36)) && (!defined(_RAINBOW256_92_48_48))
 #define _RAINBOW16_32_32_32 // Level I
@@ -26,6 +26,7 @@
 #define _O1 32
 #define _O2 32
 #define _HASH_LEN 32
+#define _ID 1
 
 #elif defined _RAINBOW256_68_36_36
 #define _GFSIZE 256
@@ -49,24 +50,24 @@ error here.
 #define _V2 ((_V1)+(_O1))
 
 #define STR1(x) #x
-#define THE_NAME(gf,v1,o1,o2) "RAINBOW(" STR1(gf) "," STR1(v1) "," STR1(o1) "," STR1(o2) ")"
-#define _S_NAME THE_NAME(_GFSIZE,_V1,_O1,_O2)
+#define THE_NAME(gf, v1, o1, o2, id) "ID-RAINBOW(" STR1(gf) "," STR1(v1) "," STR1(o1) "," STR1(o2) "," STR1(id) ")"
+#define _S_NAME THE_NAME(_GFSIZE,_V1,_O1,_O2,_ID)
 
 
 /// size of N (# variables), in # of gf elements.
 #define _PUB_N  (_V1+_O1+_O2)
 
-/// size of M (# equations), in # gf elements.
+/// size of M (# equations)
 #define _PUB_M  (_O1+_O2)
 
 
 /// size of variables, in # bytes.
 #ifdef _USE_GF16
 // GF16
-#define _V1_BYTE (_V1/2) // with GF16 you need 4 bit per number = 0,5 Byte
-#define _V2_BYTE (_V2/2)
-#define _O1_BYTE (_O1/2)
-#define _O2_BYTE (_O2/2)
+#define _V1_BYTE ((_V1/2) * _ID) // with GF16 you need 4 bit per number = 0,5 Byte
+#define _V2_BYTE ((_V2/2) * _ID)
+#define _O1_BYTE ((_O1/2) * _ID)
+#define _O2_BYTE ((_O2/2) * _ID)
 #define _PUB_N_BYTE  (_PUB_N/2)
 #define _PUB_M_BYTE  (_PUB_M/2)
 
@@ -92,7 +93,7 @@ error here.
 #define _SALT_BYTE 16
 
 /// length of a signature
-#define _SIGNATURE_BYTE (_PUB_N_BYTE + _SALT_BYTE )
+#define _SIGNATURE_BYTE (_PUB_N_BYTE + _SALT_BYTE ) //TODO: ATTENTION: signature size bleibt gleich
 
 
 

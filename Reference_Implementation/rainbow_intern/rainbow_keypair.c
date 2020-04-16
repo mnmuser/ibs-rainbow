@@ -40,39 +40,38 @@ unsigned generate_l1_F12( unsigned char * sk, prng_t * prng0 ) {
     prng_gen(prng0, sk, _O1_BYTE * N_TRIANGLE_TERMS(_V1));
     /// Triangle: (n_var) (n_var*(n_var+1)/2)
     sk += _O1_BYTE * N_TRIANGLE_TERMS(_V1);
-    n_byte_generated += _O1_BYTE * N_TRIANGLE_TERMS(_V1); // 8448 bytes
+    n_byte_generated += _O1_BYTE * N_TRIANGLE_TERMS(_V1);
 
     prng_gen(prng0, sk, _O1_BYTE * _V1 * _O1);  // l1_F2
     sk += _O1_BYTE * _V1 * _O1;
-    n_byte_generated += _O1_BYTE * _V1 * _O1; // 24832 bytes
+    n_byte_generated += _O1_BYTE * _V1 * _O1;
 
     return n_byte_generated;
 }
 
 
 static
-unsigned generate_l2_F12356( unsigned char * sk, prng_t * prng0 )
-{
+unsigned generate_l2_F12356( unsigned char * sk, prng_t * prng0 ) {
     unsigned n_byte_generated = 0;
 
-    prng_gen( prng0 , sk , _O2_BYTE * N_TRIANGLE_TERMS(_V1) ); // l2_F1
+    prng_gen(prng0, sk, _O2_BYTE * N_TRIANGLE_TERMS(_V1)); // l2_F1
     sk += _O2_BYTE * N_TRIANGLE_TERMS(_V1);
     n_byte_generated += _O2_BYTE * N_TRIANGLE_TERMS(_V1);
 
-    prng_gen( prng0 , sk , _O2_BYTE * _V1*_O1 ); // l2_F2
-    sk += _O2_BYTE * _V1*_O1;
-    n_byte_generated += _O2_BYTE * _V1*_O1;
+    prng_gen(prng0, sk, _O2_BYTE * _V1 * _O1); // l2_F2
+    sk += _O2_BYTE * _V1 * _O1;
+    n_byte_generated += _O2_BYTE * _V1 * _O1;
 
-    prng_gen( prng0 , sk , _O2_BYTE * _V1*_O2 ); // l2_F3
-    sk += _O2_BYTE * _V1*_O1;
-    n_byte_generated += _O2_BYTE * _V1*_O1;
+    prng_gen(prng0, sk, _O2_BYTE * _V1 * _O2); // l2_F3
+    sk += _O2_BYTE * _V1 * _O1;
+    n_byte_generated += _O2_BYTE * _V1 * _O1;
 
-    prng_gen( prng0 , sk , _O2_BYTE * N_TRIANGLE_TERMS(_O1) ); // l2_F5
+    prng_gen(prng0, sk, _O2_BYTE * N_TRIANGLE_TERMS(_O1)); // l2_F5
     sk += _O2_BYTE * N_TRIANGLE_TERMS(_O1);
     n_byte_generated += _O2_BYTE * N_TRIANGLE_TERMS(_O1);
 
-    prng_gen( prng0 , sk , _O2_BYTE * _O1*_O2 ); // l2_F6
-    n_byte_generated += _O2_BYTE * _O1*_O2;
+    prng_gen(prng0, sk, _O2_BYTE * _O1 * _O2); // l2_F6
+    n_byte_generated += _O2_BYTE * _O1 * _O2;
 
     return n_byte_generated;
 }
@@ -140,6 +139,7 @@ void calculate_t4( unsigned char * t2_to_t4 , const unsigned char *t1 , const un
 static
 void obsfucate_l1_polys( unsigned char * l1_polys , const unsigned char * l2_polys , unsigned n_terms , const unsigned char * s1 )
 {
+//    n_terms *=  N_PUB_QUAT_POLY(_ID_LEN); //needed for ID
     unsigned char temp[_O1_BYTE + 32];
     while( n_terms-- ) {
         gfmat_prod( temp , s1 , _O1_BYTE , _O2 , l2_polys );
@@ -194,24 +194,25 @@ void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed, const u
     obsfucate_l1_polys(pk->l1_Q9, pk->l2_Q9, N_TRIANGLE_TERMS(_O2), sk->s1);
     // so far, the pk contains the full pk but in ext_cpk_t format.
 
-    extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to pk_t.
-    ///////////////TEST/////////////////
-
-    ///////////////ID/////////////////
-    unsigned char id_digest[8]; // in GF 16
-    generate_identity_hash(id_digest, id);
-    ///////////////ID/////////////////
-    int sk_size = sizeof(sk_t) - offsetof(sk_t, l1_F1);
-
-
-    unsigned char usk[sk_size];
-    pk_t upk;
-
-    multiply_identity_GF16(usk, &upk, &id_digest, sk->l1_F1, rpk);
-
-    memcpy(rpk, &upk, CRYPTO_PUBLICKEYBYTES);
-    memcpy(sk->l1_F1, usk, sk_size);
-    ///////////////TEST/////////////////
+//    extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to pk_t.
+    memcpy(rpk, pk, sizeof(pk_t));
+//    ///////////////TEST/////////////////
+//
+//    ///////////////ID/////////////////
+//    unsigned char id_digest[8]; // in GF 16
+//    generate_identity_hash(id_digest, id);
+//    ///////////////ID/////////////////
+//    int sk_size = sizeof(sk_t) - offsetof(sk_t, l1_F1);
+//
+//
+//    unsigned char usk[sk_size];
+//    pk_t upk;
+//
+//    multiply_identity_GF16(usk, &upk, &id_digest, sk->l1_F1, rpk);
+//
+//    memcpy(rpk, &upk, CRYPTO_PUBLICKEYBYTES);
+//    memcpy(sk->l1_F1, usk, sk_size);
+//    ///////////////TEST/////////////////
 
 
     free(pk);
@@ -324,11 +325,11 @@ void multiply_identity_GF16(uint8_t *usk, uint8_t *upk, const unsigned char *id_
     multiply_ID_over_key(upk, mpk, CRYPTO_PUBLICKEYBYTES, id_hash);
 }
 
-void multiply_ID_over_key(unsigned char *dest_key, const unsigned char *key, const long key_length,
+void multiply_ID_over_key(unsigned char *dest_key, const unsigned char *key, const unsigned long key_length,
                           const unsigned char *id_hash) {
-    long length_in_elements = key_length * 2;
+    unsigned long length_in_elements = key_length * 2;
 
-    for (int i = 0; i < length_in_elements; i++) {
+    for (unsigned i = 0; i < length_in_elements; i++) {
         //get element from key at i
         uint8_t key_element = gf16v_get_ele(key, i);
         //multiply them
