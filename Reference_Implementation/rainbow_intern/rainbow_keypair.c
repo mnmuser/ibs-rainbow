@@ -183,10 +183,16 @@ void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed, const u
 
     // set up a temporary structure ext_cpk_t for calculating public key.
     ext_cpk_t *pk = (ext_cpk_t *) aligned_alloc(32, sizeof(ext_cpk_t));
-    calculate_Q_from_F(pk, sk, sk);   // compute the public key in ext_cpk_t format.
+    calculate_Q_from_F(pk, sk, sk);   //TODO! compute the public key in ext_cpk_t format
+
+    /// IS PK at this point finished in terms of everything is in?
+
+    printf("%lu", sizeof(*pk));
+    memcpy(rpk, pk, sizeof(*pk)); //todo: MAL SO LASSEN
+
     calculate_t4(sk->t4, sk->t1, sk->t3);
 
-    obsfucate_l1_polys(pk->l1_Q1, pk->l2_Q1, N_TRIANGLE_TERMS(_V1), sk->s1);
+    obsfucate_l1_polys(pk->l1_Q1, pk->l2_Q1, N_TRIANGLE_TERMS(_V1), sk->s1); // -> VERSCHLEIERN
     obsfucate_l1_polys(pk->l1_Q2, pk->l2_Q2, _V1 * _O1, sk->s1);
     obsfucate_l1_polys(pk->l1_Q3, pk->l2_Q3, _V1 * _O2, sk->s1);
     obsfucate_l1_polys(pk->l1_Q5, pk->l2_Q5, N_TRIANGLE_TERMS(_O1), sk->s1);
@@ -195,7 +201,7 @@ void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed, const u
     // so far, the pk contains the full pk but in ext_cpk_t format.
 
 //    extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to pk_t.
-    memcpy(rpk, pk, sizeof(pk_t));
+//    memcpy(rpk, pk, sizeof(*pk));
 //    ///////////////TEST/////////////////
 //
 //    ///////////////ID/////////////////
@@ -215,7 +221,7 @@ void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed, const u
 //    ///////////////TEST/////////////////
 
 
-    free(pk);
+//    free(pk); //TODO: ERROR ABRT
 }
 
 
@@ -314,6 +320,7 @@ void generate_identity_hash(unsigned char *digest, const unsigned char *id) {
     hash_msg(digest, sizeof(*digest), id, id_length); // for simplicity I use the hash-function for messages
 }
 
+/// works because F,S,T and P are homogeneous
 void multiply_identity_GF16(uint8_t *usk, uint8_t *upk, const unsigned char *id_hash, const uint8_t *msk,
                             const uint8_t *mpk) {
     int sk_size = sizeof(sk_t) - offsetof(sk_t, l1_F1);

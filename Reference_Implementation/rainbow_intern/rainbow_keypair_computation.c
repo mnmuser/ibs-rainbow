@@ -95,8 +95,7 @@ void extcpk_to_pk( pk_t * pk , const ext_cpk_t * cpk )
 
 
 static
-void calculate_Q_from_F_ref( ext_cpk_t * Qs, const sk_t * Fs , const sk_t * Ts )
-{
+void calculate_Q_from_F_ref(ext_cpk_t *cpk, const sk_t *sk, const sk_t *Ts) {
 /*
     Layer 1
     Computing :
@@ -107,31 +106,63 @@ void calculate_Q_from_F_ref( ext_cpk_t * Qs, const sk_t * Fs , const sk_t * Ts )
 */
     const unsigned char *t2 = Ts->t4;
 
-    memcpy(Qs->l1_Q1, Fs->l1_F1, _O1_BYTE * N_TRIANGLE_TERMS(_V1));
+    memcpy(cpk->l1_Q1, sk->l1_F1, _O1_BYTE * N_TRIANGLE_TERMS(_V1) * _ID);
 
-    memcpy(Qs->l1_Q2, Fs->l1_F2, _O1_BYTE * _V1 * _O1);
-    batch_trimat_madd(Qs->l1_Q2, Fs->l1_F1, Ts->t1, _V1, _V1_BYTE, _O1, _O1_BYTE);    // F1*T1 + F2
+    memcpy(cpk->l1_Q2, sk->l1_F2, _O1_BYTE * _V1 * _O1 * _ID);
 
-    memset(Qs->l1_Q3, 0, _O1_BYTE * _V1 * _O2);
-    memset(Qs->l1_Q5, 0, _O1_BYTE * N_TRIANGLE_TERMS(_O1) * N_PUB_QUAT_POLY(_ID));
-    memset(Qs->l1_Q6, 0, _O1_BYTE * _O1 * _O2);
-    memset(Qs->l1_Q9, 0, _O1_BYTE * N_TRIANGLE_TERMS(_O2) * N_PUB_QUAT_POLY(_ID));
+/// @brief  bC += btriA * B  , in GF(16)
+///
+/// @param[out]  bC         - the batched matrix C.
+/// @param[in]   btriA      - a batched UT matrix A.
+/// @param[in]   B          - a column-major matrix B.
+/// @param[in]   Bheight          - the height of B.
+/// @param[in]   size_Bcolvec     - the size of the column vector in B.
+/// @param[in]   Bwidth           - the width of B.
+/// @param[in]   size_batch - number of the batched elements in the corresponding position of the matrix.
+    batch_trimat_madd(cpk->l1_Q2, sk->l1_F1, Ts->t1, _V1 * _ID, _V1_BYTE, _O1 * _ID, _O1_BYTE);    // F1*T1 + F2
+
+    memset(cpk->l1_Q3, 0, _O1_BYTE * _V1 * _O2 * N_QUARTIC_POLY(_ID));
+    memset(cpk->l1_Q5, 0, _O1_BYTE * N_TRIANGLE_TERMS(_O1) * N_QUARTIC_POLY(_ID));
+    memset(cpk->l1_Q6, 0, _O1_BYTE * _O1 * _O2 * N_QUARTIC_POLY(_ID));
+    memset(cpk->l1_Q9, 0, _O1_BYTE * N_TRIANGLE_TERMS(_O2) * N_QUARTIC_POLY(_ID));
 
     // l1_Q5 : _O1_BYTE * _O1 * _O1
     // l1_Q9 : _O1_BYTE * _O2 * _O2
     // l2_Q5 : _O2_BYTE * _V1 * _O1
     // l2_Q9 : _O2_BYTE * _V1 * _O2
-    unsigned size_tempQ = _O1_BYTE * _O1 * _O1;
+    unsigned size_tempQ = _O1_BYTE * _O1 * _O1 * N_QUARTIC_POLY(_ID);
     if (_O1_BYTE * _O2 * _O2 > size_tempQ) size_tempQ = _O1_BYTE * _O2 * _O2;
     if (_O2_BYTE * _O1 * _O1 > size_tempQ) size_tempQ = _O2_BYTE * _O1 * _O1;
     if (_O2_BYTE * _O2 * _O2 > size_tempQ) size_tempQ = _O2_BYTE * _O2 * _O2;
     unsigned char *tempQ = (unsigned char *) aligned_alloc(32, size_tempQ + 32);
 
-    memset(tempQ, 0, _O1_BYTE * _O1 * _O1);   // l1_Q5
-    batch_matTr_madd(tempQ, Ts->t1, _V1, _V1_BYTE, _O1, Qs->l1_Q2, _O1, _O1_BYTE);  // t1_tr*(F1*T1 + F2)
-    UpperTrianglize(Qs->l1_Q5, tempQ, _O1, _O1_BYTE);    // UT( ... )   // Q5
+    memset(tempQ, 0, _O1_BYTE * _O1 * _O1 * N_QUARTIC_POLY(_ID));   // l1_Q5
 
-    batch_trimatTr_madd(Qs->l1_Q2, Fs->l1_F1, Ts->t1, _V1, _V1_BYTE, _O1, _O1_BYTE);    // Q2
+/// @brief  bC += A^Tr * bB  , in GF(16)
+///
+/// @param[out]  bC           - the batched matrix C.
+/// @param[in]   A_to_tr      - a column-major matrix A. The operand for multiplication is A^Tr.
+/// @param[in]   Aheight      - the height of A.
+/// @param[in]   size_Acolvec    - the size of a column vector in A.
+/// @param[in]   Awidth           - the width of A.
+/// @param[in]   bB          - a batched matrix B.
+/// @param[in]   Bwidth           - the width of B.
+/// @param[in]   size_batch - number of the batched elements in the corresponding position of the matrix.
+    batch_matTr_madd(tempQ, Ts->t1, _V1 * _ID, _V1_BYTE, _O1 * _ID, cpk->l1_Q2, _O1 * N_QUARTIC_POLY(_ID),
+                     _O1_BYTE);  // t1_tr*(F1*T1 + F2)
+
+    UpperTrianglize(cpk->l1_Q5, tempQ, _O1, _O1_BYTE);    // UT( ... )   // Q5
+
+/// @brief  bC += btriA^Tr * B  , in GF(16)
+///
+/// @param[out]  bC         - the batched matrix C.
+/// @param[in]   btriA      - a batched UT matrix A. A will be transposed while multiplying.
+/// @param[in]   B          - a column-major matrix B.
+/// @param[in]   Bheight          - the height of B.
+/// @param[in]   size_Bcolvec     - the size of the column vector in B.
+/// @param[in]   Bwidth           - the width of B.
+/// @param[in]   size_batch - number of the batched elements in the corresponding position of the matrix.
+    batch_trimatTr_madd(cpk->l1_Q2, sk->l1_F1, Ts->t1, _V1 * _ID, _V1_BYTE, _O1 * _ID, _O1_BYTE);    // Q2
 /*
     Computing:
     F1_T2     = F1 * t2
@@ -141,17 +172,52 @@ void calculate_Q_from_F_ref( ext_cpk_t * Qs, const sk_t * Fs , const sk_t * Ts )
     Q_pk.l1_F6s[i] = T1tr* ( F1_F1T_T2 + F2_T3 ) + F2tr * t2
     Q_pk.l1_F9s[i] = UT( T2tr* ( F1_T2 + F2_T3 ) )
 */
-    batch_trimat_madd(Qs->l1_Q3, Fs->l1_F1, t2, _V1, _V1_BYTE, _O2, _O1_BYTE);         // F1*T2
-    batch_mat_madd(Qs->l1_Q3, Fs->l1_F2, _V1, Ts->t3, _O1, _O1_BYTE, _O2, _O1_BYTE);   // F1_T2 + F2_T3
 
-    memset(tempQ, 0, _O1_BYTE * _O2 * _O2);                                              // l1_Q9
-    batch_matTr_madd(tempQ, t2, _V1, _V1_BYTE, _O2, Qs->l1_Q3, _O2, _O1_BYTE);           // T2tr * ( F1_T2 + F2_T3 )
-    UpperTrianglize(Qs->l1_Q9, tempQ, _O2, _O1_BYTE);                                   // Q9
+/// @brief  bC += btriA * B  , in GF(16)
+///
+/// @param[out]  bC         - the batched matrix C.
+/// @param[in]   btriA      - a batched UT matrix A.
+/// @param[in]   B          - a column-major matrix B.
+/// @param[in]   Bheight          - the height of B.
+/// @param[in]   size_Bcolvec     - the size of the column vector in B.
+/// @param[in]   Bwidth           - the width of B.
+/// @param[in]   size_batch - number of the batched elements in the corresponding position of the matrix.
+    batch_trimat_madd(cpk->l1_Q3, sk->l1_F1, t2, _V1 * _ID, _V1_BYTE, _O2 * _ID, _O1_BYTE);         // F1*T2
 
-    batch_trimatTr_madd(Qs->l1_Q3, Fs->l1_F1, t2, _V1, _V1_BYTE, _O2, _O1_BYTE);        // F1_F1T_T2 + F2_T3  // Q3
+/// @brief  bC += bA * B  , in GF(16)
+///
+/// @param[out]  bC         - the batched matrix C.
+/// @param[in]   bA         - a batched matrix A.
+/// @param[in]   Aheigh     - the height of A.
+/// @param[in]   B          - a column-major matrix B.
+/// @param[in]   Bheight          - the height of B.
+/// @param[in]   size_Bcolvec     - the size of the column vector in B.
+/// @param[in]   Bwidth           - the width of B.
+/// @param[in]   size_batch - number of the batched elements in the corresponding position of the matrix.
+    batch_mat_madd(cpk->l1_Q3, sk->l1_F2, _V1 * _ID, Ts->t3, _O1 * _ID, _O1_BYTE, _O2 * _ID,
+                   _O1_BYTE);   // F1_T2 + F2_T3
 
-    batch_bmatTr_madd(Qs->l1_Q6, Fs->l1_F2, _O1, t2, _V1, _V1_BYTE, _O2, _O1_BYTE);       // F2tr*T2
-    batch_matTr_madd(Qs->l1_Q6, Ts->t1, _V1, _V1_BYTE, _O1, Qs->l1_Q3, _O2, _O1_BYTE);    // Q6
+    memset(tempQ, 0, _O1_BYTE * _O2 * _O2 * N_QUARTIC_POLY(_ID));                                              // l1_Q9
+
+/// @brief  bC += A^Tr * bB  , in GF(16)
+///
+/// @param[out]  bC           - the batched matrix C.
+/// @param[in]   A_to_tr      - a column-major matrix A. The operand for multiplication is A^Tr.
+/// @param[in]   Aheight      - the height of A.
+/// @param[in]   size_Acolvec    - the size of a column vector in A.
+/// @param[in]   Awidth           - the width of A.
+/// @param[in]   bB          - a batched matrix B.
+/// @param[in]   Bwidth           - the width of B.
+/// @param[in]   size_batch - number of the batched elements in the corresponding position of the matrix.
+    batch_matTr_madd(tempQ, t2, _V1, _V1_BYTE, _O2, cpk->l1_Q3, _O2, _O1_BYTE);           // T2tr * ( F1_T2 + F2_T3 )
+
+    UpperTrianglize(cpk->l1_Q9, tempQ, _O2, _O1_BYTE);                                   // Q9
+
+    batch_trimatTr_madd(cpk->l1_Q3, sk->l1_F1, t2, _V1 * _ID, _V1_BYTE, _O2,
+                        _O1_BYTE);        // F1_F1T_T2 + F2_T3  // Q3
+
+    batch_bmatTr_madd(cpk->l1_Q6, sk->l1_F2, _O1, t2, _V1, _V1_BYTE, _O2, _O1_BYTE);       // F2tr*T2
+    batch_matTr_madd(cpk->l1_Q6, Ts->t1, _V1, _V1_BYTE, _O1, cpk->l1_Q3, _O2, _O1_BYTE);    // Q6
 
 /*
     layer 2
@@ -160,17 +226,17 @@ void calculate_Q_from_F_ref( ext_cpk_t * Qs, const sk_t * Fs , const sk_t * Ts )
     Q2 = F1_F1T*T1 + F2
     Q5 = UT( T1tr( F1*T1 + F2 )  + F5 )
 */
-    memcpy(Qs->l2_Q1, Fs->l2_F1, _O2_BYTE * N_TRIANGLE_TERMS(_V1));
+    memcpy(cpk->l2_Q1, sk->l2_F1, _O2_BYTE * N_TRIANGLE_TERMS(_V1) * _ID);
 
-    memcpy(Qs->l2_Q2, Fs->l2_F2, _O2_BYTE * _V1 * _O1);
-    batch_trimat_madd(Qs->l2_Q2, Fs->l2_F1, Ts->t1, _V1, _V1_BYTE, _O1, _O2_BYTE);      // F1*T1 + F2
+    memcpy(cpk->l2_Q2, sk->l2_F2, _O2_BYTE * _V1 * _O1);
+    batch_trimat_madd(cpk->l2_Q2, sk->l2_F1, Ts->t1, _V1, _V1_BYTE, _O1, _O2_BYTE);      // F1*T1 + F2
 
-    memcpy(Qs->l2_Q5, Fs->l2_F5, _O2_BYTE * N_TRIANGLE_TERMS(_O1));
+    memcpy(cpk->l2_Q5, sk->l2_F5, _O2_BYTE * N_TRIANGLE_TERMS(_O1));
     memset(tempQ, 0, _O2_BYTE * _O1 * _O1);                                               // l2_Q5
-    batch_matTr_madd(tempQ, Ts->t1, _V1, _V1_BYTE, _O1, Qs->l2_Q2, _O1, _O2_BYTE);        // t1_tr*(F1*T1 + F2)
-    UpperTrianglize(Qs->l2_Q5, tempQ, _O1, _O2_BYTE);                                     // UT( ... )   // Q5
+    batch_matTr_madd(tempQ, Ts->t1, _V1, _V1_BYTE, _O1, cpk->l2_Q2, _O1, _O2_BYTE);        // t1_tr*(F1*T1 + F2)
+    UpperTrianglize(cpk->l2_Q5, tempQ, _O1, _O2_BYTE);                                     // UT( ... )   // Q5
 
-    batch_trimatTr_madd(Qs->l2_Q2, Fs->l2_F1, Ts->t1, _V1, _V1_BYTE, _O1, _O2_BYTE);    // Q2
+    batch_trimatTr_madd(cpk->l2_Q2, sk->l2_F1, Ts->t1, _V1, _V1_BYTE, _O1, _O2_BYTE);    // Q2
 
 /*
     Computing:
@@ -182,26 +248,26 @@ void calculate_Q_from_F_ref( ext_cpk_t * Qs, const sk_t * Fs , const sk_t * Ts )
     Q9 = UT( T2tr*( F1*T2 + F2*T3 + F3 )  +      T3tr*( F5*T3 + F6 ) )
     Q6 = T1tr*( F1_F1T*T2 + F2*T3 + F3 )  + F2Tr*T2 + F5_F5T*T3 + F6
 */
-    memcpy(Qs->l2_Q3, Fs->l2_F3, _O2_BYTE * _V1 * _O2);
-    batch_trimat_madd(Qs->l2_Q3, Fs->l2_F1, t2, _V1, _V1_BYTE, _O2, _O2_BYTE);         // F1*T2 + F3
-    batch_mat_madd(Qs->l2_Q3, Fs->l2_F2, _V1, Ts->t3, _O1, _O1_BYTE, _O2, _O2_BYTE);   // F1_T2 + F2_T3 + F3
+    memcpy(cpk->l2_Q3, sk->l2_F3, _O2_BYTE * _V1 * _O2);
+    batch_trimat_madd(cpk->l2_Q3, sk->l2_F1, t2, _V1, _V1_BYTE, _O2, _O2_BYTE);         // F1*T2 + F3
+    batch_mat_madd(cpk->l2_Q3, sk->l2_F2, _V1, Ts->t3, _O1, _O1_BYTE, _O2, _O2_BYTE);   // F1_T2 + F2_T3 + F3
 
     memset(tempQ, 0, _O2_BYTE * _O2 * _O2);                                              // l2_Q9
-    batch_matTr_madd(tempQ, t2, _V1, _V1_BYTE, _O2, Qs->l2_Q3, _O2, _O2_BYTE);           // T2tr * ( ..... )
+    batch_matTr_madd(tempQ, t2, _V1, _V1_BYTE, _O2, cpk->l2_Q3, _O2, _O2_BYTE);           // T2tr * ( ..... )
 
-    memcpy(Qs->l2_Q6, Fs->l2_F6, _O2_BYTE * _O1 * _O2);
+    memcpy(cpk->l2_Q6, sk->l2_F6, _O2_BYTE * _O1 * _O2);
 
-    batch_trimat_madd(Qs->l2_Q6, Fs->l2_F5, Ts->t3, _O1, _O1_BYTE, _O2, _O2_BYTE);      // F5*T3 + F6
-    batch_matTr_madd(tempQ, Ts->t3, _O1, _O1_BYTE, _O2, Qs->l2_Q6, _O2,
+    batch_trimat_madd(cpk->l2_Q6, sk->l2_F5, Ts->t3, _O1, _O1_BYTE, _O2, _O2_BYTE);      // F5*T3 + F6
+    batch_matTr_madd(tempQ, Ts->t3, _O1, _O1_BYTE, _O2, cpk->l2_Q6, _O2,
                      _O2_BYTE);       // T2tr*( ..... ) + T3tr*( ..... )
-    memset(Qs->l2_Q9, 0, _O2_BYTE * N_TRIANGLE_TERMS(_O2));
-    UpperTrianglize(Qs->l2_Q9, tempQ, _O2, _O2_BYTE);                                   // Q9
+    memset(cpk->l2_Q9, 0, _O2_BYTE * N_TRIANGLE_TERMS(_O2));
+    UpperTrianglize(cpk->l2_Q9, tempQ, _O2, _O2_BYTE);                                   // Q9
 
-    batch_trimatTr_madd(Qs->l2_Q3, Fs->l2_F1, t2, _V1, _V1_BYTE, _O2, _O2_BYTE);        // F1_F1T_T2 + F2_T3 + F3 // Q3
+    batch_trimatTr_madd(cpk->l2_Q3, sk->l2_F1, t2, _V1, _V1_BYTE, _O2, _O2_BYTE);        // F1_F1T_T2 + F2_T3 + F3 // Q3
 
-    batch_bmatTr_madd( Qs->l2_Q6 , Fs->l2_F2, _O1, t2, _V1, _V1_BYTE, _O2, _O2_BYTE );       //  F5*T3 + F6 +  F2tr*T2
-    batch_trimatTr_madd( Qs->l2_Q6 , Fs->l2_F5 , Ts->t3 , _O1, _O1_BYTE, _O2, _O2_BYTE );    //   F2tr*T2 + F5_F5T*T3 + F6
-    batch_matTr_madd( Qs->l2_Q6 , Ts->t1, _V1, _V1_BYTE, _O1, Qs->l2_Q3, _O2, _O2_BYTE );    // Q6
+    batch_bmatTr_madd(cpk->l2_Q6, sk->l2_F2, _O1, t2, _V1, _V1_BYTE, _O2, _O2_BYTE);       //  F5*T3 + F6 +  F2tr*T2
+    batch_trimatTr_madd(cpk->l2_Q6, sk->l2_F5, Ts->t3, _O1, _O1_BYTE, _O2, _O2_BYTE);    //   F2tr*T2 + F5_F5T*T3 + F6
+    batch_matTr_madd(cpk->l2_Q6, Ts->t1, _V1, _V1_BYTE, _O1, cpk->l2_Q3, _O2, _O2_BYTE);    // Q6
 
     memset(tempQ, 0, size_tempQ + 32);
     free(tempQ);

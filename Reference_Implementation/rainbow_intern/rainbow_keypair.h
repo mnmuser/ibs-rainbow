@@ -10,11 +10,11 @@
 #include "rainbow_config.h"
 #include <stdint.h>
 
-/// Number of quadratic polynomials in n_var
+/// Number of quadratic polynomials in n_var / Gaußsche Summenformel, auch zur Berechnung von Dreieckszahlen
 #define N_TRIANGLE_TERMS(n_var) (n_var*(n_var+1)/2)
 
-/// for ID
-#define N_PUB_QUAT_POLY(n_var) ((n_var+1)*(n_var+2)*(n_var+3)*(n_var+4)/24)
+/// number of coefficients needed in public key (Quartic polynomial) -> Ding p.1143
+#define N_QUARTIC_POLY(id_var) ((id_var+1)*(id_var+2)*(id_var+3)*(id_var+4)/24)
 
 
 #ifdef  __cplusplus
@@ -28,14 +28,15 @@ extern  "C" {
 ///
 typedef
 struct rainbow_publickey {
-    unsigned char pk[(_PUB_M_BYTE) * N_TRIANGLE_TERMS(_PUB_N) * N_PUB_QUAT_POLY(_ID)]; // -> seems legit
+    unsigned char pk[(_PUB_M_BYTE) * N_TRIANGLE_TERMS(_PUB_N) * N_QUARTIC_POLY(_ID)]; // -> seems legit
     /// _Pub_M_Byte = (O1+O2)/2 = 32 -> Anzahl der Gleichungen (O1+O2) durch 2 wg GF16
     /// _ PUB_N = V1+O1+O2 = 32+32+32= 96 ->
     /// ((O1+O2)/2) * ((V1+O1+O2)*(V1+O1+O2+1)/2)
     /// 32 * (96 * 97 / 2)
     /// =unsigned char[148992] [CHECKED]
     /// * ID_len in QUAT_POLY
-    /// p.16 in documentation 
+    /// p.16 in documentation
+    /// same length as extend_publickey
 } pk_t;
 
 
@@ -51,20 +52,20 @@ struct rainbow_secretkey {
     /// Generating S and T only for cyclic rainbow.
     unsigned char sk_seed[LEN_SKSEED];
 
-    unsigned char s1[_O1_BYTE*_O2];   ///< part of S map
-    unsigned char t1[_V1_BYTE*_O1];   ///< part of T map
-    unsigned char t4[_V1_BYTE*_O2];   ///< part of T map
-    unsigned char t3[_O1_BYTE*_O2];   ///< part of T map
+    unsigned char s1[_O1_BYTE * _O2 * _ID];   ///< part of S map (upper right corner in matrix, p.3 in doc)
+    unsigned char t1[_V1_BYTE * _O1 * _ID];   ///< part of T map
+    unsigned char t4[_V1_BYTE * _O2 * _ID];   ///< part of T map
+    unsigned char t3[_O1_BYTE * _O2 * _ID];   ///< part of T map
 
-    unsigned char l1_F1[_O1_BYTE * N_TRIANGLE_TERMS(_V1)];  ///< part of C-map, F1, Layer1
-    unsigned char l1_F2[_O1_BYTE * _V1*_O1];                ///< part of C-map, F2, Layer1
+    unsigned char l1_F1[_O1_BYTE * N_TRIANGLE_TERMS(_V1) * _ID];  ///< part of C-map, F1, Layer1
+    unsigned char l1_F2[_O1_BYTE * _V1 * _O1 * _ID];                ///< part of C-map, F2, Layer1
 
-    unsigned char l2_F1[_O2_BYTE * N_TRIANGLE_TERMS(_V1)];  ///< part of C-map, F1, Layer2
-    unsigned char l2_F2[_O2_BYTE * _V1 * _O1];                ///< part of C-map, F2, Layer2
+    unsigned char l2_F1[_O2_BYTE * N_TRIANGLE_TERMS(_V1) * _ID];  ///< part of C-map, F1, Layer2
+    unsigned char l2_F2[_O2_BYTE * _V1 * _O1 * _ID];                ///< part of C-map, F2, Layer2
 
-    unsigned char l2_F3[_O2_BYTE * _V1 * _O2];                ///< part of C-map, F3, Layer2
-    unsigned char l2_F5[_O2_BYTE * N_TRIANGLE_TERMS(_O1)];  ///< part of C-map, F5, Layer2
-    unsigned char l2_F6[_O2_BYTE * _O1 * _O2];                ///< part of C-map, F6, Layer2
+    unsigned char l2_F3[_O2_BYTE * _V1 * _O2 * _ID];                ///< part of C-map, F3, Layer2
+    unsigned char l2_F5[_O2_BYTE * N_TRIANGLE_TERMS(_O1) * _ID];  ///< part of C-map, F5, Layer2
+    unsigned char l2_F6[_O2_BYTE * _O1 * _O2 * _ID];                ///< part of C-map, F6, Layer2
 } sk_t;
 
 
@@ -76,7 +77,7 @@ struct rainbow_secretkey {
 ///
 typedef
 struct rainbow_publickey_cyclic {
-    unsigned char pk_seed[LEN_PKSEED];                      ///< seed for generating l1_Q1,l1_Q2,l2_Q1,l2_Q2,l2_Q3,l2_Q5,l2_Q6 //TODO
+    unsigned char pk_seed[LEN_PKSEED];                      ///< seed for generating l1_Q1,l1_Q2,l2_Q1,l2_Q2,l2_Q3,l2_Q5,l2_Q6
 
     unsigned char l1_Q3[_O1_BYTE * _V1 * _O2];                ///< Q3, layer1
     unsigned char l1_Q5[_O1_BYTE * N_TRIANGLE_TERMS(_O1)];  ///< Q5, layer1

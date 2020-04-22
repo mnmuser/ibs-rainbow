@@ -9,6 +9,7 @@
 #ifndef _H_RAINBOW_CONFIG_H_
 #define _H_RAINBOW_CONFIG_H_
 
+#define _ID 2 //TODO: check if input-ID has correct length
 
 // TODO Dependency on makefile for Levels
 /// the defined parameter
@@ -18,7 +19,6 @@
 //#define _RAINBOW256_92_48_48 // Level V
 #endif
 
-
 #if defined _RAINBOW16_32_32_32
 #define _USE_GF16
 #define _GFSIZE 16
@@ -26,7 +26,7 @@
 #define _O1 32
 #define _O2 32
 #define _HASH_LEN 32
-#define _ID 1
+
 
 #elif defined _RAINBOW256_68_36_36
 #define _GFSIZE 256
@@ -64,10 +64,10 @@ error here.
 /// size of variables, in # bytes.
 #ifdef _USE_GF16
 // GF16
-#define _V1_BYTE ((_V1/2) * _ID) // with GF16 you need 4 bit per number = 0,5 Byte
-#define _V2_BYTE ((_V2/2) * _ID)
-#define _O1_BYTE ((_O1/2) * _ID)
-#define _O2_BYTE ((_O2/2) * _ID)
+#define _V1_BYTE (_V1/2)// with GF16 you need 4 bit per number = 0,5 Byte
+#define _V2_BYTE (_V2/2)
+#define _O1_BYTE (_O1/2)
+#define _O2_BYTE (_O2/2)
 #define _PUB_N_BYTE  (_PUB_N/2)
 #define _PUB_M_BYTE  (_PUB_M/2)
 

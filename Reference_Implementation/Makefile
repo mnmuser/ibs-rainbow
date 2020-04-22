@@ -70,4 +70,4 @@ PQCgenKAT_sign: $(OBJ) PQCgenKAT_sign.o
 	$(CC) $(CFLAGS) $(INCPATH) -c $<
 
 clean:
-	rm *.o  rainbow-genkey rainbow-sign rainbow-verify PQCgenKAT_sign pk.txt sk.txt signature.txt;
+	rm *.o  rainbow-genkey rainbow-sign rainbow-verify PQCgenKAT_sign pk.txt sk.txt signature.txt || true;

@@ -238,7 +238,6 @@ void batch_mat_madd_gf256( unsigned char * bC , const unsigned char* bA , unsign
 
 
 
-
 void batch_quad_trimat_eval_gf16( unsigned char * y, const unsigned char * trimat, const unsigned char * x, unsigned dim , unsigned size_batch )
 {
 ///
