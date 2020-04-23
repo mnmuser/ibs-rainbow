@@ -25,26 +25,26 @@
 
 static
 void generate_S_T(unsigned char *s_and_t, prng_t *prng0) {
-    prng_gen(prng0, s_and_t, _O1_BYTE * _O2); // S1  => 16*32 = 512
-    s_and_t += _O1_BYTE * _O2;
-    prng_gen(prng0, s_and_t, _V1_BYTE * _O1); // T1
-    s_and_t += _V1_BYTE * _O1;
-    prng_gen(prng0, s_and_t, _V1_BYTE * _O2); // T2
-    s_and_t += _V1_BYTE * _O2;
-    prng_gen(prng0, s_and_t, _O1_BYTE * _O2); // T3
+    prng_gen(prng0, s_and_t, _O1_BYTE * _O2 * _ID); // S1  => 16*32 = 512
+    s_and_t += _O1_BYTE * _O2 * _ID;
+    prng_gen(prng0, s_and_t, _V1_BYTE * _O1 * _ID); // T1
+    s_and_t += _V1_BYTE * _O1 * _ID;
+    prng_gen(prng0, s_and_t, _V1_BYTE * _O2 * _ID); // T2
+    s_and_t += _V1_BYTE * _O2 * _ID;
+    prng_gen(prng0, s_and_t, _O1_BYTE * _O2 * _ID); // T3
 }
 
 
 unsigned generate_l1_F12( unsigned char * sk, prng_t * prng0 ) {
     unsigned n_byte_generated = 0;
-    prng_gen(prng0, sk, _O1_BYTE * N_TRIANGLE_TERMS(_V1));
+    prng_gen(prng0, sk, _O1_BYTE * N_TRIANGLE_TERMS(_V1) * _ID);
     /// Triangle: (n_var) (n_var*(n_var+1)/2)
-    sk += _O1_BYTE * N_TRIANGLE_TERMS(_V1);
-    n_byte_generated += _O1_BYTE * N_TRIANGLE_TERMS(_V1);
+    sk += _O1_BYTE * N_TRIANGLE_TERMS(_V1) * _ID;
+    n_byte_generated += _O1_BYTE * N_TRIANGLE_TERMS(_V1) * _ID;
 
-    prng_gen(prng0, sk, _O1_BYTE * _V1 * _O1);  // l1_F2
-    sk += _O1_BYTE * _V1 * _O1;
-    n_byte_generated += _O1_BYTE * _V1 * _O1;
+    prng_gen(prng0, sk, _O1_BYTE * _V1 * _O1 * _ID);  // l1_F2
+    sk += _O1_BYTE * _V1 * _O1 * _ID;
+    n_byte_generated += _O1_BYTE * _V1 * _O1 * _ID;
 
     return n_byte_generated;
 }
@@ -54,24 +54,24 @@ static
 unsigned generate_l2_F12356( unsigned char * sk, prng_t * prng0 ) {
     unsigned n_byte_generated = 0;
 
-    prng_gen(prng0, sk, _O2_BYTE * N_TRIANGLE_TERMS(_V1)); // l2_F1
-    sk += _O2_BYTE * N_TRIANGLE_TERMS(_V1);
-    n_byte_generated += _O2_BYTE * N_TRIANGLE_TERMS(_V1);
+    prng_gen(prng0, sk, _O2_BYTE * N_TRIANGLE_TERMS(_V1) * _ID); // l2_F1
+    sk += _O2_BYTE * N_TRIANGLE_TERMS(_V1) * _ID;
+    n_byte_generated += _O2_BYTE * N_TRIANGLE_TERMS(_V1) * _ID;
 
-    prng_gen(prng0, sk, _O2_BYTE * _V1 * _O1); // l2_F2
-    sk += _O2_BYTE * _V1 * _O1;
-    n_byte_generated += _O2_BYTE * _V1 * _O1;
+    prng_gen(prng0, sk, _O2_BYTE * _V1 * _O1 * _ID); // l2_F2
+    sk += _O2_BYTE * _V1 * _O1 * _ID;
+    n_byte_generated += _O2_BYTE * _V1 * _O1 * _ID;
 
-    prng_gen(prng0, sk, _O2_BYTE * _V1 * _O2); // l2_F3
-    sk += _O2_BYTE * _V1 * _O1;
-    n_byte_generated += _O2_BYTE * _V1 * _O1;
+    prng_gen(prng0, sk, _O2_BYTE * _V1 * _O2 * _ID); // l2_F3
+    sk += _O2_BYTE * _V1 * _O1 * _ID;
+    n_byte_generated += _O2_BYTE * _V1 * _O1 * _ID;
 
-    prng_gen(prng0, sk, _O2_BYTE * N_TRIANGLE_TERMS(_O1)); // l2_F5
-    sk += _O2_BYTE * N_TRIANGLE_TERMS(_O1);
-    n_byte_generated += _O2_BYTE * N_TRIANGLE_TERMS(_O1);
+    prng_gen(prng0, sk, _O2_BYTE * N_TRIANGLE_TERMS(_O1) * _ID); // l2_F5
+    sk += _O2_BYTE * N_TRIANGLE_TERMS(_O1) * _ID;
+    n_byte_generated += _O2_BYTE * N_TRIANGLE_TERMS(_O1) * _ID;
 
-    prng_gen(prng0, sk, _O2_BYTE * _O1 * _O2); // l2_F6
-    n_byte_generated += _O2_BYTE * _O1 * _O2;
+    prng_gen(prng0, sk, _O2_BYTE * _O1 * _O2 * _ID); // l2_F6
+    n_byte_generated += _O2_BYTE * _O1 * _O2 * _ID;
 
     return n_byte_generated;
 }
@@ -187,8 +187,8 @@ void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed, const u
 
     /// IS PK at this point finished in terms of everything is in?
 
-    printf("%lu", sizeof(*pk));
-    memcpy(rpk, pk, sizeof(*pk)); //todo: MAL SO LASSEN
+//    printf("%lu", sizeof(*pk));
+//    memcpy(rpk, pk, sizeof(*pk)); //todo: MAL SO LASSEN
 
     calculate_t4(sk->t4, sk->t1, sk->t3);
 
@@ -200,7 +200,7 @@ void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed, const u
     obsfucate_l1_polys(pk->l1_Q9, pk->l2_Q9, N_TRIANGLE_TERMS(_O2), sk->s1);
     // so far, the pk contains the full pk but in ext_cpk_t format.
 
-//    extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to pk_t.
+    extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to pk_t.
 //    memcpy(rpk, pk, sizeof(*pk));
 //    ///////////////TEST/////////////////
 //
@@ -221,7 +221,7 @@ void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed, const u
 //    ///////////////TEST/////////////////
 
 
-//    free(pk); //TODO: ERROR ABRT
+    free(pk); //TODO: ERROR ABRT
 }
 
 

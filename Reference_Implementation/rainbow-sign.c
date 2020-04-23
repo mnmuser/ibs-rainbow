@@ -61,9 +61,14 @@ int main( int argc , char ** argv )
 	unsigned long long smlen = 0;
 	r = crypto_sign( signature, &smlen, msg , mlen , _sk );
 	if( 0 != r ) {
-		printf("sign() fail.\n");
-		return -1;
-	}
+        printf("sign() fail.\n");
+
+        free(msg);
+        free(signature);
+        free(_sk);
+
+        return -1;
+    }
 
 	byte_fdump( stdout , CRYPTO_ALGNAME " signature"  , signature + mlen , CRYPTO_BYTES );
 	printf("\n");
