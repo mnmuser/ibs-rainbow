@@ -57,10 +57,9 @@ void extcpk_to_pk(pk_t *pk, const ext_cpk_t *cpk);
 /// @brief Computing public key from secret key
 ///
 /// @param[out] Qs       - the public key
-/// @param[in]  Fs       - parts of the secret key: l1_F1, l1_F2, l2_F1, l2_F2, l2_F3, l2_F5, l2_F6
-/// @param[in]  Ts       - parts of the secret key: T1, T4, T3
+/// @param[in]  Fs       - the secret key
 ///
-void calculate_Q_from_F( ext_cpk_t * Qs, const sk_t * Fs , const sk_t * Ts );
+void calculate_Q_from_F(ext_cpk_t *Qs, const sk_t *Fs);
 
 
 ///
@@ -81,9 +80,9 @@ void calculate_F_from_Q( sk_t * Fs , const sk_t * Qs , sk_t * Ts );
 ///
 void calculate_Q_from_F_cyclic( cpk_t * Qs, const sk_t * Fs , const sk_t * Ts );
 
-void write_gf16_to_quartic(unsigned char *q, const unsigned char *f);
+void write_gf16_to_quartic(unsigned char *q, const unsigned char *f, unsigned long length_f);
 
-
+void set_quartic_zero(unsigned char *q, const unsigned length);
 
 
 #ifdef  __cplusplus

@@ -183,12 +183,12 @@ void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed, const u
 
     // set up a temporary structure ext_cpk_t for calculating public key.
     ext_cpk_t *pk = (ext_cpk_t *) aligned_alloc(32, sizeof(ext_cpk_t));
-    calculate_Q_from_F(pk, sk, sk);   //TODO! compute the public key in ext_cpk_t format
+    calculate_Q_from_F(pk, sk);   //TODO! compute the public key in ext_cpk_t format
 
     /// IS PK at this point finished in terms of everything is in?
 
 //    printf("%lu", sizeof(*pk));
-//    memcpy(rpk, pk, sizeof(*pk)); //todo: MAL SO LASSEN
+//    memcpy(rpk, pk, sizeof(*pk));
 
     calculate_t4(sk->t4, sk->t1, sk->t3);
 
