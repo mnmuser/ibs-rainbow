@@ -122,11 +122,19 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const sk_t *sk) {
 /// @param[in]   Bwidth           - the width of B.
 /// @param[in]   size_batch - number of the batched elements in the corresponding position of the matrix.
     batch_trimat_madd(cpk->l1_Q2, sk->l1_F1, sk->t1, _V1, _V1_BYTE, _O1, _O1_BYTE);    // F1*T1 + F2
-// TODO: T1 und F1 als quartic abspeichern/interpretieren
-/// dann jede multiplilkation richtig einordnen -> stelle im polynom
-/// dann addieren mit Q2
-/// düddüm düm dadümm tümm (click (bass))
 
+/// T1 als quartic abspeichern/interpretieren, F1 kann eigentlich aus Q1 gelesen werden
+
+    unsigned char q_t1[_V1_BYTE * _O1 * N_QUARTIC_POLY(_ID)];
+    write_gf16_to_quartic(q_t1, sk->t1, _V1_BYTE * _O1);
+
+/// dann jede multiplilkation richtig einordnen -> stelle im polynom
+
+
+
+/// dann addieren mit Q2
+
+/// düddüm düm dadümm tümm (click (bass))
 
 //    memset(cpk->l1_Q3, 0, _O1_BYTE * _V1 * _O2);
 //    memset(cpk->l1_Q5, 0, _O1_BYTE * N_TRIANGLE_TERMS(_O1));
