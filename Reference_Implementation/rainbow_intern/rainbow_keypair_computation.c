@@ -112,16 +112,8 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const sk_t *sk) {
     write_gf16_to_quartic(cpk->l1_Q2, sk->l1_F2, _O1_BYTE * _V1 * _O1);
 
 
-///@brief  bC += btriA * B  , in GF(16)
-///
-/// @param[out]  bC         - the batched matrix C.
-/// @param[in]   btriA      - a batched UT matrix A.
-/// @param[in]   B          - a column-major matrix B.
-/// @param[in]   Bheight          - the height of B.
-/// @param[in]   size_Bcolvec     - the size of the column vector in B.
-/// @param[in]   Bwidth           - the width of B.
-/// @param[in]   size_batch - number of the batched elements in the corresponding position of the matrix.
-    batch_trimat_madd(cpk->l1_Q2, sk->l1_F1, sk->t1, _V1, _V1_BYTE, _O1, _O1_BYTE);    // F1*T1 + F2
+
+//    batch_trimat_madd(cpk->l1_Q2, sk->l1_F1, sk->t1, _V1, _V1_BYTE, _O1, _O1_BYTE * N_QUARTIC_POLY(_ID));    // F1*T1 + F2
 
 /// T1 als quartic abspeichern/interpretieren, F1 kann eigentlich aus Q1 gelesen werden
 
@@ -129,12 +121,14 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const sk_t *sk) {
     write_gf16_to_quartic(q_t1, sk->t1, _V1_BYTE * _O1);
 
 /// dann jede multiplilkation richtig einordnen -> stelle im polynom
-
-
-
+    //write-quartic CHECK
+    quartic_batch_trimat_madd(cpk->l1_Q2, cpk->l1_Q1, q_t1, _V1, _V1_BYTE, _O1, _O1_BYTE * N_QUARTIC_POLY(_ID), _ID);
+    //selber schreiben?
+    // ---> ORGANISATION QUARTIC KLÄREN!!!!!!!!!
+    // dann richtig einordnen
 /// dann addieren mit Q2
 
-/// düddüm düm dadümm tümm (click (bass))
+/// düddüm düm dadümm tümm (Mario)
 
 //    memset(cpk->l1_Q3, 0, _O1_BYTE * _V1 * _O2);
 //    memset(cpk->l1_Q5, 0, _O1_BYTE * N_TRIANGLE_TERMS(_O1));
@@ -406,10 +400,13 @@ void calculate_Q_from_F_cyclic( cpk_t * Qs, const sk_t * Fs , const sk_t * Ts )
 
 void write_gf16_to_quartic(unsigned char *q, const unsigned char *f, const unsigned long length_f) {
     unsigned quartic_length = N_QUARTIC_POLY(_ID);
-    for (unsigned i = 0; i < _ID; i++) {
-        unsigned char element_in_f = gf16v_get_ele(f, i);
-        memcpy(&q[quartic_length * i], &f[_O1_BYTE * N_TRIANGLE_TERMS(_V1) * i], length_f);
+    for (unsigned x = 0; x < length_f; x++) {
+        for (unsigned i = 0; i < _ID; i++) {
+            unsigned char element_in_f = gf16v_get_ele(f, i);
+            memcpy(&q[quartic_length * i * x], &f[x * i], _ID / 2);
+        }
     }
+
 }
 
 void set_quartic_zero(unsigned char *q, const unsigned length) {

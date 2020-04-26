@@ -84,8 +84,14 @@ void UpperTrianglize( unsigned char * btriC , const unsigned char * bA , unsigne
 /// @param[in]   Bwidth           - the width of B.
 /// @param[in]   size_batch - number of the batched elements in the corresponding position of the matrix.
 ///
-void batch_trimat_madd_gf16( unsigned char * bC , const unsigned char* btriA ,
-        const unsigned char* B , unsigned Bheight, unsigned size_Bcolvec , unsigned Bwidth, unsigned size_batch );
+void batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA,
+                            const unsigned char *B, unsigned Bheight, unsigned size_Bcolvec, unsigned Bwidth,
+                            unsigned size_batch);
+
+///ID_SHIT
+void quartic_batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA,
+                                    const unsigned char *B, unsigned Bheight, unsigned size_Bcolvec, unsigned Bwidth,
+                                    unsigned size_batch, unsigned size_id);
 
 ///
 /// @brief  bC += btriA * B  , in GF(256)

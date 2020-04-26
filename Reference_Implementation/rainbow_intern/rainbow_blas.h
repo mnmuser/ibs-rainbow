@@ -31,6 +31,7 @@
 #define batch_quad_trimat_eval batch_quad_trimat_eval_gf16
 #define batch_quad_recmat_eval batch_quad_recmat_eval_gf16
 
+#define quartic_batch_trimat_madd quartic_batch_trimat_madd_gf16
 #else
 
 #define gfv_get_ele     gf256v_get_ele
