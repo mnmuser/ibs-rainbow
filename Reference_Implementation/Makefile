@@ -8,6 +8,12 @@ LDFLAGS=
 LIBPATH= -L/usr/local/lib -L/opt/local/lib -L/usr/lib
 LIBS=    -lcrypto
 
+ifeq ($(shell uname -s),Darwin) # for macOS you need special openssl (homebrew)
+DFLAGS=
+LDFLAGS+= -L/usr/local/opt/openssl@1.1/lib
+INCPATH+= -I/usr/local/opt/openssl@1.1/include/
+endif
+
 PROJ_DIR = rainbow_intern
 
 ifeq ($(PROJ_DIR),avx2)
