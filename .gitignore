@@ -55,6 +55,7 @@ dkms.conf
 .idea/
 /Reference_Implementation/.idea
 /Reference_Implementation/compile_commands.json
+*.json
 
 #Rainbow-specific
 /Reference_Implementation/rainbow-genkey
