@@ -402,7 +402,7 @@ void calculate_Q_from_F_cyclic( cpk_t * Qs, const sk_t * Fs , const sk_t * Ts )
 void write_gf16_to_quartic(unsigned char *q, const unsigned char *f, const unsigned long length_f) {
     set_quartic_zero(q, length_f); // to have a clean polynom
     unsigned quartic_length = N_QUARTIC_POLY(_ID);
-    for (unsigned x = 0; x < length_f; x++) {
+    for (unsigned x = 0; x < length_f * 2; x++) {
         for (unsigned i = 0; i < _ID; i++) {
             unsigned char gf16_x = gf16v_get_ele(f, i + x);
             gf16v_set_ele(q, i + (quartic_length * x) + 1, gf16_x);
