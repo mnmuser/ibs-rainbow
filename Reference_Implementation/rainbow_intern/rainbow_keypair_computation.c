@@ -405,7 +405,7 @@ void write_gf16_to_quartic(unsigned char *q, const unsigned char *f, const unsig
     for (unsigned x = 0; x < length_f * 2; x++) {
         for (unsigned i = 0; i < _ID; i++) {
             unsigned char gf16_x = gf16v_get_ele(f, i + x);
-            gf16v_set_ele(q, i + (quartic_length * x) + 1, gf16_x);
+            gf16v_set_ele(q, i + (quartic_length * x), gf16_x);
 //            memcpy(&q[quartic_length * x +1], &f[x], _ID);
         }
     }

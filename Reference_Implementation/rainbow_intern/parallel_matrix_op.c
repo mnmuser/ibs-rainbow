@@ -59,25 +59,32 @@ void batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA,
 void quartic_batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA,
                                     const unsigned char *B, unsigned Bheight, unsigned size_Bcolvec, unsigned Bwidth,
                                     unsigned size_batch, unsigned size_ID) {
-    unsigned Awidth = Bheight;
-    unsigned Aheight = Awidth;
-    for (unsigned i = 0; i < Aheight; i++) {
-        for (unsigned j = 0; j < Bwidth; j++) {
-            for (unsigned k = 0; k < Bheight; k++) {
-                if (k < i) continue;
-                for (unsigned id = 0; id < size_ID; id++) {
-                    // 3. Variable in 2 einsetzen, in 1 schreiben (4 is num_byte)
-                    gf16v_madd(bC, &btriA[((k - i) * size_batch) + id], gf16v_get_ele(&B[j * size_Bcolvec], k + id),
-                               size_batch);
-                    // setze aus T1
-                    // ?? bC MUSS erhöht werden: zur richtigen Potnez schieben aka eins weiter ::
-                    /// -> Plan: mit 4. For-Schleife umsetzen, später For-Schleife ersetzen
-                }
-            }
-            bC += size_batch;
+    for (int i = 0; i < Bheight; ++i) {
+        for (int j = 0; j < Bwidth; ++j) {
+            //ZWEI IDEEN:
+            //- zum teil beibehalten, dann auf ID münzen
+            //- selber machen mit den Funktionen, kann so schwer nicht sein
         }
-        btriA += (Aheight-i)*size_batch;
     }
+//    unsigned Awidth = Bheight;
+//    unsigned Aheight = Awidth;
+//    for (unsigned i = 0; i < Aheight; i++) {
+//        for (unsigned j = 0; j < Bwidth; j++) {
+//            for (unsigned k = 0; k < Bheight; k++) {
+//                if (k < i) continue;
+//                for (unsigned id = 0; id < size_ID; id++) {
+//                    // 3. Variable in 2 einsetzen, in 1 schreiben (4 is num_byte)
+//                    gf16v_madd(bC, &btriA[((k - i) * size_batch) + id], gf16v_get_ele(&B[j * size_Bcolvec], k + id),
+//                               size_batch);
+//                    // setze aus T1
+//                    // ?? bC MUSS erhöht werden: zur richtigen Potnez schieben aka eins weiter ::
+//                    /// -> Plan: mit 4. For-Schleife umsetzen, später For-Schleife ersetzen
+//                }
+//            }
+//            bC += size_batch;
+//        }
+//        btriA += (Aheight-i)*size_batch;
+//    }
 }
 
 void batch_trimat_madd_gf256( unsigned char * bC , const unsigned char* btriA ,
