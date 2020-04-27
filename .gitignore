@@ -53,3 +53,14 @@ dkms.conf
 
 # CLion
 .idea/
+/Reference_Implementation/.idea
+/Reference_Implementation/compile_commands.json
+
+#Rainbow-specific
+/Reference_Implementation/rainbow-genkey
+/Reference_Implementation/rainbow-sign
+/Reference_Implementation/rainbow-verify
+/Reference_Implementation/PQCgenKAT_sign
+/Reference_Implementation/pk.txt
+/Reference_Implementation/sk.txt
+/Reference_Implementation/signature.txt

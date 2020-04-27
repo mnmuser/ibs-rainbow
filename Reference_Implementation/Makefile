@@ -1,18 +1,13 @@
 CC=    gcc
 LD=    gcc
 
-DFLAGS=-D "aligned_alloc(x,y)=malloc(y)"
+DFLAGS= -D "aligned_alloc(x,y)=malloc(y)"
 CFLAGS= -O2 -std=c11 -Wall -Wextra -fno-omit-frame-pointer $(DFLAGS)
 INCPATH= -I/usr/local/include -I/opt/local/include -I/usr/include -I$(PROJ_DIR)
 LDFLAGS=
 LIBPATH= -L/usr/local/lib -L/opt/local/lib -L/usr/lib
 LIBS=    -lcrypto
 
-ifeq ($(shell uname -s),Darwin) # for macOS you need special openssl (homebrew)
-DFLAGS=
-LDFLAGS+= -L/usr/local/opt/openssl@1.1/lib
-INCPATH+= -I/usr/local/opt/openssl@1.1/include/
-endif
 
 PROJ_DIR = rainbow_intern
 
@@ -39,6 +34,12 @@ ifdef DEBUG
         CFLAGS=  -D_DEBUG_ -g -O1 -std=c11 -Wall -Wextra -fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer -mavx2 #c99(sic!)
         CXXFLAGS= -D_DEBUG_ -g -O1 -Wall -Wextra -fsanitize=address -fsanitize=undefined -fno-exceptions -fno-rtti -nostdinc++ -mavx2
         LDFLAGS= -fsanitize=address -fsanitize=undefined
+endif
+
+ifeq ($(shell uname -s),Darwin) # for macOS you need special openssl (homebrew)
+DFLAGS=
+LDFLAGS+= -L/usr/local/opt/openssl@1.1/lib
+INCPATH+= -I/usr/local/opt/openssl@1.1/include/
 endif
 
 ifdef GPROF
