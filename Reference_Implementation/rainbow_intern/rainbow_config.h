@@ -9,7 +9,7 @@
 #ifndef _H_RAINBOW_CONFIG_H_
 #define _H_RAINBOW_CONFIG_H_
 
-#define _ID 2 //TODO: check if input-ID has correct length
+#define _ID 1 //TODO: check if input-ID has correct length
 
 // TODO Dependency on makefile for Levels
 /// the defined parameter

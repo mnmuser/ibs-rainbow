@@ -125,6 +125,7 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const sk_t *sk) {
     quartic_batch_trimat_madd(cpk->l1_Q2, cpk->l1_Q1, q_t1, _V1, _V1_BYTE, _O1, _O1_BYTE * N_QUARTIC_POLY(_ID), _ID);
     //selber schreiben?
     // ---> ORGANISATION QUARTIC KLÄREN!!!!!!!!!
+    // -> Cheat: erstmal für ID_size=1 implementieren
     // dann richtig einordnen
 /// dann addieren mit Q2
 
@@ -399,11 +400,13 @@ void calculate_Q_from_F_cyclic( cpk_t * Qs, const sk_t * Fs , const sk_t * Ts )
 }
 
 void write_gf16_to_quartic(unsigned char *q, const unsigned char *f, const unsigned long length_f) {
+    set_quartic_zero(q, length_f); // to have a clean polynom
     unsigned quartic_length = N_QUARTIC_POLY(_ID);
     for (unsigned x = 0; x < length_f; x++) {
         for (unsigned i = 0; i < _ID; i++) {
-            unsigned char element_in_f = gf16v_get_ele(f, i);
-            memcpy(&q[quartic_length * i * x], &f[x * i], _ID / 2);
+            unsigned char gf16_x = gf16v_get_ele(&f[x], i);
+            gf16v_set_ele(&q[quartic_length * x + 1], i, gf16_x);
+//            memcpy(&q[quartic_length * x +1], &f[x], _ID);
         }
     }
 

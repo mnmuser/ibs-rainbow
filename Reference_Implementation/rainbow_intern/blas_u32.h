@@ -78,7 +78,7 @@ static inline void _gf256v_mul_scalar_u32(uint8_t *a, uint8_t b, unsigned _num_b
 
 static inline void
 _gf16v_madd_u32(uint8_t *accu_c, const uint8_t *a, uint8_t gf16_b, unsigned _num_byte) { // 3. Variable in 2. einsetzen
-    unsigned n_u32 = _num_byte >> 2; // = num_byte * 2^(2)
+    unsigned n_u32 = _num_byte >> 2; // -> divide by 4
     uint32_t *c_u32 = (uint32_t *) accu_c;
     const uint32_t *a_u32 = (const uint32_t *) a;
     for (unsigned i = 0; i < n_u32; i++) {
