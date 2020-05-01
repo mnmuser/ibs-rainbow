@@ -4,21 +4,24 @@
 ///  the standard implementations for functions in parallel_matrix_op.h
 ///
 
+#include "stdlib.h"
+
 #include "blas_comm.h"
 #include "blas.h"
 
 #include "parallel_matrix_op.h"
 #include "rainbow_keypair.h"
 
+#include "polynomial.h"
+
 
 ////////////////    Section: triangle matrix <-> rectangle matrix   ///////////////////////////////////
 
 
-void UpperTrianglize( unsigned char * btriC , const unsigned char * bA , unsigned Awidth, unsigned size_batch )
-{
-    unsigned char * runningC = btriC;
+void UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsigned Awidth, unsigned size_batch) {
+    unsigned char *runningC = btriC;
     unsigned Aheight = Awidth;
-    for(unsigned i=0;i<Aheight;i++) {
+    for (unsigned i = 0; i < Aheight; i++) {
         for(unsigned j=0;j<i;j++) {
             unsigned idx = idx_of_trimat(j,i,Aheight);
             gf256v_add( btriC + idx*size_batch , bA + size_batch*(i*Awidth+j) , size_batch );
@@ -61,30 +64,10 @@ void quartic_batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btri
                                     unsigned size_batch, unsigned size_ID) {
     for (int i = 0; i < Bheight; ++i) {
         for (int j = 0; j < Bwidth; ++j) {
-            //ZWEI IDEEN:
-            //- zum teil beibehalten, dann auf ID münzen
-            //- selber machen mit den Funktionen, kann so schwer nicht sein
+            // PLAN: polynomial.c anpassen und aufrufen
         }
     }
-//    unsigned Awidth = Bheight;
-//    unsigned Aheight = Awidth;
-//    for (unsigned i = 0; i < Aheight; i++) {
-//        for (unsigned j = 0; j < Bwidth; j++) {
-//            for (unsigned k = 0; k < Bheight; k++) {
-//                if (k < i) continue;
-//                for (unsigned id = 0; id < size_ID; id++) {
-//                    // 3. Variable in 2 einsetzen, in 1 schreiben (4 is num_byte)
-//                    gf16v_madd(bC, &btriA[((k - i) * size_batch) + id], gf16v_get_ele(&B[j * size_Bcolvec], k + id),
-//                               size_batch);
-//                    // setze aus T1
-//                    // ?? bC MUSS erhöht werden: zur richtigen Potnez schieben aka eins weiter ::
-//                    /// -> Plan: mit 4. For-Schleife umsetzen, später For-Schleife ersetzen
-//                }
-//            }
-//            bC += size_batch;
-//        }
-//        btriA += (Aheight-i)*size_batch;
-//    }
+
 }
 
 void batch_trimat_madd_gf256( unsigned char * bC , const unsigned char* btriA ,

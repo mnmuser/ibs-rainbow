@@ -43,9 +43,9 @@ INCPATH+= -I/usr/local/opt/openssl@1.1/include/
 endif
 
 ifdef GPROF
-	CFLAGS += -pg
-	CXXFLAGS += -pg
-	LDFLAGS += -pg
+CFLAGS += -pg
+CXXFLAGS += -pg
+LDFLAGS += -pg
 endif
 
 .PHONY: all tests tables clean
