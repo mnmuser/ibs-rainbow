@@ -13,6 +13,7 @@
 #include "rainbow_keypair.h"
 
 #include "polynomial.h"
+#include "stdio.h"
 
 
 ////////////////    Section: triangle matrix <-> rectangle matrix   ///////////////////////////////////
@@ -59,14 +60,39 @@ void batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA,
 /// Bcolvec :: Größe eines Spaltenvektors in Matrix B
 /// size_batch :: number of the batched elements in the corresponding position of the matrix.
 /// -> _V1, _V1_BYTE, _O1, _O1_BYTE
-void quartic_batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA,
-                                    const unsigned char *B, unsigned Bheight, unsigned size_Bcolvec, unsigned Bwidth,
-                                    unsigned size_batch, unsigned size_ID) {
-    for (int i = 0; i < Bheight; ++i) {
-        for (int j = 0; j < Bwidth; ++j) {
-            // PLAN: polynomial.c anpassen und aufrufen
+void
+quartic_batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA, const unsigned char *B, unsigned Bheight,
+                               unsigned size_Bcolvec, unsigned Bwidth,
+                               unsigned size_batch) {
+    int e_ID2[2] = {2, 3};
+    unsigned char *tmp_product = malloc((N_QUARTIC_POLY(_ID) + 1) / 2);
+    int tmp_e[15];
+    int *tmp_o = malloc(sizeof(int));
+    *tmp_o = 0;
+    int final_e[15];
+    int *final_o = malloc(sizeof(int));
+
+
+    unsigned Aheight = Bheight;
+    for (unsigned i = 0; i < Aheight * _ID; i++) {
+        for (unsigned j = 0; j < Bwidth * _ID; j++) {
+            for (unsigned k = 0; k < Bheight * _ID; k++) {
+                k *= _ID; //skip over same ID-Fields
+                if (i < k) continue;
+                polynomial_print(_ID, 2, &btriA[size_batch * (idx_of_trimat(k, i, Aheight))], e_ID2, "F1: ");
+                polynomial_print(_ID, 2, &B[j * size_Bcolvec + k], e_ID2, "T1: ");
+                polynomial_mul(2, &btriA[size_batch * (idx_of_trimat(k, i, Aheight))], e_ID2, 2,
+                               &B[j * size_Bcolvec + k], e_ID2, tmp_o, tmp_product, tmp_e);
+                //TODO: check multiply
+                polynomial_print(2, *tmp_o, tmp_product, tmp_e, "Produkt: ");
+                polynomial_add(*tmp_o, tmp_product, tmp_e, 2, bC, e_ID2, final_o, bC, final_e);
+//                gf16v_madd( bC , & btriA[ size_batch*(idx_of_trimat(k,i,Aheight)) ] , gf16v_get_ele( &B[j*size_Bcolvec] , k ) , size_batch );
+            }
+            bC += size_batch;
         }
     }
+    free(tmp_product);
+    free(tmp_o);
 
 }
 

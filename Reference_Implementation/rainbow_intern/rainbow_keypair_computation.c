@@ -122,11 +122,9 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const sk_t *sk) {
 
 /// dann jede multiplilkation richtig einordnen -> stelle im polynom
     //write-quartic CHECK
-    quartic_batch_trimat_madd(cpk->l1_Q2, cpk->l1_Q1, q_t1, _V1, _V1_BYTE, _O1, _O1_BYTE * N_QUARTIC_POLY(_ID), _ID);
-    //selber schreiben?
-    // ---> ORGANISATION QUARTIC KLÄREN!!!!!!!!!
-    // -> Cheat: erstmal für ID_size=1 implementieren
-    // dann richtig einordnen
+    quartic_batch_trimat_madd(cpk->l1_Q2, sk->l1_F1, sk->t1, _V1, _V1_BYTE, _O1, _O1_BYTE * N_QUARTIC_POLY(_ID));
+    //polynomial.c benutzen
+
 /// dann addieren mit Q2
 
 /// düddüm düm dadümm tümm (Mario)

@@ -1,9 +1,20 @@
-# include <stdlib.h>
-# include <stdio.h>
-# include <math.h>
-# include <time.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+#include <time.h>
 
-# include "polynomial.h"
+#include "polynomial.h"
+#include "rainbow_blas.h"
+
+/*
+ * Code from John Burkhardt, GNU LGPL licensed.
+ * https://people.sc.fsu.edu/~jburkardt/c_src/polynomial/polynomial.html
+ *
+ * Needed for Operations on the quartic id-polynomials.
+ * Adapted for GF16 (and GF256).
+ *
+ * Modified in May 2020.
+ */
 
 /******************************************************************************/
 
@@ -1271,14 +1282,12 @@ void perm_check1(int n, int p[])
         }
 
     }
-
-    return;
 }
 
 /******************************************************************************/
 
-void polynomial_add(int o1, double c1[], int e1[], int o2, double c2[],
-                    int e2[], int *o, double c[], int e[])
+void polynomial_add(int o1, unsigned char c1[], int e1[], int o2, unsigned char c2[],
+                    int e2[], int *o, unsigned char c[], int e[])
 
 /******************************************************************************/
 /*
@@ -1328,8 +1337,6 @@ void polynomial_add(int o1, double c1[], int e1[], int o2, double c2[],
 
     polynomial_sort(*o, c, e);
     polynomial_compress(*o, c, e, o, c, e);
-
-    return;
 }
 
 /******************************************************************************/
@@ -1416,7 +1423,7 @@ void polynomial_axpy(double s, int o1, double c1[], int e1[], int o2,
 
 /******************************************************************************/
 
-void polynomial_compress(int o1, double c1[], int e1[], int *o2, double c2[],
+void polynomial_compress(int o1, unsigned char c1[], int e1[], int *o2, unsigned char c2[],
                          int e2[])
 
 /******************************************************************************/
@@ -1473,14 +1480,16 @@ void polynomial_compress(int o1, double c1[], int e1[], int *o2, double c2[],
 
         if (0 == put) {
             put = put + 1;
-            c2[put - 1] = c1[get - 1];
+            gf16v_set_ele(c2, put - 1, gf16v_get_ele(c1, get - 1));
             e2[put - 1] = e1[get - 1];
         } else {
             if (e2[put - 1] == e1[get - 1]) {
-                c2[put - 1] = c2[put - 1] + c1[get - 1];
+                unsigned char tmp = gf16v_get_ele(c2, put - 1) + gf16v_get_ele(c1, get - 1);
+                tmp %= 16; //TODO: check
+                gf16v_set_ele(c2, put - 1, tmp);
             } else {
                 put = put + 1;
-                c2[put - 1] = c1[get - 1];
+                gf16v_set_ele(c2, put - 1, gf16v_get_ele(c1, get - 1));
                 e2[put - 1] = e1[get - 1];
             }
         }
@@ -1494,8 +1503,8 @@ void polynomial_compress(int o1, double c1[], int e1[], int *o2, double c2[],
     put = 0;
 
     while (get < *o2) {
-        if (r8_epsilon_sqrt < fabs(c2[get])) {
-            c2[put] = c2[get];
+        if (r8_epsilon_sqrt < (gf16v_get_ele(c2, get))) {
+            gf16v_set_ele(c2, put, gf16v_get_ele(c2, get));
             e2[put] = e2[get];
             put = put + 1;
         }
@@ -1504,7 +1513,6 @@ void polynomial_compress(int o1, double c1[], int e1[], int *o2, double c2[],
 
     *o2 = put;
 
-    return;
 }
 
 /******************************************************************************/
@@ -1581,8 +1589,8 @@ void polynomial_dif(int m, int o1, double c1[], int e1[], int dif[],
 
 /******************************************************************************/
 
-void polynomial_mul(int m, int o1, double c1[], int e1[], int o2, double c2[],
-                    int e2[], int *o, double c[], int e[])
+void polynomial_mul(int o1, const unsigned char c1[], int e1[], int o2, const unsigned char c2[],
+                    int e2[], int *o, unsigned char c[], int e[])
 
 /******************************************************************************/
 /*
@@ -1604,7 +1612,7 @@ void polynomial_mul(int m, int o1, double c1[], int e1[], int o2, double c2[],
 
   Parameters:
 
-    Input, int M, the spatial dimension.
+    Input, int M, the spatial dimension. -> in this case same as _ID
 
     Input, int O1, the "order" of polynomial 1.
 
@@ -1628,6 +1636,8 @@ void polynomial_mul(int m, int o1, double c1[], int e1[], int o2, double c2[],
     polynomial product.
 */
 {
+    int m = _ID;
+
     int *f;
     int *f1;
     int *f2;
@@ -1640,7 +1650,9 @@ void polynomial_mul(int m, int o1, double c1[], int e1[], int o2, double c2[],
     *o = 0;
     for (j = 0; j < o2; j++) {
         for (i = 0; i < o1; i++) {
-            c[*o] = c1[i] * c2[j];
+            //c[*o] = c1[i] * c2[j]; -> adapt for GF16:
+            gf16v_set_ele(c, *o, gf16_mul(gf16v_get_ele(c1, i), gf16v_get_ele(c2, j)));
+
             f1 = mono_unrank_grlex(m, e1[i]);
             f2 = mono_unrank_grlex(m, e2[j]);
             for (k = 0; k < m; k++) {
@@ -1657,13 +1669,11 @@ void polynomial_mul(int m, int o1, double c1[], int e1[], int o2, double c2[],
 
     polynomial_sort(*o, c, e);
     polynomial_compress(*o, c, e, o, c, e);
-
-    return;
 }
 
 /******************************************************************************/
 
-void polynomial_print(int m, int o, double c[], int e[], char *title)
+void polynomial_print(int m, int o, const unsigned char c[], int e[], char *title)
 
 /******************************************************************************/
 /*
@@ -1708,12 +1718,12 @@ void polynomial_print(int m, int o, double c[], int e[], char *title)
     } else {
         for (j = 0; j < o; j++) {
             printf("    ");
-            if (c[j] < 0.0) {
+            if (gf16v_get_ele(c, j) < 0) {
                 printf("- ");
             } else {
                 printf("+ ");
             }
-            printf("%g * x^(", fabs(c[j]));
+            printf("%hhu * x^(", gf16v_get_ele(c, j));
 
             f = mono_unrank_grlex(m, e[j]);
             for (i = 0; i < m; i++) {
@@ -1732,8 +1742,6 @@ void polynomial_print(int m, int o, double c[], int e[], char *title)
             printf("\n");
         }
     }
-
-    return;
 }
 
 /******************************************************************************/
@@ -1783,7 +1791,7 @@ void polynomial_scale(double s, int m, int o, double c[], int e[])
 
 /******************************************************************************/
 
-void polynomial_sort(int o, double c[], int e[])
+void polynomial_sort(int o, unsigned char c[], int e[])
 
 /******************************************************************************/
 /*
@@ -1826,8 +1834,6 @@ void polynomial_sort(int o, double c[], int e[])
     r8vec_permute(o, indx, c);
 
     free(indx);
-
-    return;
 }
 
 /******************************************************************************/
@@ -1903,7 +1909,7 @@ double *polynomial_value(int m, int o, double c[], int e[], int nx,
 
 /******************************************************************************/
 
-void r8vec_concatenate(int n1, double a[], int n2, double b[], double c[])
+void r8vec_concatenate(int n1, unsigned char a[], int n2, unsigned char b[], unsigned char c[])
 
 /******************************************************************************/
 /*
@@ -1943,18 +1949,18 @@ void r8vec_concatenate(int n1, double a[], int n2, double b[], double c[])
     int i;
 
     for (i = 0; i < n1; i++) {
-        c[i] = a[i];
+        gf16v_set_ele(c, i, gf16v_get_ele(a, i));
+//        c[i] = a[i];
     }
     for (i = 0; i < n2; i++) {
-        c[n1 + i] = b[i];
+        gf16v_set_ele(c, n1 + i, gf16v_get_ele(b, i));
+//        c[n1 + i] = b[i];
     }
-
-    return;
 }
 
 /******************************************************************************/
 
-void r8vec_permute(int n, int p[], double a[])
+void r8vec_permute(int n, int p[], unsigned char a[])
 
 /******************************************************************************/
 /*
@@ -2006,7 +2012,7 @@ void r8vec_permute(int n, int p[], double a[])
     Input/output, double A[N], the array to be permuted.
 */
 {
-    double a_temp;
+    unsigned char a_temp;
     int i;
     int iget;
     int iput;
@@ -2031,7 +2037,7 @@ void r8vec_permute(int n, int p[], double a[])
             p[istart - 1] = -p[istart - 1];
             continue;
         } else {
-            a_temp = a[istart - 1];
+            a_temp = gf16v_get_ele(a, istart - 1);
             iget = istart;
 /*
   Copy the new value into the vacated entry.
@@ -2051,10 +2057,10 @@ void r8vec_permute(int n, int p[], double a[])
                 }
 
                 if (iget == istart) {
-                    a[iput - 1] = a_temp;
+                    gf16v_set_ele(a, iput - 1, a_temp);
                     break;
                 }
-                a[iput - 1] = a[iget - 1];
+                gf16v_set_ele(a, iput - 1, gf16v_get_ele(a, iget - 1));
             }
         }
     }
@@ -2070,53 +2076,4 @@ void r8vec_permute(int n, int p[], double a[])
     for (i = 0; i < n; i++) {
         p[i] = p[i] - 1;
     }
-    return;
-}
-
-/******************************************************************************/
-
-void timestamp()
-
-/******************************************************************************/
-/*
-  Purpose:
-
-    TIMESTAMP prints the current YMDHMS date as a time stamp.
-
-  Example:
-
-    31 May 2001 09:45:54 AM
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    24 September 2003
-
-  Author:
-
-    John Burkardt
-
-  Parameters:
-
-    None
-*/
-{
-# define TIME_SIZE 40
-
-    static char time_buffer[TIME_SIZE];
-    const struct tm *tm;
-    time_t now;
-
-    now = time(NULL);
-    tm = localtime(&now);
-
-    strftime(time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm);
-
-    fprintf(stdout, "%s\n", time_buffer);
-
-    return;
-# undef TIME_SIZE
 }

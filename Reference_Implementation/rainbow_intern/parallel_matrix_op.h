@@ -89,9 +89,10 @@ void batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA,
                             unsigned size_batch);
 
 ///ID_SHIT
-void quartic_batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA,
-                                    const unsigned char *B, unsigned Bheight, unsigned size_Bcolvec, unsigned Bwidth,
-                                    unsigned size_batch, unsigned size_id);
+void
+quartic_batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA, const unsigned char *B, unsigned Bheight,
+                               unsigned size_Bcolvec, unsigned Bwidth,
+                               unsigned size_batch);
 
 ///
 /// @brief  bC += btriA * B  , in GF(256)

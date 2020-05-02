@@ -30,32 +30,32 @@ void perm_check0(int n, int p[]);
 
 void perm_check1(int n, int p[]);
 
-void polynomial_add(int o1, double c1[], int e1[], int o2, double c2[],
-                    int e2[], int *o, double c[], int e[]);
+void polynomial_add(int o1, unsigned char c1[], int e1[], int o2, unsigned char c2[],
+                    int e2[], int *o, unsigned char c[], int e[]);
 
 void polynomial_axpy(double s, int o1, double c1[], int e1[], int o2, double c2[],
                      int e2[], int *o, double c[], int e[]);
 
-void polynomial_compress(int o1, double c1[], int e1[], int *o2, double c2[],
+void polynomial_compress(int o1, unsigned char c1[], int e1[], int *o2, unsigned char c2[],
                          int e2[]);
 
 void polynomial_dif(int m, int o1, double c1[], int e1[], int dif[],
                     int *o2, double c2[], int e2[]);
 
-void polynomial_mul(int m, int o1, double c1[], int e1[], int o2, double c2[],
-                    int e2[], int *o, double c[], int e[]);
+void polynomial_mul(int o1, const unsigned char c1[], int e1[], int o2, const unsigned char c2[],
+                    int e2[], int *o, unsigned char c[], int e[]);
 
-void polynomial_print(int m, int o, double c[], int e[], char *title);
+void polynomial_print(int m, int o, const unsigned char c[], int e[], char *title);
 
 void polynomial_scale(double s, int m, int o1, double c1[], int e1[]);
 
-void polynomial_sort(int o, double c[], int e[]);
+void polynomial_sort(int o, unsigned char c[], int e[]);
 
 double *polynomial_value(int m, int o, double c[], int e[], int nx,
                          double x[]);
 
-void r8vec_concatenate(int n1, double a[], int n2, double b[], double c[]);
+void r8vec_concatenate(int n1, unsigned char a[], int n2, unsigned char b[], unsigned char c[]);
 
-void r8vec_permute(int n, int p[], double a[]);
+void r8vec_permute(int n, int p[], unsigned char a[]);
 
 void timestamp();
