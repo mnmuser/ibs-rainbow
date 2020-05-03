@@ -1294,6 +1294,7 @@ void polynomial_add(int o1, unsigned char c1[], int e1[], int o2, unsigned char 
   Purpose:
 
     POLYNOMIAL_ADD adds two polynomials.
+    - Attention: One summand-polynomial must not be the destination-polynomial at the same time.
 
   Licensing:
 
@@ -1466,6 +1467,8 @@ void polynomial_compress(int o1, unsigned char c1[], int e1[], int *o2, unsigned
     the polynomial.
 */
 {
+    //TODO: NULLEN NICHT KÜRZEN LASSEN!
+
     int get;
     int put;
     const double r8_epsilon_sqrt = 0.1490116119384766E-07;
@@ -1651,7 +1654,12 @@ void polynomial_mul(int o1, const unsigned char c1[], int e1[], int o2, const un
     for (j = 0; j < o2; j++) {
         for (i = 0; i < o1; i++) {
             //c[*o] = c1[i] * c2[j]; -> adapt for GF16:
-            gf16v_set_ele(c, *o, gf16_mul(gf16v_get_ele(c1, i), gf16v_get_ele(c2, j)));
+
+            unsigned char factor_a = gf16v_get_ele(c1, i);
+            unsigned char factor_b = gf16v_get_ele(c2, j);
+            unsigned char tmp_product = gf16_mul(factor_a, factor_b);
+
+            gf16v_set_ele(c, *o, tmp_product);
 
             f1 = mono_unrank_grlex(m, e1[i]);
             f2 = mono_unrank_grlex(m, e2[j]);

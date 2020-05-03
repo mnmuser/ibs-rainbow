@@ -8,6 +8,7 @@
 #include "blas_comm.h"
 #include "blas.h"
 #include "rainbow_blas.h"
+#include "polynomial.h"
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -116,13 +117,21 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const sk_t *sk) {
 //    batch_trimat_madd(cpk->l1_Q2, sk->l1_F1, sk->t1, _V1, _V1_BYTE, _O1, _O1_BYTE * N_QUARTIC_POLY(_ID));    // F1*T1 + F2
 
 /// T1 als quartic abspeichern/interpretieren, F1 kann eigentlich aus Q1 gelesen werden
-
-    unsigned char q_t1[_V1_BYTE * _O1 * N_QUARTIC_POLY(_ID)];
-    write_gf16_to_quartic(q_t1, sk->t1, _V1_BYTE * _O1);
+/// not needed, when we make a good job below, this would only produce zeros
+//    unsigned char q_t1[_V1_BYTE * _O1 * N_QUARTIC_POLY(_ID)];
+//    write_gf16_to_quartic(q_t1, sk->t1, _V1_BYTE * _O1);
 
 /// dann jede multiplilkation richtig einordnen -> stelle im polynom
-    //write-quartic CHECK
+    int full_e_power2[15] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+
+    polynomial_print(_ID, 15, cpk->l1_Q2, full_e_power2, "L1_Q2: ");
+
     quartic_batch_trimat_madd(cpk->l1_Q2, sk->l1_F1, sk->t1, _V1, _V1_BYTE, _O1, _O1_BYTE * N_QUARTIC_POLY(_ID));
+
+    polynomial_print(_ID, 15, cpk->l1_Q2, full_e_power2, "L1_Q2: ");
+//    polynomial_print(_ID,15,cpk->l1_Q2+30,full_e_power2,"L1_Q2: ");
+//    polynomial_print(_ID,15,cpk->l1_Q2+45,full_e_power2,"L1_Q2: ");
+//    polynomial_print(_ID,15,cpk->l1_Q2+60,full_e_power2,"L1_Q2: ");
     //polynomial.c benutzen
 
 /// dann addieren mit Q2
