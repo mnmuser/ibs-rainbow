@@ -139,7 +139,6 @@ void calculate_t4( unsigned char * t2_to_t4 , const unsigned char *t1 , const un
 static
 void obsfucate_l1_polys( unsigned char * l1_polys , const unsigned char * l2_polys , unsigned n_terms , const unsigned char * s1 )
 {
-//    n_terms *=  N_PUB_QUAT_POLY(_ID_LEN); //needed for ID
     unsigned char temp[_O1_BYTE + 32];
     while( n_terms-- ) {
         gfmat_prod( temp , s1 , _O1_BYTE , _O2 , l2_polys );
@@ -185,14 +184,14 @@ void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed, const u
     ext_cpk_t *pk = (ext_cpk_t *) aligned_alloc(32, sizeof(ext_cpk_t));
     calculate_Q_from_F(pk, sk);   //TODO! compute the public key in ext_cpk_t format
 
-    /// IS PK at this point finished in terms of everything is in?
+    /// at this point P = F o T ; S is still missing
 
 //    printf("%lu", sizeof(*pk));
 //    memcpy(rpk, pk, sizeof(*pk));
 
     calculate_t4(sk->t4, sk->t1, sk->t3);
 
-    obsfucate_l1_polys(pk->l1_Q1, pk->l2_Q1, N_TRIANGLE_TERMS(_V1), sk->s1); // -> VERSCHLEIERN
+    obsfucate_l1_polys(pk->l1_Q1, pk->l2_Q1, N_TRIANGLE_TERMS(_V1), sk->s1); // -> integrate S :)
     obsfucate_l1_polys(pk->l1_Q2, pk->l2_Q2, _V1 * _O1, sk->s1);
     obsfucate_l1_polys(pk->l1_Q3, pk->l2_Q3, _V1 * _O2, sk->s1);
     obsfucate_l1_polys(pk->l1_Q5, pk->l2_Q5, N_TRIANGLE_TERMS(_O1), sk->s1);

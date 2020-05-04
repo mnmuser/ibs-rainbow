@@ -1467,7 +1467,6 @@ void polynomial_compress(int o1, unsigned char c1[], int e1[], int *o2, unsigned
     the polynomial.
 */
 {
-    //TODO: NULLEN NICHT KÜRZEN LASSEN!
 
     int get;
     int put;
@@ -1499,23 +1498,6 @@ void polynomial_compress(int o1, unsigned char c1[], int e1[], int *o2, unsigned
     }
 
     *o2 = put;
-/*
-  Clear out zeros and tiny coefficients.
-*/
-    get = 0;
-    put = 0;
-
-    while (get < *o2) {
-        if (r8_epsilon_sqrt < (gf16v_get_ele(c2, get))) {
-            gf16v_set_ele(c2, put, gf16v_get_ele(c2, get));
-            e2[put] = e2[get];
-            put = put + 1;
-        }
-        get = get + 1;
-    }
-
-    *o2 = put;
-
 }
 
 /******************************************************************************/

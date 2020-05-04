@@ -107,41 +107,17 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const sk_t *sk) {
 */
     const unsigned char *t2 = sk->t4;
 
-//    memcpy( cpk->l1_Q1 , sk->l1_F1 , _O1_BYTE * N_TRIANGLE_TERMS(_V1) ); //this is not the way -> quartic
-//    memcpy(cpk->l1_Q2, sk->l1_F2, _O1_BYTE * _V1 * _O1);
-    write_gf16_to_quartic(cpk->l1_Q1, sk->l1_F1, _O1_BYTE * N_TRIANGLE_TERMS(_V1));
+    memcpy(cpk->l1_Q1, sk->l1_F1, _O1_BYTE * N_TRIANGLE_TERMS(_V1));
     write_gf16_to_quartic(cpk->l1_Q2, sk->l1_F2, _O1_BYTE * _V1 * _O1);
 
-
-
-//    batch_trimat_madd(cpk->l1_Q2, sk->l1_F1, sk->t1, _V1, _V1_BYTE, _O1, _O1_BYTE * N_QUARTIC_POLY(_ID));    // F1*T1 + F2
-
-/// T1 als quartic abspeichern/interpretieren, F1 kann eigentlich aus Q1 gelesen werden
-/// not needed, when we make a good job below, this would only produce zeros
-//    unsigned char q_t1[_V1_BYTE * _O1 * N_QUARTIC_POLY(_ID)];
-//    write_gf16_to_quartic(q_t1, sk->t1, _V1_BYTE * _O1);
-
-/// dann jede multiplilkation richtig einordnen -> stelle im polynom
     int full_e_power2[15] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
+    polynomial_print(_ID, 15, cpk->l1_Q2, full_e_power2, "L1_Q2 before: ");
+
+    quartic_batch_trimat_madd(cpk->l1_Q2, sk->l1_F1, sk->t1, _V1, _V1_BYTE, _O1, _O1_BYTE); // F1*T1 + F2
+
     polynomial_print(_ID, 15, cpk->l1_Q2, full_e_power2, "L1_Q2: ");
 
-    quartic_batch_trimat_madd(cpk->l1_Q2, sk->l1_F1, sk->t1, _V1, _V1_BYTE, _O1, _O1_BYTE * N_QUARTIC_POLY(_ID));
-
-    polynomial_print(_ID, 15, cpk->l1_Q2, full_e_power2, "L1_Q2: ");
-//    polynomial_print(_ID,15,cpk->l1_Q2+30,full_e_power2,"L1_Q2: ");
-//    polynomial_print(_ID,15,cpk->l1_Q2+45,full_e_power2,"L1_Q2: ");
-//    polynomial_print(_ID,15,cpk->l1_Q2+60,full_e_power2,"L1_Q2: ");
-    //polynomial.c benutzen
-
-/// dann addieren mit Q2
-
-/// düddüm düm dadümm tümm (Mario)
-
-//    memset(cpk->l1_Q3, 0, _O1_BYTE * _V1 * _O2);
-//    memset(cpk->l1_Q5, 0, _O1_BYTE * N_TRIANGLE_TERMS(_O1));
-//    memset(cpk->l1_Q6, 0, _O1_BYTE * _O1 * _O2);
-//    memset(cpk->l1_Q9, 0, _O1_BYTE * N_TRIANGLE_TERMS(_O2));
 
     set_quartic_zero(cpk->l1_Q3, _O1_BYTE * _V1 * _O2);
     set_quartic_zero(cpk->l1_Q5, _O1_BYTE * N_TRIANGLE_TERMS(_O1));
@@ -152,13 +128,14 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const sk_t *sk) {
     // l1_Q9 : _O1_BYTE * _O2 * _O2
     // l2_Q5 : _O2_BYTE * _V1 * _O1
     // l2_Q9 : _O2_BYTE * _V1 * _O2
-    unsigned size_tempQ = _O1_BYTE * _O1 * _O1;
-    if (_O1_BYTE * _O2 * _O2 > size_tempQ) size_tempQ = _O1_BYTE * _O2 * _O2;
-    if (_O2_BYTE * _O1 * _O1 > size_tempQ) size_tempQ = _O2_BYTE * _O1 * _O1;
-    if (_O2_BYTE * _O2 * _O2 > size_tempQ) size_tempQ = _O2_BYTE * _O2 * _O2;
+    unsigned size_tempQ = _O1_BYTE * _O1 * _O1 * N_QUARTIC_POLY(_ID);
+    if (_O1_BYTE * _O2 * _O2 > size_tempQ) size_tempQ = _O1_BYTE * _O2 * _O2 * N_QUARTIC_POLY(_ID);
+    if (_O2_BYTE * _O1 * _O1 > size_tempQ) size_tempQ = _O2_BYTE * _O1 * _O1 * N_QUARTIC_POLY(_ID);
+    if (_O2_BYTE * _O2 * _O2 > size_tempQ) size_tempQ = _O2_BYTE * _O2 * _O2 * N_QUARTIC_POLY(_ID);
     unsigned char *tempQ = (unsigned char *) aligned_alloc(32, size_tempQ + 32);
 
-    memset(tempQ, 0, _O1_BYTE * _O1 * _O1);   // l1_Q5
+    set_quartic_zero(tempQ, _O1_BYTE * _O1 * _O1);   // l1_Q5
+
     batch_matTr_madd(tempQ, sk->t1, _V1, _V1_BYTE, _O1, cpk->l1_Q2, _O1, _O1_BYTE);  // t1_tr*(F1*T1 + F2)
     UpperTrianglize(cpk->l1_Q5, tempQ, _O1, _O1_BYTE);    // UT( ... )   // Q5
 
@@ -412,7 +389,7 @@ void write_gf16_to_quartic(unsigned char *q, const unsigned char *f, const unsig
     for (unsigned x = 0; x < length_f * 2; x++) {
         for (unsigned i = 0; i < _ID; i++) {
             unsigned char gf16_x = gf16v_get_ele(f, i + x);
-            gf16v_set_ele(q, i + (quartic_length * x), gf16_x);
+            gf16v_set_ele(q, i + (quartic_length * x) + 1, gf16_x); // plus one, to set not into the constant field
 //            memcpy(&q[quartic_length * x +1], &f[x], _ID);
         }
     }

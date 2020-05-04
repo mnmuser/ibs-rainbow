@@ -65,9 +65,10 @@ void
 quartic_batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA, const unsigned char *B, unsigned Bheight,
                                unsigned size_Bcolvec, unsigned Bwidth,
                                unsigned size_batch) {
+    size_batch *= N_QUARTIC_POLY(_ID);
     int e_ID2[2] = {2, 3}; // the structure of the sk-fields (do we need a constant factor?)
     unsigned char tmp_product[(N_QUARTIC_POLY(_ID) + 1) / 2]; // could be better calculated with i4.. in poly.c
-    unsigned char tmp_summand[(_ID + 1) / 2];
+    unsigned char tmp_summand[(_ID + 2) / 2];
 
     int tmp_e[15]; //size is too big..
     int final_e[15];
@@ -75,27 +76,26 @@ quartic_batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA, co
     int tmp_o = 0;
     int final_o = 0;
 
-    int full_e_power2[15] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1};
+    int full_e_power2[15] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
     unsigned Aheight = Bheight;
     for (unsigned i = 0; i < Aheight * _ID; i++) {
         for (unsigned j = 0; j < Bwidth * _ID; j++) {
             for (unsigned k = 0; k < Bheight * _ID; k += _ID) { //skip over same ID-Fields
                 if (i < k) continue;
+//                polynomial_print(_ID, 15, bC, full_e_power2, "L1_Q2 inside: ");
+
                 polynomial_mul(2, &btriA[size_batch * (idx_of_trimat(k, i, Aheight))], e_ID2, 2,
                                &B[j * size_Bcolvec + k], e_ID2, &tmp_o, tmp_product, tmp_e);
 
-                polynomial_print(_ID, 2, bC, full_e_power2, "inside : L1_Q2: ");
-                polynomial_print(_ID, tmp_o, tmp_product, tmp_e, "tmp_prod: ");
+                memcpy(tmp_summand, bC, (_ID + 2) / 2);
 
-                memcpy(tmp_summand, bC, (_ID + 1) / 2);
+                polynomial_add(tmp_o, tmp_product, tmp_e, _ID + 1, tmp_summand, full_e_power2, &final_o, bC, final_e);
 
-                polynomial_add(tmp_o, tmp_product, tmp_e, _ID, tmp_summand, full_e_power2, &final_o, bC, final_e);
-
-                polynomial_print(_ID, final_o, bC, final_e, "inside (AFTER ADD): L1_Q2: ");
+//                polynomial_print(_ID, 15, bC, full_e_power2, "L1_Q2 inside (AfTER ADD): ");
 //                gf16v_madd( bC , & btriA[ size_batch*(idx_of_trimat(k,i,Aheight)) ] , gf16v_get_ele( &B[j*size_Bcolvec] , k ) , size_batch );
             }
-            bC += size_batch;
+            bC += size_batch; //TODO: check pointer-arithmetic in for-loops
         }
     }
 }
