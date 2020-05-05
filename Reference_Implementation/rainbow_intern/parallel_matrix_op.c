@@ -87,13 +87,14 @@ quartic_batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA, co
                 if (k < i) continue;
                 for (unsigned l = 0; l < size_batch; l++) {
                     //the inner loop of gf16vmadd
+                    //TODO: STEP checken
                     polynomial_mul(2, &btriA[(k - i) * size_batch * l], e_ID2, 2, &B[j * size_Bcolvec + k],
                                    e_ID2, &tmp_o, tmp_product, tmp_e);
 
                     memcpy(tmp_summand, bC, (_ID + 2) / 2);
-                    //TODO: Step zu groß, muss l für genauen offset in bC übergeben (7,5 is ne schlechte Zahl)
+
                     polynomial_add(tmp_o, tmp_product, tmp_e, _ID + 1, tmp_summand, full_e_power2, &final_o,
-                                   bC + (l * N_QUARTIC_POLY(_ID)), final_e);
+                                   bC, (l * N_QUARTIC_POLY(_ID)), final_e);
                 }
             }
             bC += size_batch + N_QUARTIC_POLY(_ID); //TODO: check pointer-arithmetic in for-loops

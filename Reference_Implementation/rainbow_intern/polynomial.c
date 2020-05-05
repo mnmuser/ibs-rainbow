@@ -1288,7 +1288,7 @@ void perm_check1(int n, int p[])
 /******************************************************************************/
 
 void polynomial_add(int o1, unsigned char c1[], int e1[], int o2, unsigned char c2[],
-                    int e2[], int *o, unsigned char c[], int e[])
+                    int e2[], int *o, unsigned char c[], unsigned offset, int e[])
 
 /******************************************************************************/
 /*
@@ -1334,7 +1334,7 @@ void polynomial_add(int o1, unsigned char c1[], int e1[], int o2, unsigned char 
 */
 {
     *o = o1 + o2;
-    r8vec_concatenate(o1, c1, o2, c2, c);
+    r8vec_concatenate(o1, c1, o2, c2, c, offset);
     i4vec_concatenate(o1, e1, o2, e2, e);
 
     polynomial_sort(*o, c, e);
@@ -1344,7 +1344,7 @@ void polynomial_add(int o1, unsigned char c1[], int e1[], int o2, unsigned char 
 /******************************************************************************/
 
 void polynomial_axpy(double s, int o1, double c1[], int e1[], int o2,
-                     double c2[], int e2[], int *o, double c[], int e[])
+                     double c2[], int e2[], int *o, double c[], unsigned offset, int e[])
 
 /******************************************************************************/
 /*
@@ -1410,7 +1410,7 @@ void polynomial_axpy(double s, int o1, double c1[], int e1[], int o2,
         sc1[i] = s * c1[i];
     }
 
-    r8vec_concatenate(o1, sc1, o2, c2, c3);
+    r8vec_concatenate(o1, sc1, o2, c2, c3, offset);
     i4vec_concatenate(o1, e1, o2, e2, e3);
 
     polynomial_sort(o3, c3, e3);
@@ -1419,8 +1419,6 @@ void polynomial_axpy(double s, int o1, double c1[], int e1[], int o2,
     free(c3);
     free(e3);
     free(sc1);
-
-    return;
 }
 
 /******************************************************************************/
@@ -1900,7 +1898,7 @@ double *polynomial_value(int m, int o, double c[], int e[], int nx,
 
 /******************************************************************************/
 
-void r8vec_concatenate(int n1, unsigned char a[], int n2, unsigned char b[], unsigned char c[])
+void r8vec_concatenate(int n1, unsigned char a[], int n2, unsigned char b[], unsigned char c[], unsigned offset)
 
 /******************************************************************************/
 /*
@@ -1940,11 +1938,11 @@ void r8vec_concatenate(int n1, unsigned char a[], int n2, unsigned char b[], uns
     int i;
 
     for (i = 0; i < n1; i++) {
-        gf16v_set_ele(c, i, gf16v_get_ele(a, i));
+        gf16v_set_ele(c, i + offset, gf16v_get_ele(a, i));
 //        c[i] = a[i];
     }
     for (i = 0; i < n2; i++) {
-        gf16v_set_ele(c, n1 + i, gf16v_get_ele(b, i));
+        gf16v_set_ele(c, n1 + i + offset, gf16v_get_ele(b, i));
 //        c[n1 + i] = b[i];
     }
 }
