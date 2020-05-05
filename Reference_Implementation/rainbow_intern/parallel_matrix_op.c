@@ -38,6 +38,7 @@ void UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsigned Awi
 
 /////////////////  Section: matrix multiplications  ///////////////////////////////
 
+/// Q2, F1,  T1, _V1, _V1_BYTE, _O1, _O1_BYTE
 void batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA,
                             const unsigned char *B, unsigned Bheight, unsigned size_Bcolvec, unsigned Bwidth,
                             unsigned size_batch) {
@@ -65,7 +66,6 @@ void
 quartic_batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA, const unsigned char *B, unsigned Bheight,
                                unsigned size_Bcolvec, unsigned Bwidth,
                                unsigned size_batch) {
-    size_batch *= N_QUARTIC_POLY(_ID);
     int e_ID2[2] = {2, 3}; // the structure of the sk-fields (do we need a constant factor?)
     unsigned char tmp_product[(N_QUARTIC_POLY(_ID) + 1) / 2]; // could be better calculated with i4.. in poly.c
     unsigned char tmp_summand[(_ID + 2) / 2];
@@ -76,27 +76,29 @@ quartic_batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA, co
     int tmp_o = 0;
     int final_o = 0;
 
+    //#define e_standard(n) (n+1) -> mal ersetzen
     int full_e_power2[15] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
-    unsigned Aheight = Bheight;
-    for (unsigned i = 0; i < Aheight * _ID; i++) {
-        for (unsigned j = 0; j < Bwidth * _ID; j++) {
+    unsigned Awidth = Bheight;
+    unsigned Aheight = Awidth * _ID; //TODO: fix this multiply better
+    for (unsigned i = 0; i < Aheight; i += _ID) {
+        for (unsigned j = 0; j < Bwidth; j++) {
             for (unsigned k = 0; k < Bheight * _ID; k += _ID) { //skip over same ID-Fields
-                if (i < k) continue;
-//                polynomial_print(_ID, 15, bC, full_e_power2, "L1_Q2 inside: ");
+                if (k < i) continue;
+                for (unsigned l = 0; l < size_batch; l++) {
+                    //the inner loop of gf16vmadd
+                    polynomial_mul(2, &btriA[(k - i) * size_batch * l], e_ID2, 2, &B[j * size_Bcolvec + k],
+                                   e_ID2, &tmp_o, tmp_product, tmp_e);
 
-                polynomial_mul(2, &btriA[size_batch * (idx_of_trimat(k, i, Aheight))], e_ID2, 2,
-                               &B[j * size_Bcolvec + k], e_ID2, &tmp_o, tmp_product, tmp_e);
-
-                memcpy(tmp_summand, bC, (_ID + 2) / 2);
-
-                polynomial_add(tmp_o, tmp_product, tmp_e, _ID + 1, tmp_summand, full_e_power2, &final_o, bC, final_e);
-
-//                polynomial_print(_ID, 15, bC, full_e_power2, "L1_Q2 inside (AfTER ADD): ");
-//                gf16v_madd( bC , & btriA[ size_batch*(idx_of_trimat(k,i,Aheight)) ] , gf16v_get_ele( &B[j*size_Bcolvec] , k ) , size_batch );
+                    memcpy(tmp_summand, bC, (_ID + 2) / 2);
+                    //TODO: Step zu groß, muss l für genauen offset in bC übergeben (7,5 is ne schlechte Zahl)
+                    polynomial_add(tmp_o, tmp_product, tmp_e, _ID + 1, tmp_summand, full_e_power2, &final_o,
+                                   bC + (l * N_QUARTIC_POLY(_ID)), final_e);
+                }
             }
-            bC += size_batch; //TODO: check pointer-arithmetic in for-loops
+            bC += size_batch + N_QUARTIC_POLY(_ID); //TODO: check pointer-arithmetic in for-loops
         }
+        btriA += (Aheight - i) * size_batch;
     }
 }
 

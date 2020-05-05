@@ -6,6 +6,7 @@
 #include "polynomial.h"
 #include "rainbow_blas.h"
 
+
 /*
  * Code from John Burkhardt, GNU LGPL licensed.
  * https://people.sc.fsu.edu/~jburkardt/c_src/polynomial/polynomial.html
