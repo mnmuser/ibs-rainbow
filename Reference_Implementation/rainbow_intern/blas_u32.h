@@ -83,7 +83,8 @@ _gf16v_madd_u32(uint8_t *accu_c, const uint8_t *a, uint8_t gf16_b, unsigned _num
     uint32_t *c_u32 = (uint32_t *) accu_c; // c_u32 points to accu_c
     const uint32_t *a_u32 = (const uint32_t *) a; // a-u32 points to a
     for (unsigned i = 0; i < n_u32; i++) {
-        c_u32[i] ^= gf16v_mul_u32(a_u32[i], gf16_b);
+        c_u32[i] ^= gf16v_mul_u32(a_u32[i],
+                                  gf16_b); /// GF16mul: hier wird gleich auf u32 (also 4 byte) operiert, aber schon gf16; gf16_b hat nur 4 bit
     }
     union tmp_32 {
         uint8_t u8[4];

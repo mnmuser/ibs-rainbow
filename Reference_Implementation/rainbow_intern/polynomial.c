@@ -1573,7 +1573,7 @@ void polynomial_dif(int m, int o1, double c1[], int e1[], int dif[],
 
 /******************************************************************************/
 
-void polynomial_mul(int o1, const unsigned char c1[], int e1[], int o2, const unsigned char c2[],
+void polynomial_mul(int o1, const unsigned char c1[], int e1[], int o2, const unsigned char c2[], unsigned c2_offset,
                     int e2[], int *o, unsigned char c[], int e[])
 
 /******************************************************************************/
@@ -1637,7 +1637,7 @@ void polynomial_mul(int o1, const unsigned char c1[], int e1[], int o2, const un
             //c[*o] = c1[i] * c2[j]; -> adapt for GF16:
 
             unsigned char factor_a = gf16v_get_ele(c1, i);
-            unsigned char factor_b = gf16v_get_ele(c2, j);
+            unsigned char factor_b = gf16v_get_ele(c2, j + k);
             unsigned char tmp_product = gf16_mul(factor_a, factor_b);
 
             gf16v_set_ele(c, *o, tmp_product);

@@ -80,24 +80,26 @@ quartic_batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA, co
     int full_e_power2[15] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
     unsigned Awidth = Bheight;
-    unsigned Aheight = Awidth * _ID; //TODO: fix this multiply better
-    for (unsigned i = 0; i < Aheight; i += _ID) {
+    unsigned Aheight = Awidth;
+    for (unsigned i = 0; i < Aheight; i++) {
+        i *= _ID;//skip over same ID-Fields
         for (unsigned j = 0; j < Bwidth; j++) {
-            for (unsigned k = 0; k < Bheight * _ID; k += _ID) { //skip over same ID-Fields
+            for (unsigned k = 0; k < Bheight; k++) {
+                k *= _ID;//skip over same ID-Fields
                 if (k < i) continue;
                 for (unsigned l = 0; l < size_batch; l++) {
                     //the inner loop of gf16vmadd
-                    //TODO: STEP checken
-                    polynomial_mul(2, &btriA[(k - i) * size_batch * l], e_ID2, 2, &B[j * size_Bcolvec + k],
+                    polynomial_mul(2, &btriA[(k - i) * size_batch * l], e_ID2, 2, &B[j * size_Bcolvec], k,
                                    e_ID2, &tmp_o, tmp_product, tmp_e);
 
                     memcpy(tmp_summand, bC, (_ID + 2) / 2);
 
                     polynomial_add(tmp_o, tmp_product, tmp_e, _ID + 1, tmp_summand, full_e_power2, &final_o,
                                    bC, (l * N_QUARTIC_POLY(_ID)), final_e);
+                    //TODO: STEP should be okay; maybe check later
                 }
             }
-            bC += size_batch + N_QUARTIC_POLY(_ID); //TODO: check pointer-arithmetic in for-loops
+            bC += size_batch + N_QUARTIC_POLY(_ID);
         }
         btriA += (Aheight - i) * size_batch;
     }

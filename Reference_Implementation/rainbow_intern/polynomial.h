@@ -42,7 +42,7 @@ void polynomial_compress(int o1, unsigned char c1[], int e1[], int *o2, unsigned
 void polynomial_dif(int m, int o1, double c1[], int e1[], int dif[],
                     int *o2, double c2[], int e2[]);
 
-void polynomial_mul(int o1, const unsigned char c1[], int e1[], int o2, const unsigned char c2[],
+void polynomial_mul(int o1, const unsigned char c1[], int e1[], int o2, const unsigned char c2[], unsigned c2_offset,
                     int e2[], int *o, unsigned char c[], int e[]);
 
 void polynomial_print(int m, int o, const unsigned char c[], int e[], char *title);
