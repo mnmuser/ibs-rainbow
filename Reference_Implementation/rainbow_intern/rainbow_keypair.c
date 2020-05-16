@@ -182,14 +182,14 @@ void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed, const u
 
     // set up a temporary structure ext_cpk_t for calculating public key.
     ext_cpk_t *pk = (ext_cpk_t *) aligned_alloc(32, sizeof(ext_cpk_t));
-    calculate_Q_from_F(pk, sk);   //TODO! compute the public key in ext_cpk_t format
+    calculate_Q_from_F(pk, sk);
 
-    /// at this point P = F o T ; S is still missing
+    /// at this point P = F o T ; S is still missing and P/Q is cubic on ID
 
 //    printf("%lu", sizeof(*pk));
 //    memcpy(rpk, pk, sizeof(*pk));
 
-    calculate_t4(sk->t4, sk->t1, sk->t3);
+    calculate_t4(sk->t4, sk->t1, sk->t3); // t4 = t4 + t1*t3
 
     obsfucate_l1_polys(pk->l1_Q1, pk->l2_Q1, N_TRIANGLE_TERMS(_V1), sk->s1); // -> integrate S :)
     obsfucate_l1_polys(pk->l1_Q2, pk->l2_Q2, _V1 * _O1, sk->s1);

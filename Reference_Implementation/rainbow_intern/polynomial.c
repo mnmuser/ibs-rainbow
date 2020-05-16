@@ -1567,13 +1567,12 @@ void polynomial_dif(int m, int o1, double c1[], int e1[], int dif[],
     polynomial_sort(*o2, c2, e2);
 
     polynomial_compress(*o2, c2, e2, o2, c2, e2);
-
-    return;
 }
 
 /******************************************************************************/
 
-void polynomial_mul(int o1, const unsigned char c1[], int e1[], int o2, const unsigned char c2[], unsigned c2_offset,
+void polynomial_mul(int o1, const unsigned char c1[], unsigned c1_offset, int e1[], int o2, const unsigned char c2[],
+                    unsigned c2_offset,
                     int e2[], int *o, unsigned char c[], int e[])
 
 /******************************************************************************/
@@ -1636,8 +1635,8 @@ void polynomial_mul(int o1, const unsigned char c1[], int e1[], int o2, const un
         for (i = 0; i < o1; i++) {
             //c[*o] = c1[i] * c2[j]; -> adapt for GF16:
 
-            unsigned char factor_a = gf16v_get_ele(c1, i);
-            unsigned char factor_b = gf16v_get_ele(c2, j + k);
+            unsigned char factor_a = gf16v_get_ele(c1, i + c1_offset);
+            unsigned char factor_b = gf16v_get_ele(c2, j + c2_offset);
             unsigned char tmp_product = gf16_mul(factor_a, factor_b);
 
             gf16v_set_ele(c, *o, tmp_product);
@@ -1662,7 +1661,7 @@ void polynomial_mul(int o1, const unsigned char c1[], int e1[], int o2, const un
 
 /******************************************************************************/
 
-void polynomial_print(int m, int o, const unsigned char c[], int e[], char *title)
+void polynomial_print(int m, int o, const unsigned char c[], unsigned gf16_offset, int e[], char *title)
 
 /******************************************************************************/
 /*
@@ -1707,12 +1706,12 @@ void polynomial_print(int m, int o, const unsigned char c[], int e[], char *titl
     } else {
         for (j = 0; j < o; j++) {
             printf("    ");
-            if (gf16v_get_ele(c, j) < 0) {
+            if (gf16v_get_ele(c, j + gf16_offset) < 0) {
                 printf("- ");
             } else {
                 printf("+ ");
             }
-            printf("%hhu * x^(", gf16v_get_ele(c, j));
+            printf("%hhu * x^(", gf16v_get_ele(c, j + gf16_offset));
 
             f = mono_unrank_grlex(m, e[j]);
             for (i = 0; i < m; i++) {
