@@ -112,12 +112,13 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const sk_t *sk) {
 
     int full_e_power2[15] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
-    polynomial_print(_ID, 15, cpk->l1_Q2, 0, full_e_power2, "L1_Q2 before: ");
+    polynomial_print(3, cpk->l1_Q2, 0, full_e_power2, "L1_Q2 before: ");
+    polynomial_print(3, cpk->l1_Q2, 15, full_e_power2, "L1_Q2 before: ");
 
-    quartic_batch_trimat_madd(cpk->l1_Q2, sk->l1_F1, sk->t1, _V1, _V1_BYTE, _O1, _O1_BYTE); // F1*T1 + F2
+    quartic_batch_trimat_madd(cpk->l1_Q2, sk->l1_F1, sk->t1, _V1, _V1_BYTE, _O1, _O1_BYTE); // Q2 += F1*T1
 
-    polynomial_print(_ID, 15, cpk->l1_Q2, 0, full_e_power2, "L1_Q2: ");
-
+    polynomial_print(6, cpk->l1_Q2, 0, full_e_power2, "L1_Q2: ");
+    polynomial_print(6, cpk->l1_Q2, 15, full_e_power2, "L1_Q2: ");
 
     set_quartic_zero(cpk->l1_Q3, _O1_BYTE * _V1 * _O2);
     set_quartic_zero(cpk->l1_Q5, _O1_BYTE * N_TRIANGLE_TERMS(_O1));
@@ -383,12 +384,12 @@ void calculate_Q_from_F_cyclic( cpk_t * Qs, const sk_t * Fs , const sk_t * Ts )
     calculate_Q_from_F_cyclic_impl(Qs, Fs, Ts);
 }
 
-void write_gf16_to_quartic(unsigned char *q, const unsigned char *f, const unsigned long length_f) {
+void write_gf16_to_quartic(unsigned char *q, const unsigned char *f, unsigned long length_f) {
     set_quartic_zero(q, length_f); // to have a clean polynom
     unsigned quartic_length = N_QUARTIC_POLY(_ID);
     for (unsigned x = 0; x < length_f * 2; x++) {
         for (unsigned i = 0; i < _ID; i++) {
-            unsigned char gf16_x = gf16v_get_ele(f, i + x);
+            unsigned char gf16_x = gf16v_get_ele(f, i + x * _ID);
             gf16v_set_ele(q, i + (quartic_length * x) + 1, gf16_x); // plus one, to set not into the constant field
 //            memcpy(&q[quartic_length * x +1], &f[x], _ID);
         }
@@ -398,5 +399,11 @@ void write_gf16_to_quartic(unsigned char *q, const unsigned char *f, const unsig
 
 void set_quartic_zero(unsigned char *q, const unsigned length) {
     memset(q, 0, length * N_QUARTIC_POLY(_ID));
+}
+
+void gf16_lin_poly_copy(unsigned char *dest, const unsigned char *src, unsigned char gf16_offset_src) {
+    for (unsigned i = 0; i < _ID + 1; i++) { // +1 because of the constant factor in the polynom
+        gf16v_set_ele(dest, i, gf16v_get_ele(src, gf16_offset_src + i));
+    }
 }
 

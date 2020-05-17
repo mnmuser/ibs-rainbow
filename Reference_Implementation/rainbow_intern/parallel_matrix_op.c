@@ -15,6 +15,7 @@
 #include "polynomial.h"
 #include "stdio.h"
 #include "string.h"
+#include "rainbow_keypair_computation.h"
 
 
 ////////////////    Section: triangle matrix <-> rectangle matrix   ///////////////////////////////////
@@ -66,6 +67,7 @@ void
 quartic_batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA, const unsigned char *B, unsigned Bheight,
                                unsigned size_Bcolvec, unsigned Bwidth,
                                unsigned size_batch) {
+
     int e_ID2[2] = {2, 3}; // the structure of the sk-fields (do we need a constant factor?)
     unsigned char tmp_product[(N_QUARTIC_POLY(_ID) + 1) / 2]; // could be better calculated with i4.. in poly.c
     unsigned char tmp_summand[(_ID + 2) / 2];
@@ -82,31 +84,26 @@ quartic_batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA, co
     unsigned Awidth = Bheight;
     unsigned Aheight = Awidth;
     for (unsigned i = 0; i < Aheight; i++) {
-        i *= _ID;//skip over same ID-Fields
+        //i *= _ID;//skip over same ID-Fields
         for (unsigned j = 0; j < Bwidth; j++) {
             for (unsigned k = 0; k < Bheight; k++) {
-                k *= _ID;//skip over same ID-Fields
+                //k *= _ID;//skip over same ID-Fields
                 if (k < i) continue;
                 for (unsigned l = 0; l < size_batch; l++) {
                     //the inner loop of gf16vmadd
-                    polynomial_print(_ID, 2, &btriA[(k - i) * size_batch], l, e_ID2, "c1: ");
-                    polynomial_print(_ID, 2, &B[j * size_Bcolvec], k, e_ID2, "c2: ");
+                    polynomial_mul(2, &btriA[(k - i) * _ID * size_batch], l, e_ID2, 2, &B[j * size_Bcolvec], k * _ID,
+                                   e_ID2, &tmp_o, tmp_product, 0, tmp_e);
 
-                    polynomial_mul(2, &btriA[(k - i) * size_batch], l, e_ID2, 2, &B[j * size_Bcolvec], k,
-                                   e_ID2, &tmp_o, tmp_product, tmp_e);
-
-                    memcpy(tmp_summand, bC, (_ID + 2) / 2);
-
-                    polynomial_print(_ID, tmp_o, tmp_product, 0, tmp_e, "tmp: ");
+                    gf16_lin_poly_copy(tmp_summand, bC, (l * N_QUARTIC_POLY(_ID)));
 
                     polynomial_add(tmp_o, tmp_product, tmp_e, _ID + 1, tmp_summand, full_e_power2, &final_o,
                                    bC, (l * N_QUARTIC_POLY(_ID)), final_e);
-                    //TODO: STEP should be okay; maybe check later
                 }
             }
-            bC += size_batch + N_QUARTIC_POLY(_ID);
+            bC += size_batch * N_QUARTIC_POLY(_ID);
         }
-        btriA += (Aheight - i) * size_batch;
+        btriA += (Aheight - i) * _ID * size_batch;
+        //TODO: we have to get to all 245760 bytes of l1_Q2
     }
 }
 
@@ -198,26 +195,45 @@ void batch_2trimat_madd_gf256( unsigned char * bC , const unsigned char* btriA ,
 
 
 void batch_matTr_madd_gf16( unsigned char * bC , const unsigned char* A_to_tr , unsigned Aheight, unsigned size_Acolvec, unsigned Awidth,
-        const unsigned char* bB, unsigned Bwidth, unsigned size_batch )
-{
+        const unsigned char* bB, unsigned Bwidth, unsigned size_batch ) {
     unsigned Atr_height = Awidth;
-    unsigned Atr_width  = Aheight;
-    for(unsigned i=0;i<Atr_height;i++) {
-        for(unsigned j=0;j<Atr_width;j++) {
-            gf16v_madd( bC , & bB[ j*Bwidth*size_batch ] , gf16v_get_ele( &A_to_tr[size_Acolvec*i] , j ) , size_batch*Bwidth );
+    unsigned Atr_width = Aheight;
+    for (unsigned i = 0; i < Atr_height; i++) {
+        for (unsigned j = 0; j < Atr_width; j++) {
+            gf16v_madd(bC, &bB[j * Bwidth * size_batch], gf16v_get_ele(&A_to_tr[size_Acolvec * i], j),
+                       size_batch * Bwidth);
         }
-        bC += size_batch*Bwidth;
+        bC += size_batch * Bwidth;
     }
 }
 
-void batch_matTr_madd_gf256( unsigned char * bC , const unsigned char* A_to_tr , unsigned Aheight, unsigned size_Acolvec, unsigned Awidth,
-        const unsigned char* bB, unsigned Bwidth, unsigned size_batch )
-{
+void
+quartic_batch_matTr_madd_gf16(unsigned char *bC, const unsigned char *A_to_tr, unsigned Aheight, unsigned size_Acolvec,
+                              unsigned Awidth,
+                              const unsigned char *bB, unsigned Bwidth, unsigned size_batch) {
     unsigned Atr_height = Awidth;
-    unsigned Atr_width  = Aheight;
-    for(unsigned i=0;i<Atr_height;i++) {
-        for(unsigned j=0;j<Atr_width;j++) {
-            gf256v_madd( bC , & bB[ j*Bwidth*size_batch ] , gf256v_get_ele( &A_to_tr[size_Acolvec*i] , j ) , size_batch*Bwidth );
+    unsigned Atr_width = Aheight;
+    for (unsigned i = 0; i < Atr_height; i++) {
+        for (unsigned j = 0; j < Atr_width; j++) {
+            for (unsigned k = 0; k < size_batch * Bwidth; k++) {
+                //polynomial_mul(_ID,A_to_tr,k,3,6,)...
+            }
+            gf16v_madd(bC, &bB[j * Bwidth * size_batch], gf16v_get_ele(&A_to_tr[size_Acolvec * i], j),
+                       size_batch * Bwidth);
+        }
+        bC += size_batch * Bwidth;
+    }
+}
+
+void batch_matTr_madd_gf256(unsigned char *bC, const unsigned char *A_to_tr, unsigned Aheight, unsigned size_Acolvec,
+                            unsigned Awidth,
+                            const unsigned char *bB, unsigned Bwidth, unsigned size_batch) {
+    unsigned Atr_height = Awidth;
+    unsigned Atr_width = Aheight;
+    for (unsigned i = 0; i < Atr_height; i++) {
+        for (unsigned j = 0; j < Atr_width; j++) {
+            gf256v_madd(bC, &bB[j * Bwidth * size_batch], gf256v_get_ele(&A_to_tr[size_Acolvec * i], j),
+                        size_batch * Bwidth);
         }
         bC += size_batch*Bwidth;
     }

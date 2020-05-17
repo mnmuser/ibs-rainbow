@@ -1337,8 +1337,8 @@ void polynomial_add(int o1, unsigned char c1[], int e1[], int o2, unsigned char 
     r8vec_concatenate(o1, c1, o2, c2, c, offset);
     i4vec_concatenate(o1, e1, o2, e2, e);
 
-    polynomial_sort(*o, c, e);
-    polynomial_compress(*o, c, e, o, c, e);
+    polynomial_sort(*o, c, offset, e);
+    polynomial_compress(*o, c, offset, e, o, c, offset, e);
 }
 
 /******************************************************************************/
@@ -1413,8 +1413,8 @@ void polynomial_axpy(double s, int o1, double c1[], int e1[], int o2,
     r8vec_concatenate(o1, sc1, o2, c2, c3, offset);
     i4vec_concatenate(o1, e1, o2, e2, e3);
 
-    polynomial_sort(o3, c3, e3);
-    polynomial_compress(o3, c3, e3, o, c, e);
+    polynomial_sort(o3, c3, 0, e3);
+    polynomial_compress(o3, c3, 0, e3, o, c, 0, e);
 
     free(c3);
     free(e3);
@@ -1423,7 +1423,8 @@ void polynomial_axpy(double s, int o1, double c1[], int e1[], int o2,
 
 /******************************************************************************/
 
-void polynomial_compress(int o1, unsigned char c1[], int e1[], int *o2, unsigned char c2[],
+void polynomial_compress(int o1, unsigned char c1[], unsigned c1_offset, int e1[], int *o2, unsigned char c2[],
+                         unsigned c2_offset,
                          int e2[])
 
 /******************************************************************************/
@@ -1481,16 +1482,16 @@ void polynomial_compress(int o1, unsigned char c1[], int e1[], int *o2, unsigned
 
         if (0 == put) {
             put = put + 1;
-            gf16v_set_ele(c2, put - 1, gf16v_get_ele(c1, get - 1));
+            gf16v_set_ele(c2, put - 1 + c2_offset, gf16v_get_ele(c1, get - 1 + c1_offset));
             e2[put - 1] = e1[get - 1];
         } else {
             if (e2[put - 1] == e1[get - 1]) {
-                unsigned char tmp = gf16v_get_ele(c2, put - 1) + gf16v_get_ele(c1, get - 1);
+                unsigned char tmp = gf16v_get_ele(c2, put - 1 + c2_offset) + gf16v_get_ele(c1, get - 1 + c1_offset);
                 tmp %= 16; //TODO: check
                 gf16v_set_ele(c2, put - 1, tmp);
             } else {
                 put = put + 1;
-                gf16v_set_ele(c2, put - 1, gf16v_get_ele(c1, get - 1));
+                gf16v_set_ele(c2, put - 1 + c2_offset, gf16v_get_ele(c1, get - 1 + c1_offset));
                 e2[put - 1] = e1[get - 1];
             }
         }
@@ -1564,16 +1565,16 @@ void polynomial_dif(int m, int o1, double c1[], int e1[], int dif[],
         free(f1);
     }
 
-    polynomial_sort(*o2, c2, e2);
+    polynomial_sort(*o2, c2, 0, e2);
 
-    polynomial_compress(*o2, c2, e2, o2, c2, e2);
+    polynomial_compress(*o2, c2, 0, e2, o2, c2, 0, e2); //TODO
 }
 
 /******************************************************************************/
 
 void polynomial_mul(int o1, const unsigned char c1[], unsigned c1_offset, int e1[], int o2, const unsigned char c2[],
                     unsigned c2_offset,
-                    int e2[], int *o, unsigned char c[], int e[])
+                    int e2[], int *o, unsigned char c[], unsigned c_offset, int e[])
 
 /******************************************************************************/
 /*
@@ -1639,7 +1640,7 @@ void polynomial_mul(int o1, const unsigned char c1[], unsigned c1_offset, int e1
             unsigned char factor_b = gf16v_get_ele(c2, j + c2_offset);
             unsigned char tmp_product = gf16_mul(factor_a, factor_b);
 
-            gf16v_set_ele(c, *o, tmp_product);
+            gf16v_set_ele(c, *o + c_offset, tmp_product);
 
             f1 = mono_unrank_grlex(m, e1[i]);
             f2 = mono_unrank_grlex(m, e2[j]);
@@ -1655,13 +1656,13 @@ void polynomial_mul(int o1, const unsigned char c1[], unsigned c1_offset, int e1
 
     free(f);
 
-    polynomial_sort(*o, c, e);
-    polynomial_compress(*o, c, e, o, c, e);
+    polynomial_sort(*o, c, c_offset, e);
+    polynomial_compress(*o, c, c_offset, e, o, c, c_offset, e);
 }
 
 /******************************************************************************/
 
-void polynomial_print(int m, int o, const unsigned char c[], unsigned gf16_offset, int e[], char *title)
+void polynomial_print(int o, const unsigned char c[], unsigned gf16_offset, int e[], char *title)
 
 /******************************************************************************/
 /*
@@ -1700,6 +1701,8 @@ void polynomial_print(int m, int o, const unsigned char c[], unsigned gf16_offse
     int j;
 
     printf("%s\n", title);
+
+    int m = _ID;
 
     if (o == 0) {
         printf("      0.\n");
@@ -1773,13 +1776,11 @@ void polynomial_scale(double s, int m, int o, double c[], int e[])
     for (i = 0; i < o; i++) {
         c[i] = c[i] * s;
     }
-
-    return;
 }
 
 /******************************************************************************/
 
-void polynomial_sort(int o, unsigned char c[], int e[])
+void polynomial_sort(int o, unsigned char c[], unsigned offset, int e[])
 
 /******************************************************************************/
 /*
@@ -1819,7 +1820,7 @@ void polynomial_sort(int o, unsigned char c[], int e[])
     indx = i4vec_sort_heap_index_a(o, e);
 
     i4vec_permute(o, indx, e);
-    r8vec_permute(o, indx, c);
+    r8vec_permute(o, indx, c, offset);
 
     free(indx);
 }
@@ -1948,7 +1949,7 @@ void r8vec_concatenate(int n1, unsigned char a[], int n2, unsigned char b[], uns
 
 /******************************************************************************/
 
-void r8vec_permute(int n, int p[], unsigned char a[])
+void r8vec_permute(int n, int p[], unsigned char a[], unsigned offset)
 
 /******************************************************************************/
 /*
@@ -2025,7 +2026,7 @@ void r8vec_permute(int n, int p[], unsigned char a[])
             p[istart - 1] = -p[istart - 1];
             continue;
         } else {
-            a_temp = gf16v_get_ele(a, istart - 1);
+            a_temp = gf16v_get_ele(a, istart - 1 + offset);
             iget = istart;
 /*
   Copy the new value into the vacated entry.
@@ -2045,10 +2046,10 @@ void r8vec_permute(int n, int p[], unsigned char a[])
                 }
 
                 if (iget == istart) {
-                    gf16v_set_ele(a, iput - 1, a_temp);
+                    gf16v_set_ele(a, iput - 1 + offset, a_temp);
                     break;
                 }
-                gf16v_set_ele(a, iput - 1, gf16v_get_ele(a, iget - 1));
+                gf16v_set_ele(a, iput - 1 + offset, gf16v_get_ele(a, iget - 1 + offset));
             }
         }
     }
