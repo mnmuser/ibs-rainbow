@@ -89,7 +89,7 @@ quartic_batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA, co
             for (unsigned k = 0; k < Bheight; k++) {
                 //k *= _ID;//skip over same ID-Fields
                 if (k < i) continue;
-                for (unsigned l = 0; l < size_batch; l++) {
+                for (unsigned l = 0; l < size_batch * 2; l++) { // *2 for gf16 (size is in byte)
                     //the inner loop of gf16vmadd
                     polynomial_mul(2, &btriA[(k - i) * _ID * size_batch], l, e_ID2, 2, &B[j * size_Bcolvec], k * _ID,
                                    e_ID2, &tmp_o, tmp_product, 0, tmp_e);
@@ -100,10 +100,9 @@ quartic_batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA, co
                                    bC, (l * N_QUARTIC_POLY(_ID)), final_e);
                 }
             }
-            bC += size_batch * N_QUARTIC_POLY(_ID);
+            bC += (size_batch * N_QUARTIC_POLY(_ID));
         }
         btriA += (Aheight - i) * _ID * size_batch;
-        //TODO: we have to get to all 245760 bytes of l1_Q2
     }
 }
 

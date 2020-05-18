@@ -83,7 +83,7 @@ void write_gf16_to_quartic(unsigned char *q, const unsigned char *f, unsigned lo
 
 void set_quartic_zero(unsigned char *q, const unsigned length);
 
-void gf16_lin_poly_copy(unsigned char *dest, const unsigned char *src, unsigned char gf16_offset_src);
+void gf16_lin_poly_copy(unsigned char *dest, const unsigned char *src, unsigned gf16_offset_src);
 
 #ifdef  __cplusplus
 }
