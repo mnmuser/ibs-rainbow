@@ -24,7 +24,7 @@ SRCS_O_ND = $(subst $(PROJ_DIR)/,,$(SRCS_O))
 
 OBJ = $(SRCS_O_ND)
 
-EXE= rainbow-genkey rainbow-sign rainbow-verify PQCgenKAT_sign
+EXE= rainbow-genkey rainbow-sign rainbow-verify
 
 
 CSRC= $(wildcard *.c)
@@ -68,9 +68,6 @@ rainbow-sign: $(OBJ) rainbow-sign.o
 rainbow-verify: $(OBJ) rainbow-verify.o
 	$(LD) $(LDFLAGS) $(LIBPATH) -o $@ $^ $(LIBS)
 
-PQCgenKAT_sign: $(OBJ) PQCgenKAT_sign.o
-	$(LD) $(LDFLAGS) $(LIBPATH) -o $@ $^ $(LIBS)
-
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCPATH) -c $<
 
@@ -78,4 +75,4 @@ PQCgenKAT_sign: $(OBJ) PQCgenKAT_sign.o
 	$(CC) $(CFLAGS) $(INCPATH) -c $<
 
 clean:
-	rm *.o  rainbow-genkey rainbow-sign rainbow-verify PQCgenKAT_sign pk.txt sk.txt signature.txt || true;
+	rm *.o  rainbow-genkey rainbow-sign rainbow-verify pk.txt sk.txt signature.txt || true;
