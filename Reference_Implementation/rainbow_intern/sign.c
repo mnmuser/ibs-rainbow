@@ -26,11 +26,7 @@ crypto_sign_keypair(unsigned char *pk, unsigned char *sk)
 
 #if defined _RAINBOW_CLASSIC
 
-    //for testing ID
-
-    unsigned char test_id = 5;
-
-    generate_keypair((pk_t *) pk, (sk_t *) sk, sk_seed, &test_id);
+    generate_keypair((pk_t *) pk, (sk_t *) sk, sk_seed);
 
 
 #elif defined _RAINBOW_CYCLIC

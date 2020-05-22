@@ -6,7 +6,7 @@ CFLAGS= -O2 -std=c11 -Wall -Wextra -fno-omit-frame-pointer $(DFLAGS)
 INCPATH= -I/usr/local/include -I/opt/local/include -I/usr/include -I$(PROJ_DIR)
 LDFLAGS=
 LIBPATH= -L/usr/local/lib -L/opt/local/lib -L/usr/lib
-LIBS=    -lcrypto
+LIBS=    -lcrypto -lm
 
 
 PROJ_DIR = rainbow_intern
@@ -43,9 +43,9 @@ INCPATH+= -I/usr/local/opt/openssl@1.1/include/
 endif
 
 ifdef GPROF
-CFLAGS += -pg
-CXXFLAGS += -pg
-LDFLAGS += -pg
+	CFLAGS += -pg
+	CXXFLAGS += -pg
+	LDFLAGS += -pg
 endif
 
 .PHONY: all tests tables clean

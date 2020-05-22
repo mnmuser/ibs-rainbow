@@ -1,7 +1,5 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <math.h>
-#include <time.h>
 
 #include "polynomial.h"
 #include "rainbow_blas.h"
@@ -1339,86 +1337,6 @@ void polynomial_add(int o1, unsigned char c1[], int e1[], int o2, unsigned char 
 
     polynomial_sort(*o, c, offset, e);
     polynomial_compress(*o, c, offset, e, o, c, offset, e);
-}
-
-/******************************************************************************/
-
-void polynomial_axpy(double s, int o1, double c1[], int e1[], int o2,
-                     double c2[], int e2[], int *o, double c[], unsigned offset, int e[])
-
-/******************************************************************************/
-/*
-  Purpose:
-
-    POLYNOMIAL_AXPY adds a multiple of one polynomial to another.
-
-  Discussion:
-
-    P(X) = S * P1(X) + P2(X)
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    21 January 2014
-
-  Author:
-
-    John Burkardt
-
-  Parameters:
-
-    Input, double S, the multiplier for polynomial 1.
-
-    Input, int O1, the "order" of polynomial 1.
-
-    Input, double C1[O1], the coefficients of polynomial 1.
-
-    Input, int E1[O1], the indices of the exponents of 
-    polynomial 1.
-
-    Input, int O2, the "order" of polynomial 2.
-
-    Input, double C2[O2], the coefficients of polynomial 2.
-
-    Input, int E2[O2], the indices of the exponents of 
-    polynomial 2.
-
-    Output, int *O, the "order" of the polynomial sum.
-
-    Output, double C[*O], the coefficients of the polynomial sum.
-
-    Output, int E[*O], the indices of the exponents of 
-    the polynomial sum.
-*/
-{
-    double *c3;
-    int *e3;
-    int i;
-    int o3;
-    double *sc1;
-
-    o3 = o1 + o2;
-
-    c3 = (double *) malloc(o3 * sizeof(double));
-    e3 = (int *) malloc(o3 * sizeof(int));
-    sc1 = (double *) malloc(o1 * sizeof(double));
-
-    for (i = 0; i < o1; i++) {
-        sc1[i] = s * c1[i];
-    }
-
-    r8vec_concatenate(o1, sc1, o2, c2, c3, offset);
-    i4vec_concatenate(o1, e1, o2, e2, e3);
-
-    polynomial_sort(o3, c3, 0, e3);
-    polynomial_compress(o3, c3, 0, e3, o, c, 0, e);
-
-    free(c3);
-    free(e3);
-    free(sc1);
 }
 
 /******************************************************************************/

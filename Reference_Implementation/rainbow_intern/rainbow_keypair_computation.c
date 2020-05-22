@@ -136,6 +136,7 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const sk_t *sk) {
     unsigned char *tempQ = (unsigned char *) aligned_alloc(32, size_tempQ + 32);
 
     set_quartic_zero(tempQ, _O1_BYTE * _O1 * _O1);   // l1_Q5
+    //TODO: here we are
 
     batch_matTr_madd(tempQ, sk->t1, _V1, _V1_BYTE, _O1, cpk->l1_Q2, _O1, _O1_BYTE);  // t1_tr*(F1*T1 + F2)
     UpperTrianglize(cpk->l1_Q5, tempQ, _O1, _O1_BYTE);    // UT( ... )   // Q5

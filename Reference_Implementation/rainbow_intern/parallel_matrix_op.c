@@ -70,7 +70,7 @@ quartic_batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA, co
 
     int e_ID2[2] = {2, 3}; // the structure of the sk-fields (do we need a constant factor?)
     unsigned char tmp_product[(N_QUARTIC_POLY(_ID) + 1) / 2]; // could be better calculated with i4.. in poly.c
-    unsigned char tmp_summand[(_ID + 2) / 2];
+    unsigned char tmp_summand[(_ID + 2) / 2]; //GF16, round up, one extra field for constant
 
     int tmp_e[15]; //size is too big..
     int final_e[15];
@@ -98,6 +98,8 @@ quartic_batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA, co
 
                     polynomial_add(tmp_o, tmp_product, tmp_e, _ID + 1, tmp_summand, full_e_power2, &final_o,
                                    bC, (l * N_QUARTIC_POLY(_ID)), final_e);
+
+                    //TODO: test sometime, if all coefficients of A and B are used
                 }
             }
             bC += (size_batch * N_QUARTIC_POLY(_ID));

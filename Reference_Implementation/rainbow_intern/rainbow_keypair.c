@@ -176,7 +176,7 @@ void generate_secretkey(sk_t *sk, const unsigned char *sk_seed) {
 }
 
 
-void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed, const unsigned char *id) {
+void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed) {
 
     _generate_secretkey(sk, sk_seed);
 
