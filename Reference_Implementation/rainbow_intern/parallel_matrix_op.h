@@ -318,7 +318,13 @@ void batch_quad_recmat_eval_gf16( unsigned char * z, const unsigned char * y, un
 void batch_quad_recmat_eval_gf256( unsigned char * z, const unsigned char * y, unsigned dim_y,
         const unsigned char * mat, const unsigned char * x, unsigned dim_x , unsigned size_batch );
 
+void quartic_gf16v_madd(uint8_t *C, const uint8_t *A, unsigned A_pointer_index, const unsigned char *B,
+                        unsigned B_pointer_index, unsigned B_offset, unsigned size_batch, unsigned size_Bcolvec);
 
+void
+quartic_batch_matTr_madd_gf16(unsigned char *bC, const unsigned char *A_to_tr, unsigned Aheight, unsigned size_Acolvec,
+                              unsigned Awidth,
+                              const unsigned char *bB, unsigned Bwidth, unsigned size_batch);
 
 
 
