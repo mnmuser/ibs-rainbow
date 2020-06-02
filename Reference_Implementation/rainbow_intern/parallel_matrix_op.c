@@ -4,6 +4,7 @@
 ///  the standard implementations for functions in parallel_matrix_op.h
 ///
 
+#include <stdbool.h>
 #include "stdlib.h"
 
 #include "blas_comm.h"
@@ -188,7 +189,7 @@ quartic_batch_matTr_madd_gf16(unsigned char *bC, const unsigned char *A_to_tr, u
     unsigned Atr_width = Aheight;
     for (unsigned i = 0; i < Atr_height; i++) {
         for (unsigned j = 0; j < Atr_width; j++) {
-            quartic_gf16v_madd(bC, bB, j, A_to_tr, i, size_batch * Bwidth, size_Acolvec, j);
+            quartic_gf16v_madd2(bC, bB, j, A_to_tr, i, j, 0, size_batch * Bwidth, size_Acolvec);
             //gf16v_madd(bC, &bB[j * Bwidth * size_batch], gf16v_get_ele(&A_to_tr[size_Acolvec * i], j),size_batch * Bwidth);
         }
         bC += size_batch * Bwidth * N_QUARTIC_POLY(_ID);
@@ -387,7 +388,7 @@ void quartic_gf16v_madd(uint8_t *C, const uint8_t *A, unsigned A_pointer_index, 
                         unsigned B_pointer_index, unsigned B_offset, unsigned size_batch, unsigned size_Bcolvec) {
 
     ///SHOULD BE DONE BETTER (WIP)--///
-    int e_ID2[2] = {2, 3}; // the structure of the sk-fields (do we need a constant factor?)
+    int e_linear[2] = {2, 3}; // the structure of the sk-fields (do we need a constant factor?)
     unsigned char tmp_product[(N_QUARTIC_POLY(_ID) + 1) / 2]; // could be better calculated with i4.. in poly.c
     unsigned char tmp_summand[(_ID + 2) / 2]; //GF16, round up, one extra field for constant
 
@@ -403,9 +404,53 @@ void quartic_gf16v_madd(uint8_t *C, const uint8_t *A, unsigned A_pointer_index, 
 
     for (unsigned l = 0; l < size_batch * 2; l++) { // *2 for gf16 (size is in byte)
         //the inner loop of gf16vmadd
-        polynomial_mul(2, &A[(A_pointer_index) * _ID * size_batch], l, e_ID2, 2, &B[B_pointer_index * size_Bcolvec],
+        polynomial_mul(2, &A[(A_pointer_index) * _ID * size_batch], l, e_linear, 2, &B[B_pointer_index * size_Bcolvec],
                        B_offset * _ID,
-                       e_ID2, &tmp_o, tmp_product, 0, tmp_e);
+                       e_linear, &tmp_o, tmp_product, 0, tmp_e);
+
+        gf16_lin_poly_copy(tmp_summand, C, (l * N_QUARTIC_POLY(_ID)));
+
+        polynomial_add(tmp_o, tmp_product, tmp_e, _ID + 1, tmp_summand, full_e_power2, &final_o,
+                       C, (l * N_QUARTIC_POLY(_ID)), final_e);
+    }
+}
+
+void quartic_gf16v_madd2(uint8_t *C, const uint8_t *A, unsigned A_pointer_index, const unsigned char *B,
+                         unsigned B_pointer_index, unsigned B_offset, char b_linear, unsigned size_batch,
+                         unsigned size_Bcolvec) {
+
+    ///SHOULD BE DONE BETTER (WIP)--///
+    int e_linear[2] = {2, 3}; // the structure of the sk-fields (do we need a constant factor?)
+    unsigned char tmp_product[(N_QUARTIC_POLY(_ID) + 1) / 2]; // could be better calculated with i4.. in poly.c
+    unsigned char tmp_summand[(_ID + 2) / 2]; //GF16, round up, one extra field for constant
+
+    int tmp_e[15]; //size is too big..
+    int final_e[15];
+
+    int tmp_o = 0;
+    int final_o = 0;
+
+    //#define e_standard(n) (n+1) -> mal ersetzen
+    int full_e_power2[15] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+
+    int *e_B;
+    unsigned o2;
+
+    if (b_linear) {
+        e_B = e_linear;
+        o2 = 2;
+    } else {
+        e_B = full_e_power2;
+        o2 = 6;
+    }
+
+    ///--SHOULD BE DONE BETTER (WIP)///
+
+    for (unsigned l = 0; l < size_batch * 2; l++) { // *2 for gf16 (size is in byte)
+        //the inner loop of gf16vmadd
+        polynomial_mul(2, &A[(A_pointer_index) * _ID * size_batch], l, e_linear, o2, &B[B_pointer_index * size_Bcolvec],
+                       B_offset * _ID,
+                       e_B, &tmp_o, tmp_product, 0, tmp_e);
 
         gf16_lin_poly_copy(tmp_summand, C, (l * N_QUARTIC_POLY(_ID)));
 
