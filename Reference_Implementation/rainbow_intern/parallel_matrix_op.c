@@ -4,8 +4,6 @@
 ///  the standard implementations for functions in parallel_matrix_op.h
 ///
 
-#include <stdbool.h>
-#include "stdlib.h"
 
 #include "blas_comm.h"
 #include "blas.h"
@@ -189,7 +187,7 @@ quartic_batch_matTr_madd_gf16(unsigned char *bC, const unsigned char *A_to_tr, u
     unsigned Atr_width = Aheight;
     for (unsigned i = 0; i < Atr_height; i++) {
         for (unsigned j = 0; j < Atr_width; j++) {
-            quartic_gf16v_madd2(bC, bB, j, A_to_tr, i, j, 0, size_batch * Bwidth, size_Acolvec);
+            quartic_gf16v_madd2(bC, bB, j, 0, A_to_tr, i, j, size_batch * Bwidth, size_Acolvec);
             //gf16v_madd(bC, &bB[j * Bwidth * size_batch], gf16v_get_ele(&A_to_tr[size_Acolvec * i], j),size_batch * Bwidth);
         }
         bC += size_batch * Bwidth * N_QUARTIC_POLY(_ID);
@@ -415,8 +413,8 @@ void quartic_gf16v_madd(uint8_t *C, const uint8_t *A, unsigned A_pointer_index, 
     }
 }
 
-void quartic_gf16v_madd2(uint8_t *C, const uint8_t *A, unsigned A_pointer_index, const unsigned char *B,
-                         unsigned B_pointer_index, unsigned B_offset, char b_linear, unsigned size_batch,
+void quartic_gf16v_madd2(uint8_t *C, const uint8_t *Av, unsigned A_pointer_index, char A_linear, const unsigned char *B,
+                         unsigned B_pointer_index, unsigned B_offset, unsigned size_batch,
                          unsigned size_Bcolvec) {
 
     ///SHOULD BE DONE BETTER (WIP)--///
@@ -433,24 +431,28 @@ void quartic_gf16v_madd2(uint8_t *C, const uint8_t *A, unsigned A_pointer_index,
     //#define e_standard(n) (n+1) -> mal ersetzen
     int full_e_power2[15] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
-    int *e_B;
-    unsigned o2;
+    int *e_A;
+    int o_A;
+    unsigned A_loop_offset;
 
-    if (b_linear) {
-        e_B = e_linear;
-        o2 = 2;
+    if (A_linear) {
+        e_A = e_linear;
+        o_A = 2;
+        A_loop_offset = _ID;
     } else {
-        e_B = full_e_power2;
-        o2 = 6;
+        e_A = full_e_power2;
+        o_A = 6;
+        A_loop_offset = N_QUARTIC_POLY(_ID);
     }
 
     ///--SHOULD BE DONE BETTER (WIP)///
 
     for (unsigned l = 0; l < size_batch * 2; l++) { // *2 for gf16 (size is in byte)
         //the inner loop of gf16vmadd
-        polynomial_mul(2, &A[(A_pointer_index) * _ID * size_batch], l, e_linear, o2, &B[B_pointer_index * size_Bcolvec],
+        polynomial_mul(o_A, &Av[(A_pointer_index) * A_loop_offset * size_batch], l, e_A, 2,
+                       &B[B_pointer_index * size_Bcolvec],
                        B_offset * _ID,
-                       e_B, &tmp_o, tmp_product, 0, tmp_e);
+                       e_linear, &tmp_o, tmp_product, 0, tmp_e);
 
         gf16_lin_poly_copy(tmp_summand, C, (l * N_QUARTIC_POLY(_ID)));
 

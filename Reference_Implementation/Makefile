@@ -31,8 +31,8 @@ CSRC= $(wildcard *.c)
 
 
 ifdef DEBUG
-        CFLAGS=  -D_DEBUG_ -g -O0 -std=c11 -Wall -Wextra -fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer -mavx2 #c99(sic!)
-        CXXFLAGS= -D_DEBUG_ -g -O0 -Wall -Wextra -fsanitize=address -fsanitize=undefined -fno-exceptions -fno-rtti -nostdinc++ -mavx2
+        CFLAGS=  -D_DEBUG_ -g -Og -std=c11 -Wall -Wextra -fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer -mavx2 #c99(sic!)
+        CXXFLAGS= -D_DEBUG_ -g -Og -Wall -Wextra -fsanitize=address -fsanitize=undefined -fno-exceptions -fno-rtti -nostdinc++ -mavx2
         LDFLAGS= -fsanitize=address -fsanitize=undefined
 endif
 
