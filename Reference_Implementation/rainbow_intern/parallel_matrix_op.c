@@ -403,13 +403,15 @@ void quartic_gf16v_madd(uint8_t *C, const uint8_t *A, unsigned A_pointer_index, 
     for (unsigned l = 0; l < size_batch * 2; l++) { // *2 for gf16 (size is in byte)
         //the inner loop of gf16vmadd
         polynomial_mul(2, &A[(A_pointer_index) * _ID * size_batch], l, e_linear, 2, &B[B_pointer_index * size_Bcolvec],
-                       B_offset * _ID,
+                       B_offset * _ID, // u.U l * _ID ????
                        e_linear, &tmp_o, tmp_product, 0, tmp_e);
 
         gf16_lin_poly_copy(tmp_summand, C, (l * N_QUARTIC_POLY(_ID)));
 
         polynomial_add(tmp_o, tmp_product, tmp_e, _ID + 1, tmp_summand, full_e_power2, &final_o,
                        C, (l * N_QUARTIC_POLY(_ID)), final_e);
+
+        //Hint: Das hier funktioniert soweit gut für l1_Q2 (oft gedebuggt)
     }
 }
 
@@ -444,20 +446,27 @@ void quartic_gf16v_madd2(uint8_t *C, const uint8_t *Av, unsigned A_pointer_index
         o_A = 6;
         A_loop_offset = N_QUARTIC_POLY(_ID);
     }
-
     ///--SHOULD BE DONE BETTER (WIP)///
 
     for (unsigned l = 0; l < size_batch * 2; l++) { // *2 for gf16 (size is in byte)
         //the inner loop of gf16vmadd
-        polynomial_mul(o_A, &Av[(A_pointer_index) * A_loop_offset * size_batch], l, e_A, 2,
+
+        polynomial_print(o_A, &Av[(A_pointer_index) * size_batch * A_loop_offset], l * A_loop_offset, e_A, "l1_Q2:");
+        polynomial_print(2, &B[B_pointer_index * size_Bcolvec], B_offset * _ID, e_linear, "T1");
+
+        polynomial_mul(o_A, &Av[(A_pointer_index) * size_batch * A_loop_offset], l * A_loop_offset, e_A, 2,
                        &B[B_pointer_index * size_Bcolvec],
                        B_offset * _ID,
                        e_linear, &tmp_o, tmp_product, 0, tmp_e);
+
+        polynomial_print(tmp_o, tmp_product, 0, tmp_e, "Produkt:");
 
         gf16_lin_poly_copy(tmp_summand, C, (l * N_QUARTIC_POLY(_ID)));
 
         polynomial_add(tmp_o, tmp_product, tmp_e, _ID + 1, tmp_summand, full_e_power2, &final_o,
                        C, (l * N_QUARTIC_POLY(_ID)), final_e);
+
+//        polynomial_print(final_o,C,(l * N_QUARTIC_POLY(_ID)),final_e,"Written:");
     }
 }
 
