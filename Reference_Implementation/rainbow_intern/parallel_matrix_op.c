@@ -451,15 +451,15 @@ void quartic_gf16v_madd2(uint8_t *C, const uint8_t *Av, unsigned A_pointer_index
     for (unsigned l = 0; l < size_batch * 2; l++) { // *2 for gf16 (size is in byte)
         //the inner loop of gf16vmadd
 
-        polynomial_print(o_A, &Av[(A_pointer_index) * size_batch * A_loop_offset], l * A_loop_offset, e_A, "l1_Q2:");
-        polynomial_print(2, &B[B_pointer_index * size_Bcolvec], B_offset * _ID, e_linear, "T1");
+//        polynomial_print(o_A, &Av[(A_pointer_index) * size_batch * A_loop_offset], l * A_loop_offset, e_A, "l1_Q2:");
+//        polynomial_print(2, &B[B_pointer_index * size_Bcolvec], B_offset * _ID, e_linear, "T1");
 
         polynomial_mul(o_A, &Av[(A_pointer_index) * size_batch * A_loop_offset], l * A_loop_offset, e_A, 2,
                        &B[B_pointer_index * size_Bcolvec],
                        B_offset * _ID,
                        e_linear, &tmp_o, tmp_product, 0, tmp_e);
 
-        polynomial_print(tmp_o, tmp_product, 0, tmp_e, "Produkt:");
+//        polynomial_print(tmp_o, tmp_product, 0, tmp_e, "Produkt:");
 
         gf16_lin_poly_copy(tmp_summand, C, (l * N_QUARTIC_POLY(_ID)));
 
