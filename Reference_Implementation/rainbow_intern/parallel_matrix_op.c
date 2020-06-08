@@ -99,6 +99,22 @@ void batch_trimat_madd_gf256( unsigned char * bC , const unsigned char* btriA ,
     }
 }
 
+void quartic_batch_trimatTr_madd_gf16(unsigned char *bC, const unsigned char *btriA,
+                                      const unsigned char *B, unsigned Bheight, unsigned size_Bcolvec, unsigned Bwidth,
+                                      unsigned size_batch) {
+    unsigned Aheight = Bheight;
+    for (unsigned i = 0; i < Aheight; i++) {
+        for (unsigned j = 0; j < Bwidth; j++) {
+            for (unsigned k = 0; k < Bheight; k++) {
+                if (i < k) continue;
+                quartic_gf16v_madd2(bC, btriA, (idx_of_trimat(k, i, Aheight)), 1, B, j * size_Bcolvec, k, size_batch,
+                                    size_Bcolvec);
+                //gf16v_madd( bC , & btriA[ size_batch*(idx_of_trimat(k,i,Aheight)) ] , gf16v_get_ele( &B[j*size_Bcolvec] , k ) , size_batch );
+            }
+            bC += size_batch * N_QUARTIC_POLY(_ID);
+        }
+    }
+}
 
 void batch_trimatTr_madd_gf16( unsigned char * bC , const unsigned char* btriA ,
         const unsigned char* B , unsigned Bheight, unsigned size_Bcolvec , unsigned Bwidth, unsigned size_batch )
@@ -165,7 +181,6 @@ void batch_2trimat_madd_gf256( unsigned char * bC , const unsigned char* btriA ,
 
 
 
-
 void batch_matTr_madd_gf16( unsigned char * bC , const unsigned char* A_to_tr , unsigned Aheight, unsigned size_Acolvec, unsigned Awidth,
         const unsigned char* bB, unsigned Bwidth, unsigned size_batch ) {
     unsigned Atr_height = Awidth;
@@ -209,7 +224,21 @@ void batch_matTr_madd_gf256(unsigned char *bC, const unsigned char *A_to_tr, uns
 }
 
 
-
+void quartic_batch_bmatTr_madd_gf16(unsigned char *bC, const unsigned char *bA_to_tr, unsigned Awidth_before_tr,
+                                    const unsigned char *B, unsigned Bheight, unsigned size_Bcolvec, unsigned Bwidth,
+                                    unsigned size_batch) {
+    const unsigned char *bA = bA_to_tr;
+    unsigned Aheight = Awidth_before_tr;
+    for (unsigned i = 0; i < Aheight; i++) {
+        for (unsigned j = 0; j < Bwidth; j++) {
+            for (unsigned k = 0; k < Bheight; k++) {
+                quartic_gf16v_madd(bC, bA, i + k + Aheight, B, j, k, size_batch, size_Bcolvec);
+                //gf16v_madd( bC , & bA[ size_batch*(i+k*Aheight) ] , gf16v_get_ele( &B[j*size_Bcolvec] , k ) , size_batch );
+            }
+            bC += size_batch;
+        }
+    }
+}
 
 void batch_bmatTr_madd_gf16( unsigned char *bC , const unsigned char *bA_to_tr, unsigned Awidth_before_tr,
         const unsigned char *B, unsigned Bheight, unsigned size_Bcolvec, unsigned Bwidth, unsigned size_batch )
@@ -242,8 +271,21 @@ void batch_bmatTr_madd_gf256( unsigned char *bC , const unsigned char *bA_to_tr,
 }
 
 
-
-
+void quartic_batch_mat_madd_gf16(unsigned char *bC, const unsigned char *bA, unsigned Aheight,
+                                 const unsigned char *B, unsigned Bheight, unsigned size_Bcolvec, unsigned Bwidth,
+                                 unsigned size_batch) {
+    unsigned Awidth = Bheight;
+    for (unsigned i = 0; i < Aheight; i++) {
+        for (unsigned j = 0; j < Bwidth; j++) {
+            for (unsigned k = 0; k < Bheight; k++) {
+                quartic_gf16v_madd(bC, bA, k, B, j, k, size_batch, size_Bcolvec);
+                //gf16v_madd( bC , & bA[ k*size_batch ] , gf16v_get_ele( &B[j*size_Bcolvec] , k ) , size_batch );
+            }
+            bC += size_batch * N_QUARTIC_POLY(_ID);
+        }
+        bA += (Awidth) * size_batch * _ID;
+    }
+}
 
 void batch_mat_madd_gf16( unsigned char * bC , const unsigned char* bA , unsigned Aheight,
         const unsigned char* B , unsigned Bheight, unsigned size_Bcolvec , unsigned Bwidth, unsigned size_batch )

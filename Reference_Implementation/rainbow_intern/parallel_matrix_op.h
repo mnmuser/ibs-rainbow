@@ -330,9 +330,17 @@ void quartic_gf16v_madd2(uint8_t *C, const uint8_t *Av, unsigned A_pointer_index
                          unsigned B_pointer_index, unsigned B_offset, unsigned size_batch,
                          unsigned size_Bcolvec);
 
+void quartic_batch_trimatTr_madd_gf16(unsigned char *bC, const unsigned char *btriA,
+                                      const unsigned char *B, unsigned Bheight, unsigned size_Bcolvec, unsigned Bwidth,
+                                      unsigned size_batch);
 
+void quartic_batch_mat_madd_gf16(unsigned char *bC, const unsigned char *bA, unsigned Aheight,
+                                 const unsigned char *B, unsigned Bheight, unsigned size_Bcolvec, unsigned Bwidth,
+                                 unsigned size_batch);
 
-
+void quartic_batch_bmatTr_madd_gf16(unsigned char *bC, const unsigned char *bA_to_tr, unsigned Awidth_before_tr,
+                                    const unsigned char *B, unsigned Bheight, unsigned size_Bcolvec, unsigned Bwidth,
+                                    unsigned size_batch);
 
 #ifdef  __cplusplus
 }

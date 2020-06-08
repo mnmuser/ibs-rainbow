@@ -24,14 +24,14 @@ extern  "C" {
 ///
 typedef
 struct rainbow_extend_publickey {
-    unsigned char l1_Q1[_O1_BYTE * N_TRIANGLE_TERMS(_V1) * N_QUARTIC_POLY(_ID)];
+    unsigned char l1_Q1[_O1_BYTE * N_TRIANGLE_TERMS(_V1)];
     unsigned char l1_Q2[_O1_BYTE * _V1 * _O1 * N_QUARTIC_POLY(_ID)];
     unsigned char l1_Q3[_O1_BYTE * _V1 * _O2 * N_QUARTIC_POLY(_ID)];
     unsigned char l1_Q5[_O1_BYTE * N_TRIANGLE_TERMS(_O1) * N_QUARTIC_POLY(_ID)];
     unsigned char l1_Q6[_O1_BYTE * _O1 * _O2 * N_QUARTIC_POLY(_ID)];
     unsigned char l1_Q9[_O1_BYTE * N_TRIANGLE_TERMS(_O2) * N_QUARTIC_POLY(_ID)];
     /// -> 372480
-    unsigned char l2_Q1[_O2_BYTE * N_TRIANGLE_TERMS(_V1) * N_QUARTIC_POLY(_ID)];
+    unsigned char l2_Q1[_O2_BYTE * N_TRIANGLE_TERMS(_V1)];
     unsigned char l2_Q2[_O2_BYTE * _V1 * _O1 * N_QUARTIC_POLY(_ID)];
     unsigned char l2_Q3[_O2_BYTE * _V1 * _O2 * N_QUARTIC_POLY(_ID)];
     unsigned char l2_Q5[_O2_BYTE * N_TRIANGLE_TERMS(_O1) * N_QUARTIC_POLY(_ID)];

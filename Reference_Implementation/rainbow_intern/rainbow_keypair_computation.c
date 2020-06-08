@@ -130,22 +130,26 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const sk_t *sk) {
     // l2_Q5 : _O2_BYTE * _V1 * _O1
     // l2_Q9 : _O2_BYTE * _V1 * _O2
     unsigned size_tempQ = _O1_BYTE * _O1 * _O1 * N_QUARTIC_POLY(_ID);
-    if (_O1_BYTE * _O2 * _O2 > size_tempQ) size_tempQ = _O1_BYTE * _O2 * _O2 * N_QUARTIC_POLY(_ID);
-    if (_O2_BYTE * _O1 * _O1 > size_tempQ) size_tempQ = _O2_BYTE * _O1 * _O1 * N_QUARTIC_POLY(_ID);
-    if (_O2_BYTE * _O2 * _O2 > size_tempQ) size_tempQ = _O2_BYTE * _O2 * _O2 * N_QUARTIC_POLY(_ID);
+    if (_O1_BYTE * _O2 * _O2 * N_QUARTIC_POLY(_ID) > size_tempQ)
+        size_tempQ = _O1_BYTE * _O2 * _O2 * N_QUARTIC_POLY(_ID);
+    if (_O2_BYTE * _O1 * _O1 * N_QUARTIC_POLY(_ID) > size_tempQ)
+        size_tempQ = _O2_BYTE * _O1 * _O1 * N_QUARTIC_POLY(_ID);
+    if (_O2_BYTE * _O2 * _O2 * N_QUARTIC_POLY(_ID) > size_tempQ)
+        size_tempQ = _O2_BYTE * _O2 * _O2 * N_QUARTIC_POLY(_ID);
     unsigned char *tempQ = (unsigned char *) aligned_alloc(32, size_tempQ + 32);
 
     set_quartic_zero(tempQ, _O1_BYTE * _O1 * _O1);   // l1_Q5
 
     quartic_batch_matTr_madd_gf16(tempQ, sk->t1, _V1, _V1_BYTE, _O1, cpk->l1_Q2, _O1, _O1_BYTE); // t1_tr*(F1*T1 + F2)
-    polynomial_print(15, tempQ, 0, full_e_power2, "tempQ(0): ");
-    polynomial_print(15, tempQ, 15, full_e_power2, "tempQ(60): ");
-    //TODO: here we are:
+//    polynomial_print(15, tempQ, 0, full_e_power2, "tempQ(0): ");
+//    polynomial_print(15, tempQ, 15, full_e_power2, "tempQ(60): ");
+    //TODO: this triangle shit ->
     UpperTrianglize(cpk->l1_Q5, tempQ, _O1, _O1_BYTE * N_QUARTIC_POLY(_ID));    // UT( ... )   // Q5
 
-    polynomial_print(15, cpk->l1_Q5, 0, full_e_power2, "l1_Q5(0): ");
+//    polynomial_print(15, cpk->l1_Q5, 0, full_e_power2, "l1_Q5(0): ");
 
-    batch_trimatTr_madd(cpk->l1_Q2, sk->l1_F1, sk->t1, _V1, _V1_BYTE, _O1, _O1_BYTE);    // Q2
+    quartic_batch_trimatTr_madd_gf16(cpk->l1_Q2, sk->l1_F1, sk->t1, _V1, _V1_BYTE, _O1, _O1_BYTE); // Q2
+
 /*
     Computing:
     F1_T2     = F1 * t2
@@ -155,17 +159,19 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const sk_t *sk) {
     Q_pk.l1_F6s[i] = T1tr* ( F1_F1T_T2 + F2_T3 ) + F2tr * t2
     Q_pk.l1_F9s[i] = UT( T2tr* ( F1_T2 + F2_T3 ) )
 */
-    batch_trimat_madd(cpk->l1_Q3, sk->l1_F1, t2, _V1, _V1_BYTE, _O2, _O1_BYTE);         // F1*T2
-    batch_mat_madd(cpk->l1_Q3, sk->l1_F2, _V1, sk->t3, _O1, _O1_BYTE, _O2, _O1_BYTE);   // F1_T2 + F2_T3
+    quartic_batch_trimat_madd(cpk->l1_Q3, sk->l1_F1, t2, _V1, _V1_BYTE, _O2, _O1_BYTE);         // F1*T2
+    quartic_batch_mat_madd_gf16(cpk->l1_Q3, sk->l1_F2, _V1, sk->t3, _O1, _O1_BYTE, _O2, _O1_BYTE);   // F1_T2 + F2_T3
 
-    memset(tempQ, 0, _O1_BYTE * _O2 * _O2);                                              // l1_Q9
-    batch_matTr_madd(tempQ, t2, _V1, _V1_BYTE, _O2, cpk->l1_Q3, _O2, _O1_BYTE);           // T2tr * ( F1_T2 + F2_T3 )
+    set_quartic_zero(tempQ, _O1_BYTE * _O2 * _O2);                                              // l1_Q9
+    quartic_batch_matTr_madd_gf16(tempQ, t2, _V1, _V1_BYTE, _O2, cpk->l1_Q3, _O2,
+                                  _O1_BYTE);           // T2tr * ( F1_T2 + F2_T3 )
     UpperTrianglize(cpk->l1_Q9, tempQ, _O2, _O1_BYTE);                                   // Q9
 
-    batch_trimatTr_madd(cpk->l1_Q3, sk->l1_F1, t2, _V1, _V1_BYTE, _O2, _O1_BYTE);        // F1_F1T_T2 + F2_T3  // Q3
+    quartic_batch_trimatTr_madd_gf16(cpk->l1_Q3, sk->l1_F1, t2, _V1, _V1_BYTE, _O2,
+                                     _O1_BYTE);        // F1_F1T_T2 + F2_T3  // Q3
 
-    batch_bmatTr_madd(cpk->l1_Q6, sk->l1_F2, _O1, t2, _V1, _V1_BYTE, _O2, _O1_BYTE);       // F2tr*T2
-    batch_matTr_madd(cpk->l1_Q6, sk->t1, _V1, _V1_BYTE, _O1, cpk->l1_Q3, _O2, _O1_BYTE);    // Q6
+    quartic_batch_bmatTr_madd_gf16(cpk->l1_Q6, sk->l1_F2, _O1, t2, _V1, _V1_BYTE, _O2, _O1_BYTE);       // F2tr*T2
+    quartic_batch_matTr_madd_gf16(cpk->l1_Q6, sk->t1, _V1, _V1_BYTE, _O1, cpk->l1_Q3, _O2, _O1_BYTE);    // Q6
 
 /*
     layer 2
@@ -176,15 +182,16 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const sk_t *sk) {
 */
     memcpy(cpk->l2_Q1, sk->l2_F1, _O2_BYTE * N_TRIANGLE_TERMS(_V1));
 
-    memcpy(cpk->l2_Q2, sk->l2_F2, _O2_BYTE * _V1 * _O1);
-    batch_trimat_madd(cpk->l2_Q2, sk->l2_F1, sk->t1, _V1, _V1_BYTE, _O1, _O2_BYTE);      // F1*T1 + F2
+    write_gf16_to_quartic(cpk->l2_Q2, sk->l2_F2, _O2_BYTE * _V1 * _O1);
+    quartic_batch_trimat_madd(cpk->l2_Q2, sk->l2_F1, sk->t1, _V1, _V1_BYTE, _O1, _O2_BYTE);      // F1*T1 + F2
 
-    memcpy(cpk->l2_Q5, sk->l2_F5, _O2_BYTE * N_TRIANGLE_TERMS(_O1));
-    memset(tempQ, 0, _O2_BYTE * _O1 * _O1);                                               // l2_Q5
-    batch_matTr_madd(tempQ, sk->t1, _V1, _V1_BYTE, _O1, cpk->l2_Q2, _O1, _O2_BYTE);        // t1_tr*(F1*T1 + F2)
+    write_gf16_to_quartic(cpk->l2_Q5, sk->l2_F5, _O2_BYTE * N_TRIANGLE_TERMS(_O1));
+    set_quartic_zero(tempQ, _O2_BYTE * _O1 * _O1);                                               // l2_Q5
+    quartic_batch_matTr_madd_gf16(tempQ, sk->t1, _V1, _V1_BYTE, _O1, cpk->l2_Q2, _O1,
+                                  _O2_BYTE);        // t1_tr*(F1*T1 + F2)
     UpperTrianglize(cpk->l2_Q5, tempQ, _O1, _O2_BYTE);                                     // UT( ... )   // Q5
 
-    batch_trimatTr_madd(cpk->l2_Q2, sk->l2_F1, sk->t1, _V1, _V1_BYTE, _O1, _O2_BYTE);    // Q2
+    quartic_batch_trimatTr_madd_gf16(cpk->l2_Q2, sk->l2_F1, sk->t1, _V1, _V1_BYTE, _O1, _O2_BYTE);    // Q2
 
 /*
     Computing:
@@ -196,27 +203,33 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const sk_t *sk) {
     Q9 = UT( T2tr*( F1*T2 + F2*T3 + F3 )  +      T3tr*( F5*T3 + F6 ) )
     Q6 = T1tr*( F1_F1T*T2 + F2*T3 + F3 )  + F2Tr*T2 + F5_F5T*T3 + F6
 */
-    memcpy(cpk->l2_Q3, sk->l2_F3, _O2_BYTE * _V1 * _O2);
-    batch_trimat_madd(cpk->l2_Q3, sk->l2_F1, t2, _V1, _V1_BYTE, _O2, _O2_BYTE);         // F1*T2 + F3
-    batch_mat_madd(cpk->l2_Q3, sk->l2_F2, _V1, sk->t3, _O1, _O1_BYTE, _O2, _O2_BYTE);   // F1_T2 + F2_T3 + F3
+    write_gf16_to_quartic(cpk->l2_Q3, sk->l2_F3, _O2_BYTE * _V1 * _O2);
+    quartic_batch_trimat_madd(cpk->l2_Q3, sk->l2_F1, t2, _V1, _V1_BYTE, _O2, _O2_BYTE);         // F1*T2 + F3
+    quartic_batch_mat_madd_gf16(cpk->l2_Q3, sk->l2_F2, _V1, sk->t3, _O1, _O1_BYTE, _O2,
+                                _O2_BYTE);   // F1_T2 + F2_T3 + F3
 
-    memset(tempQ, 0, _O2_BYTE * _O2 * _O2);                                              // l2_Q9
-    batch_matTr_madd(tempQ, t2, _V1, _V1_BYTE, _O2, cpk->l2_Q3, _O2, _O2_BYTE);           // T2tr * ( ..... )
+    set_quartic_zero(tempQ, _O2_BYTE * _O2 * _O2);                                              // l2_Q9
+    quartic_batch_matTr_madd_gf16(tempQ, t2, _V1, _V1_BYTE, _O2, cpk->l2_Q3, _O2,
+                                  _O2_BYTE);           // T2tr * ( ..... )
 
-    memcpy(cpk->l2_Q6, sk->l2_F6, _O2_BYTE * _O1 * _O2);
+    write_gf16_to_quartic(cpk->l2_Q6, sk->l2_F6, _O2_BYTE * _O1 * _O2);
 
-    batch_trimat_madd(cpk->l2_Q6, sk->l2_F5, sk->t3, _O1, _O1_BYTE, _O2, _O2_BYTE);      // F5*T3 + F6
-    batch_matTr_madd(tempQ, sk->t3, _O1, _O1_BYTE, _O2, cpk->l2_Q6, _O2,
-                     _O2_BYTE);       // T2tr*( ..... ) + T3tr*( ..... )
-    memset(cpk->l2_Q9, 0, _O2_BYTE * N_TRIANGLE_TERMS(_O2));
+    quartic_batch_trimat_madd(cpk->l2_Q6, sk->l2_F5, sk->t3, _O1, _O1_BYTE, _O2, _O2_BYTE);      // F5*T3 + F6
+    quartic_batch_matTr_madd_gf16(tempQ, sk->t3, _O1, _O1_BYTE, _O2, cpk->l2_Q6, _O2,
+                                  _O2_BYTE);       // T2tr*( ..... ) + T3tr*( ..... )
+    set_quartic_zero(cpk->l2_Q9, _O2_BYTE * N_TRIANGLE_TERMS(_O2));
     UpperTrianglize(cpk->l2_Q9, tempQ, _O2, _O2_BYTE);                                   // Q9
 
-    batch_trimatTr_madd(cpk->l2_Q3, sk->l2_F1, t2, _V1, _V1_BYTE, _O2, _O2_BYTE);        // F1_F1T_T2 + F2_T3 + F3 // Q3
+    quartic_batch_trimatTr_madd_gf16(cpk->l2_Q3, sk->l2_F1, t2, _V1, _V1_BYTE, _O2,
+                                     _O2_BYTE);        // F1_F1T_T2 + F2_T3 + F3 // Q3
 
-    batch_bmatTr_madd(cpk->l2_Q6, sk->l2_F2, _O1, t2, _V1, _V1_BYTE, _O2, _O2_BYTE);       //  F5*T3 + F6 +  F2tr*T2
-    batch_trimatTr_madd(cpk->l2_Q6, sk->l2_F5, sk->t3, _O1, _O1_BYTE, _O2, _O2_BYTE);    //   F2tr*T2 + F5_F5T*T3 + F6
-    batch_matTr_madd(cpk->l2_Q6, sk->t1, _V1, _V1_BYTE, _O1, cpk->l2_Q3, _O2, _O2_BYTE);    // Q6
+    quartic_batch_bmatTr_madd_gf16(cpk->l2_Q6, sk->l2_F2, _O1, t2, _V1, _V1_BYTE, _O2,
+                                   _O2_BYTE);       //  F5*T3 + F6 +  F2tr*T2
+    quartic_batch_trimatTr_madd_gf16(cpk->l2_Q6, sk->l2_F5, sk->t3, _O1, _O1_BYTE, _O2,
+                                     _O2_BYTE);    //   F2tr*T2 + F5_F5T*T3 + F6
+    quartic_batch_matTr_madd_gf16(cpk->l2_Q6, sk->t1, _V1, _V1_BYTE, _O1, cpk->l2_Q3, _O2, _O2_BYTE);    // Q6
 
+    //TODO: upper triangilize, checking, GF16-naming
     memset(tempQ, 0, size_tempQ + 32);
     free(tempQ);
 }
