@@ -16,6 +16,7 @@
 #include "utils_hash.h"
 
 #include "api.h"
+#include "polynomial.h"
 
 /////////////////////////////////////////////////////////////////
 
@@ -148,6 +149,27 @@ void obsfucate_l1_polys( unsigned char * l1_polys , const unsigned char * l2_pol
     }
 }
 
+static
+void quartic_obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2_polys, unsigned n_terms,
+                                const unsigned char *s1) {
+    n_terms *= N_QUARTIC_POLY(_ID);
+    unsigned char temp[_O1_BYTE * N_QUARTIC_POLY(_ID) + 32];
+    while (n_terms--) { //for-loop *for* runaways
+        quartic_gf16mat_prod_ref(temp, s1, _O1_BYTE, _O2, l2_polys); //(s1*l2 -> grade4)
+        int e[20];
+        int o = 0;
+        int full_e_power2[15] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+        unsigned char *tmp_l1_polys = malloc(N_QUARTIC_POLY((_ID) + 1) / 2);
+        for (unsigned i = 0; i < _O1_BYTE; i++) {
+            memcpy(tmp_l1_polys, l1_polys, (N_QUARTIC_POLY(_ID) + 1) / 2);
+            polynomial_add(6, tmp_l1_polys, full_e_power2, 10, temp, full_e_power2, &o, l1_polys, 0, e);
+        }
+        free(tmp_l1_polys);
+        //gf256v_add( l1_polys , temp , _O1_BYTE ); //poly_add because different grades?
+        l1_polys += _O1_BYTE * N_QUARTIC_POLY(_ID);
+        l2_polys += _O2_BYTE * N_QUARTIC_POLY(_ID);
+    }
+}
 
 
 ///////////////////  Classic //////////////////////////////////
@@ -192,11 +214,11 @@ void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed) {
     calculate_t4(sk->t4, sk->t1, sk->t3); // t4 = t4 + t1*t3
 
     obsfucate_l1_polys(pk->l1_Q1, pk->l2_Q1, N_TRIANGLE_TERMS(_V1), sk->s1); // -> integrate S :)
-    obsfucate_l1_polys(pk->l1_Q2, pk->l2_Q2, _V1 * _O1, sk->s1);
-    obsfucate_l1_polys(pk->l1_Q3, pk->l2_Q3, _V1 * _O2, sk->s1);
-    obsfucate_l1_polys(pk->l1_Q5, pk->l2_Q5, N_TRIANGLE_TERMS(_O1), sk->s1);
-    obsfucate_l1_polys(pk->l1_Q6, pk->l2_Q6, _O1 * _O2, sk->s1);
-    obsfucate_l1_polys(pk->l1_Q9, pk->l2_Q9, N_TRIANGLE_TERMS(_O2), sk->s1);
+    quartic_obsfucate_l1_polys(pk->l1_Q2, pk->l2_Q2, _V1 * _O1, sk->s1);
+    quartic_obsfucate_l1_polys(pk->l1_Q3, pk->l2_Q3, _V1 * _O2, sk->s1);
+    quartic_obsfucate_l1_polys(pk->l1_Q5, pk->l2_Q5, N_TRIANGLE_TERMS(_O1), sk->s1);
+    quartic_obsfucate_l1_polys(pk->l1_Q6, pk->l2_Q6, _O1 * _O2, sk->s1);
+    quartic_obsfucate_l1_polys(pk->l1_Q9, pk->l2_Q9, N_TRIANGLE_TERMS(_O2), sk->s1);
     // so far, the pk contains the full pk but in ext_cpk_t format.
 
     extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to pk_t.

@@ -97,6 +97,7 @@ void extcpk_to_pk( pk_t * pk , const ext_cpk_t * cpk )
 
 static
 void calculate_Q_from_F_ref(ext_cpk_t *cpk, const sk_t *sk) {
+    //TODO: hey you, this should be done multi-threaded https://doi.org/10.1007/978-1-4419-5906-5
 /*
     Layer 1
     Computing :

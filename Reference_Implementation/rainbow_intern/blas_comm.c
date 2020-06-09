@@ -4,6 +4,8 @@
 
 #include "blas_comm.h"
 #include "blas.h"
+#include "rainbow_keypair.h"
+#include "rainbow_blas.h"
 
 #include <assert.h>  // FIXME(js): don't use assert() and don't deal with NDEBUG
 #include <stdint.h>
@@ -60,6 +62,17 @@ void gf16mat_prod_ref(uint8_t *c, const uint8_t *matA, unsigned n_A_vec_byte, un
         uint8_t bb = gf16v_get_ele(b, i); //get element i from vinegar-array
         gf16v_madd(c, matA, bb, n_A_vec_byte); // -> _gf16v_madd_u32
         matA += n_A_vec_byte;
+    }
+}
+
+void
+quartic_gf16mat_prod_ref(uint8_t *c, const uint8_t *matA, unsigned n_A_vec_byte, unsigned n_A_width, const uint8_t *b) {
+    memset(c, 0, n_A_vec_byte * N_QUARTIC_POLY(_ID)); //set number of O1-bytes in matrix to 0
+    for (unsigned i = 0; i < n_A_width; i++) { // loop over number of vinegars
+        //uint8_t bb = gf16v_get_ele(b, i); //get element i from vinegar-array
+        quartic_gf16v_madd(c, matA, 0, b, 0, i, n_A_vec_byte, n_A_width);
+        //gf16v_madd(c, matA, bb, n_A_vec_byte); // -> _gf16v_madd_u32
+        matA += n_A_vec_byte * _ID;
     }
 }
 
