@@ -152,20 +152,20 @@ void obsfucate_l1_polys( unsigned char * l1_polys , const unsigned char * l2_pol
 static
 void quartic_obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2_polys, unsigned n_terms,
                                 const unsigned char *s1) {
-    n_terms *= N_QUARTIC_POLY(_ID);
     unsigned char temp[_O1_BYTE * N_QUARTIC_POLY(_ID) + 32];
     while (n_terms--) { //for-loop *for* runaways
-        quartic_gf16mat_prod_ref(temp, s1, _O1_BYTE, _O2, l2_polys); //(s1*l2 -> grade4)
-        int e[20];
+        quartic_gf16mat_prod_ref(temp, s1, _O1_BYTE, _O2, l2_polys); //(s1*l2 -> temp has grade4)
+        int e[25]; //e has to be long enough (?)
         int o = 0;
         int full_e_power2[15] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
         unsigned char *tmp_l1_polys = malloc(N_QUARTIC_POLY((_ID) + 1) / 2);
         for (unsigned i = 0; i < _O1_BYTE; i++) {
-            memcpy(tmp_l1_polys, l1_polys, (N_QUARTIC_POLY(_ID) + 1) / 2);
-            polynomial_add(6, tmp_l1_polys, full_e_power2, 10, temp, full_e_power2, &o, l1_polys, 0, e);
+            memcpy(tmp_l1_polys, l1_polys, (N_QUARTIC_POLY(_ID) + 1) / 2); // TODO: depend on place i!
+            polynomial_add(10, tmp_l1_polys, full_e_power2, 15, temp, full_e_power2, &o, l1_polys, 0, e);
         }
+        polynomial_print(o, l1_polys, 0, e, "temp:");
         free(tmp_l1_polys);
-        //gf256v_add( l1_polys , temp , _O1_BYTE ); //poly_add because different grades?
+        //gf256v_add( l1_polys , temp , _O1_BYTE ); //add u32 (temp) on whole length of l1_polys
         l1_polys += _O1_BYTE * N_QUARTIC_POLY(_ID);
         l2_polys += _O2_BYTE * N_QUARTIC_POLY(_ID);
     }
