@@ -2,7 +2,7 @@ CC=    gcc
 LD=    gcc
 
 DFLAGS= -D "aligned_alloc(x,y)=malloc(y)"
-CFLAGS= -O3 -std=c11 -Wall -Wextra -fno-omit-frame-pointer $(DFLAGS)
+CFLAGS= -O3 -march=znver2 -std=c11 -Wall -Wextra -fno-omit-frame-pointer $(DFLAGS)
 INCPATH= -I/usr/local/include -I/opt/local/include -I/usr/include -I$(PROJ_DIR)
 LDFLAGS=
 LIBPATH= -L/usr/local/lib -L/opt/local/lib -L/usr/lib
@@ -10,6 +10,7 @@ LIBS=    -lcrypto -lm
 
 # genkey-benchmark:
 #-> O3 and march=native 12 seconds
+#-> O3 and march=znver2 12 seconds -> Really new instruction set for Zen 2
 #-> O2 and march=native 18 seconds
 #-> O2 w/o march 		17 seconds
 #-> O3 w/o march		13 seconds
@@ -38,8 +39,8 @@ CSRC= $(wildcard *.c)
 
 
 ifdef DEBUG
-        CFLAGS=  -D_DEBUG_ -g -O3 -march=native -std=c11 -Wall -Wextra #-fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer -mavx2 #c99(sic!) #normal: -Og but too slow :D
-        CXXFLAGS= -D_DEBUG_ -g -O3 -march=native -Wall -Wextra #-fsanitize=address -fsanitize=undefined -fno-exceptions -fno-rtti -nostdinc++ -mavx2
+        CFLAGS=  -D_DEBUG_ -g -O3 -march=znver2 -std=c11 -Wall -Wextra #-fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer -mavx2 #c99(sic!) #normal: -Og but too slow :D
+        CXXFLAGS= -D_DEBUG_ -g -O3 -march=znver2 -Wall -Wextra #-fsanitize=address -fsanitize=undefined -fno-exceptions -fno-rtti -nostdinc++ -mavx2
         LDFLAGS= #-fsanitize=address -fsanitize=undefined
 endif
 
