@@ -155,15 +155,15 @@ void quartic_obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2
     unsigned char temp[_O1_BYTE * N_QUARTIC_POLY(_ID) + 32];
     while (n_terms--) { //for-loop *for* runaways
         quartic_gf16mat_prod_ref(temp, s1, _O1_BYTE, _O2, l2_polys); //(s1*l2 -> temp has grade4)
-        int e[25]; //e has to be long enough (?)
+        int e[25]; //e has to be long enough (?) for poly_add
         int o = 0;
         int full_e_power2[15] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
         unsigned char *tmp_l1_polys = malloc(N_QUARTIC_POLY((_ID) + 1) / 2);
-        for (unsigned i = 0; i < _O1_BYTE; i++) {
-            memcpy(tmp_l1_polys, l1_polys, (N_QUARTIC_POLY(_ID) + 1) / 2); // TODO: depend on place i!
+        for (unsigned i = 0; i < _O1; i++) {
+            gf16_quartic_poly_copy(tmp_l1_polys, l1_polys, i * N_QUARTIC_POLY(_ID));
             polynomial_add(10, tmp_l1_polys, full_e_power2, 15, temp, full_e_power2, &o, l1_polys, 0, e);
         }
-        polynomial_print(o, l1_polys, 0, e, "temp:");
+//        polynomial_print(o, l1_polys, 0, e, "temp:");
         free(tmp_l1_polys);
         //gf256v_add( l1_polys , temp , _O1_BYTE ); //add u32 (temp) on whole length of l1_polys
         l1_polys += _O1_BYTE * N_QUARTIC_POLY(_ID);
@@ -208,10 +208,7 @@ void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed) {
 
     /// at this point P = F o T ; S is still missing and P/Q is cubic on ID
 
-//    printf("%lu", sizeof(*pk));
-//    memcpy(rpk, pk, sizeof(*pk));
-
-    calculate_t4(sk->t4, sk->t1, sk->t3); // t4 = t4 + t1*t3
+    calculate_t4(sk->t4, sk->t1, sk->t3); // t4 = t4 + t1*t3 //TODO: has to be done by poly_mul...
 
     obsfucate_l1_polys(pk->l1_Q1, pk->l2_Q1, N_TRIANGLE_TERMS(_V1), sk->s1); // -> integrate S :)
     quartic_obsfucate_l1_polys(pk->l1_Q2, pk->l2_Q2, _V1 * _O1, sk->s1);
@@ -221,28 +218,9 @@ void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed) {
     quartic_obsfucate_l1_polys(pk->l1_Q9, pk->l2_Q9, N_TRIANGLE_TERMS(_O2), sk->s1);
     // so far, the pk contains the full pk but in ext_cpk_t format.
 
-    extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to pk_t.
-//    memcpy(rpk, pk, sizeof(*pk));
-//    ///////////////TEST/////////////////
-//
-//    ///////////////ID/////////////////
-//    unsigned char id_digest[8]; // in GF 16
-//    generate_identity_hash(id_digest, id);
-//    ///////////////ID/////////////////
-//    int sk_size = sizeof(sk_t) - offsetof(sk_t, l1_F1);
-//
-//
-//    unsigned char usk[sk_size];
-//    pk_t upk;
-//
-//    multiply_identity_GF16(usk, &upk, &id_digest, sk->l1_F1, rpk);
-//
-//    memcpy(rpk, &upk, CRYPTO_PUBLICKEYBYTES);
-//    memcpy(sk->l1_F1, usk, sk_size);
-//    ///////////////TEST/////////////////
+    quartic_extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to pk_t.
 
-
-    free(pk); //TODO: ERROR ABRT
+    free(pk);
 }
 
 

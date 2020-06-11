@@ -2,12 +2,19 @@ CC=    gcc
 LD=    gcc
 
 DFLAGS= -D "aligned_alloc(x,y)=malloc(y)"
-CFLAGS= -O2 -std=c11 -Wall -Wextra -fno-omit-frame-pointer $(DFLAGS)
+CFLAGS= -O3 -std=c11 -Wall -Wextra -fno-omit-frame-pointer $(DFLAGS)
 INCPATH= -I/usr/local/include -I/opt/local/include -I/usr/include -I$(PROJ_DIR)
 LDFLAGS=
 LIBPATH= -L/usr/local/lib -L/opt/local/lib -L/usr/lib
 LIBS=    -lcrypto -lm
 
+# genkey-benchmark:
+#-> O3 and march=native 12 seconds
+#-> O2 and march=native 18 seconds
+#-> O2 w/o march 		17 seconds
+#-> O3 w/o march		13 seconds
+#-> Debug O3 march=native 3:10 minutes
+#-> DEBUG O3 march=native w/o sanitizers 14 seconds
 
 PROJ_DIR = rainbow_intern
 
@@ -31,9 +38,9 @@ CSRC= $(wildcard *.c)
 
 
 ifdef DEBUG
-        CFLAGS=  -D_DEBUG_ -g -O2 -std=c11 -Wall -Wextra -fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer -mavx2 #c99(sic!) #normal: -Og but too slow :D
-        CXXFLAGS= -D_DEBUG_ -g -O2 -Wall -Wextra -fsanitize=address -fsanitize=undefined -fno-exceptions -fno-rtti -nostdinc++ -mavx2
-        LDFLAGS= -fsanitize=address -fsanitize=undefined
+        CFLAGS=  -D_DEBUG_ -g -O3 -march=native -std=c11 -Wall -Wextra #-fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer -mavx2 #c99(sic!) #normal: -Og but too slow :D
+        CXXFLAGS= -D_DEBUG_ -g -O3 -march=native -Wall -Wextra #-fsanitize=address -fsanitize=undefined -fno-exceptions -fno-rtti -nostdinc++ -mavx2
+        LDFLAGS= #-fsanitize=address -fsanitize=undefined
 endif
 
 ifeq ($(shell uname -s),Darwin) # for macOS you need special openssl (homebrew)

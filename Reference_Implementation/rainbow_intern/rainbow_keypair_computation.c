@@ -79,14 +79,89 @@ void extcpk_to_pk( pk_t * pk , const ext_cpk_t * cpk )
     }
     idx_l1 = cpk->l1_Q9;
     idx_l2 = cpk->l2_Q9;
-    for(unsigned i=_V1+_O1;i<_PUB_N;i++) {
-        for(unsigned j=i;j<_PUB_N;j++) {
-            unsigned pub_idx = idx_of_trimat(i,j,_PUB_N);
-            memcpy( & pk->pk[ _PUB_M_BYTE*pub_idx ]             , idx_l1 , _O1_BYTE );
-            memcpy( (&pk->pk[ _PUB_M_BYTE*pub_idx ]) + _O1_BYTE , idx_l2 , _O2_BYTE );
+    for (unsigned i = _V1 + _O1; i < _PUB_N; i++) {
+        for (unsigned j = i; j < _PUB_N; j++) {
+            unsigned pub_idx = idx_of_trimat(i, j, _PUB_N);
+            memcpy(&pk->pk[_PUB_M_BYTE * pub_idx], idx_l1, _O1_BYTE);
+            memcpy((&pk->pk[_PUB_M_BYTE * pub_idx]) + _O1_BYTE, idx_l2, _O2_BYTE);
             idx_l1 += _O1_BYTE;
             idx_l2 += _O2_BYTE;
         }
+    }
+}
+
+void quartic_extcpk_to_pk(pk_t *pk, const ext_cpk_t *cpk) {
+    const unsigned char *idx_l1 = cpk->l1_Q1;
+    const unsigned char *idx_l2 = cpk->l2_Q1;
+    for (unsigned i = 0; i < _V1; i++) {
+        for (unsigned j = i; j < _V1; j++) {
+            unsigned pub_idx = idx_of_trimat(i, j, _PUB_N);
+            memcpy(&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY(_ID)], idx_l1, _O1_BYTE * N_QUARTIC_POLY(_ID));
+            memcpy((&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY(_ID)]) + _O1_BYTE, idx_l2,
+                   _O2_BYTE * N_QUARTIC_POLY(_ID));
+            idx_l1 += _O1_BYTE * N_QUARTIC_POLY(_ID); //TODO: maybe not
+            idx_l2 += _O2_BYTE * N_QUARTIC_POLY(_ID);
+        }
+    }
+    idx_l1 = cpk->l1_Q2;
+    idx_l2 = cpk->l2_Q2;
+    for (unsigned i = 0; i < _V1; i++) {
+        for (unsigned j = _V1; j < _V1 + _O1; j++) {
+            unsigned pub_idx = idx_of_trimat(i, j, _PUB_N);
+            memcpy(&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY(_ID)], idx_l1, _O1_BYTE * N_QUARTIC_POLY(_ID));
+            memcpy((&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY(_ID)]) + _O1_BYTE, idx_l2,
+                   _O2_BYTE * N_QUARTIC_POLY(_ID));
+            idx_l1 += _O1_BYTE * N_QUARTIC_POLY(_ID);
+            idx_l2 += _O2_BYTE * N_QUARTIC_POLY(_ID);
+        }
+    }
+    idx_l1 = cpk->l1_Q3;
+    idx_l2 = cpk->l2_Q3;
+    for (unsigned i = 0; i < _V1; i++) {
+        for (unsigned j = _V1 + _O1; j < _PUB_N; j++) {
+            unsigned pub_idx = idx_of_trimat(i, j, _PUB_N);
+            memcpy(&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY(_ID)], idx_l1, _O1_BYTE * N_QUARTIC_POLY(_ID));
+            memcpy((&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY(_ID)]) + _O1_BYTE, idx_l2,
+                   _O2_BYTE * N_QUARTIC_POLY(_ID));
+            idx_l1 += _O1_BYTE * N_QUARTIC_POLY(_ID);
+            idx_l2 += _O2_BYTE * N_QUARTIC_POLY(_ID);
+        }
+    }
+    idx_l1 = cpk->l1_Q5;
+    idx_l2 = cpk->l2_Q5;
+    for (unsigned i = _V1; i < _V1 + _O1; i++) {
+        for (unsigned j = i; j < _V1 + _O1; j++) {
+            unsigned pub_idx = idx_of_trimat(i, j, _PUB_N);
+            memcpy(&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY(_ID)], idx_l1, _O1_BYTE * N_QUARTIC_POLY(_ID));
+            memcpy((&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY(_ID)]) + _O1_BYTE, idx_l2,
+                   _O2_BYTE * N_QUARTIC_POLY(_ID));
+            idx_l1 += _O1_BYTE * N_QUARTIC_POLY(_ID);
+            idx_l2 += _O2_BYTE * N_QUARTIC_POLY(_ID);
+        }
+    }
+    idx_l1 = cpk->l1_Q6;
+    idx_l2 = cpk->l2_Q6;
+    for (unsigned i = _V1; i < _V1 + _O1; i++) {
+        for (unsigned j = _V1 + _O1; j < _PUB_N; j++) {
+            unsigned pub_idx = idx_of_trimat(i, j, _PUB_N);
+            memcpy(&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY(_ID)], idx_l1, _O1_BYTE * N_QUARTIC_POLY(_ID));
+            memcpy((&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY(_ID)]) + _O1_BYTE, idx_l2,
+                   _O2_BYTE * N_QUARTIC_POLY(_ID));
+            idx_l1 += _O1_BYTE * N_QUARTIC_POLY(_ID);
+            idx_l2 += _O2_BYTE * N_QUARTIC_POLY(_ID);
+        }
+    }
+    idx_l1 = cpk->l1_Q9;
+    idx_l2 = cpk->l2_Q9;
+    for (unsigned i = _V1 + _O1; i < _PUB_N; i++) {
+        for (unsigned j = i; j < _PUB_N; j++) {
+            unsigned pub_idx = idx_of_trimat(i, j, _PUB_N);
+            memcpy(&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY(_ID)], idx_l1, _O1_BYTE * N_QUARTIC_POLY(_ID));
+            memcpy((&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY(_ID)]) + _O1_BYTE, idx_l2,
+                   _O2_BYTE * N_QUARTIC_POLY(_ID));
+            idx_l1 += _O1_BYTE * N_QUARTIC_POLY(_ID);
+            idx_l2 += _O2_BYTE * N_QUARTIC_POLY(_ID);
+        } //TODO: checkup, cause pk is not full!
     }
 }
 
@@ -421,6 +496,12 @@ void set_quartic_zero(unsigned char *q, const unsigned length) {
 
 void gf16_lin_poly_copy(unsigned char *dest, const unsigned char *src, unsigned gf16_offset_src) {
     for (unsigned i = 0; i < _ID + 1; i++) { // +1 because of the constant factor in the polynom
+        gf16v_set_ele(dest, i, gf16v_get_ele(src, gf16_offset_src + i));
+    }
+}
+
+void gf16_quartic_poly_copy(unsigned char *dest, const unsigned char *src, unsigned gf16_offset_src) {
+    for (unsigned i = 0; i < N_QUARTIC_POLY(_ID); i++) {
         gf16v_set_ele(dest, i, gf16v_get_ele(src, gf16_offset_src + i));
     }
 }
