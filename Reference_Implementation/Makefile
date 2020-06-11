@@ -8,7 +8,7 @@ LDFLAGS=
 LIBPATH= -L/usr/local/lib -L/opt/local/lib -L/usr/lib
 LIBS=    -lcrypto -lm
 
-# genkey-benchmark:
+# genkey-benchmark (gcc10):
 #-> O3 and march=native 12 seconds
 #-> O3 and march=znver2 12 seconds -> Really new instruction set for Zen 2
 #-> O2 and march=native 18 seconds
