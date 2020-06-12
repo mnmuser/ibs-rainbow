@@ -76,6 +76,18 @@ quartic_gf16mat_prod_ref(uint8_t *c, const uint8_t *matA, unsigned n_A_vec_byte,
     }
 }
 
+void
+quartic_linear_gf16mat_prod_ref(uint8_t *c, const uint8_t *matA, unsigned n_A_vec_byte, unsigned n_A_width,
+                                const uint8_t *b) {
+    memset(c, 0, n_A_vec_byte * _ID); //set number of O1-bytes in matrix to 0
+    for (unsigned i = 0; i < n_A_width; i++) { // loop over number of vinegars
+        //uint8_t bb = gf16v_get_ele(b, i); //get element i from vinegar-array
+        quartic_linear_gf16v_madd(c, matA, i * n_A_vec_byte * _ID, b, 0, i, n_A_vec_byte, n_A_width);
+        //gf16v_madd(c, matA, bb, n_A_vec_byte); // -> _gf16v_madd_u32
+        //matA += n_A_vec_byte * _ID;
+    }
+}
+
 static
 void gf256mat_prod_ref(uint8_t *c, const uint8_t *matA, unsigned n_A_vec_byte, unsigned n_A_width, const uint8_t *b) {
     gf256v_set_zero(c, n_A_vec_byte);

@@ -12,8 +12,6 @@
 #include "rainbow_keypair.h"
 
 #include "polynomial.h"
-#include "stdio.h"
-#include "string.h"
 #include "rainbow_keypair_computation.h"
 
 
@@ -509,6 +507,49 @@ void quartic_gf16v_madd2(uint8_t *C, const uint8_t *Av, unsigned A_pointer_index
                        C, (l * N_QUARTIC_POLY(_ID)), final_e);
 
 //        polynomial_print(final_o,C,(l * N_QUARTIC_POLY(_ID)),final_e,"Written:");
+    }
+}
+
+///
+/// \param C
+/// \param Av
+/// \param A_pointer_index
+/// \param A_linear
+/// \param B
+/// \param B_pointer_index
+/// \param B_offset
+/// \param size_batch
+/// \param size_Bcolvec
+/// @brief when C is linear over ID -> T4
+void quartic_linear_gf16v_madd(uint8_t *C, const uint8_t *A, unsigned A_pointer_index, const unsigned char *B,
+                               unsigned B_pointer_index, unsigned B_offset, unsigned size_batch,
+                               unsigned size_Bcolvec) {
+
+    ///SHOULD BE DONE BETTER (WIP)--///
+    int e_linear[2] = {2, 3}; // the structure of the sk-fields (do we need a constant factor?)
+    unsigned char tmp_product[(_ID + 1) / 2]; // could be better calculated with i4.. in poly.c
+    unsigned char tmp_summand[(_ID + 2) / 2]; //GF16, round up, one extra field for constant
+
+    int tmp_e[15]; //size is too big..
+    int final_e[15];
+
+    int tmp_o = 0;
+    int final_o = 0;
+
+    ///--SHOULD BE DONE BETTER (WIP)///
+
+    for (unsigned l = 0; l < size_batch * 2; l++) { // *2 for gf16 (size is in byte)
+        //the inner loop of gf16vmadd
+        polynomial_mul(2, &A[(A_pointer_index) * _ID * size_batch], l, e_linear, 2, &B[B_pointer_index * size_Bcolvec],
+                       B_offset * _ID, // u.U l * _ID ????
+                       e_linear, &tmp_o, tmp_product, 0, tmp_e);
+
+        gf16_lin_poly_copy(tmp_summand, C, (l * _ID));
+
+        polynomial_add(tmp_o, tmp_product, tmp_e, 2, tmp_summand, e_linear, &final_o,
+                       C, (l * _ID), final_e);
+
+        //Hint: Das hier funktioniert soweit gut für l1_Q2 (oft gedebuggt)
     }
 }
 

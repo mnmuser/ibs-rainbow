@@ -125,25 +125,48 @@ static
 void calculate_t4( unsigned char * t2_to_t4 , const unsigned char *t1 , const unsigned char *t3 )
 {
     //  t4 = T_sk.t1 * T_sk.t3 - T_sk.t2
-    unsigned char temp[_V1_BYTE+32];
-    unsigned char * t4 = t2_to_t4;
-    for(unsigned i=0;i<_O2;i++) {  /// t3 width
-        gfmat_prod( temp , t1 , _V1_BYTE , _O1 , t3 );
-        gf256v_add( t4 , temp , _V1_BYTE );
+    unsigned char temp[_V1_BYTE + 32];
+    unsigned char *t4 = t2_to_t4;
+    for (unsigned i = 0; i < _O2; i++) {  /// t3 width
+        gfmat_prod(temp, t1, _V1_BYTE, _O1, t3);
+        gf256v_add(t4, temp, _V1_BYTE);
         t4 += _V1_BYTE;
         t3 += _O1_BYTE;
     }
 }
 
+static
+void quartic_calculate_t4(unsigned char *t2_to_t4, const unsigned char *t1, const unsigned char *t3) {
+    //  t4 = T_sk.t1 * T_sk.t3 - T_sk.t2
+    unsigned char temp[(_O1_BYTE + 32) * N_QUADRATIC_POLY(_ID)];
+    unsigned char *t4 = t2_to_t4;
+    for (unsigned i = 0; i < _O2; i++) {  /// t3 width
+        quartic_linear_gf16mat_prod_ref(temp, t1, _V1_BYTE, _O1, t3);
+        //gf256v_add( t4 , temp , _V1_BYTE );
+
+        int e[25]; //e has to be long enough (?) for poly_add
+        int o = 0;
+        int full_e_power2[15] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+        unsigned char *tmp_t4 = malloc((N_QUADRATIC_POLY(_ID) + 1) / 2);
+        for (unsigned j = 0; i < _O1; i++) {
+            gf16_quartic_poly_copy(tmp_t4, t4, j * _ID);
+            polynomial_add(5, tmp_t4, full_e_power2, 5, temp, full_e_power2, &o, t4, 0, e);
+        }
+        free(tmp_t4);
+
+        t4 += _V1_BYTE * N_QUADRATIC_POLY(_ID);
+        t3 += _O1_BYTE * _ID;
+    }
+}
 
 
 static
-void obsfucate_l1_polys( unsigned char * l1_polys , const unsigned char * l2_polys , unsigned n_terms , const unsigned char * s1 )
-{
+void
+obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2_polys, unsigned n_terms, const unsigned char *s1) {
     unsigned char temp[_O1_BYTE + 32];
-    while( n_terms-- ) {
-        gfmat_prod( temp , s1 , _O1_BYTE , _O2 , l2_polys );
-        gf256v_add( l1_polys , temp , _O1_BYTE );
+    while (n_terms--) {
+        gfmat_prod(temp, s1, _O1_BYTE, _O2, l2_polys);
+        gf256v_add(l1_polys, temp, _O1_BYTE);
         l1_polys += _O1_BYTE;
         l2_polys += _O2_BYTE;
     }
@@ -208,7 +231,7 @@ void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed) {
 
     /// at this point P = F o T ; S is still missing and P/Q is cubic on ID
 
-    calculate_t4(sk->t4, sk->t1, sk->t3); // t4 = t4 + t1*t3 //TODO: has to be done by poly_mul...
+    quartic_calculate_t4(sk->t4, sk->t1, sk->t3); // t4 = t4 + t1*t3
 
     obsfucate_l1_polys(pk->l1_Q1, pk->l2_Q1, N_TRIANGLE_TERMS(_V1), sk->s1); // -> integrate S :)
     quartic_obsfucate_l1_polys(pk->l1_Q2, pk->l2_Q2, _V1 * _O1, sk->s1);
@@ -339,14 +362,12 @@ void multiply_ID_over_key(unsigned char *dest_key, const unsigned char *key, con
         //get element from key at i
         uint8_t key_element = gf16v_get_ele(key, i);
         //multiply them
-        /// TODO: With that way we only have 16 identities
+        /// With that way we only have 16 identities
         /// XOR is not working
         /// addition is not working
         /// corresponding element out of ID-Hash is not working
         /// multiply with a integer in GF16 works
         uint8_t product = gf16_mul(key_element, gf16v_get_ele(id_hash, 0));
-        printf("%d", product);
-        printf("%s", "\n");
         //set them for the user key
         gf16v_set_ele(dest_key, i, product);
     }
