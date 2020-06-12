@@ -527,7 +527,7 @@ void quartic_linear_gf16v_madd(uint8_t *C, const uint8_t *A, unsigned A_pointer_
 
     ///SHOULD BE DONE BETTER (WIP)--///
     int e_linear[2] = {2, 3}; // the structure of the sk-fields (do we need a constant factor?)
-    unsigned char tmp_product[(_ID + 1) / 2]; // could be better calculated with i4.. in poly.c
+    unsigned char tmp_product[(N_QUADRATIC_POLY(_ID) + 1) / 2]; // could be better calculated with i4.. in poly.c
     unsigned char tmp_summand[(_ID + 2) / 2]; //GF16, round up, one extra field for constant
 
     int tmp_e[15]; //size is too big..

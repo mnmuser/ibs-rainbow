@@ -149,7 +149,7 @@ void quartic_calculate_t4(unsigned char *t2_to_t4, const unsigned char *t1, cons
         int full_e_power2[15] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
         unsigned char *tmp_t4 = malloc((N_QUADRATIC_POLY(_ID) + 1) / 2);
         for (unsigned j = 0; i < _O1; i++) {
-            gf16_quartic_poly_copy(tmp_t4, t4, j * _ID);
+            gf16_quadratic_poly_copy(tmp_t4, t4, j * _ID);
             polynomial_add(5, tmp_t4, full_e_power2, 5, temp, full_e_power2, &o, t4, 0, e);
         }
         free(tmp_t4);

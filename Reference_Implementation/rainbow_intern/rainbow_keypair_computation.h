@@ -82,9 +82,11 @@ void calculate_Q_from_F_cyclic(cpk_t *Qs, const sk_t *Fs, const sk_t *Ts);
 
 void write_gf16_to_quartic(unsigned char *q, const unsigned char *f, unsigned long length_f);
 
-void set_quartic_zero(unsigned char *q, const unsigned length);
+void set_quartic_zero(unsigned char *q, unsigned length);
 
 void gf16_lin_poly_copy(unsigned char *dest, const unsigned char *src, unsigned gf16_offset_src);
+
+void gf16_quadratic_poly_copy(unsigned char *dest, const unsigned char *src, unsigned gf16_offset_src);
 
 void gf16_quartic_poly_copy(unsigned char *dest, const unsigned char *src, unsigned gf16_offset_src);
 

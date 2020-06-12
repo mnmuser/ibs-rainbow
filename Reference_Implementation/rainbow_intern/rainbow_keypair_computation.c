@@ -500,9 +500,14 @@ void gf16_lin_poly_copy(unsigned char *dest, const unsigned char *src, unsigned 
     }
 }
 
+void gf16_quadratic_poly_copy(unsigned char *dest, const unsigned char *src, unsigned gf16_offset_src) {
+    for (unsigned i = 0; i < N_QUADRATIC_POLY(_ID); i++) {
+        gf16v_set_ele(dest, i, gf16v_get_ele(src, gf16_offset_src + i));
+    }
+}
+
 void gf16_quartic_poly_copy(unsigned char *dest, const unsigned char *src, unsigned gf16_offset_src) {
     for (unsigned i = 0; i < N_QUARTIC_POLY(_ID); i++) {
         gf16v_set_ele(dest, i, gf16v_get_ele(src, gf16_offset_src + i));
     }
 }
-
