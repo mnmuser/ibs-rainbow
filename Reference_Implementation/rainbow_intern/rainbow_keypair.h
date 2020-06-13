@@ -18,10 +18,14 @@
 /// number of terms in quadratic polynom
 #define N_QUADRATIC_POLY(id_var) ((id_var+1)*(id_var+2)/2)
 
+#define N_CUBIC_POLY(id_var) ((id_var+1)*(id_var+2)*(id_var+3)/6)
+
 #ifdef  __cplusplus
 extern  "C" {
 #endif
 
+/// standard e TODO: only for ID2
+const unsigned full_e_power2[N_QUARTIC_POLY(_ID)] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
 /// @brief public key for classic rainbow
 ///

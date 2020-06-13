@@ -11,6 +11,8 @@
 #include "parallel_matrix_op.h"
 #include "rainbow_keypair.h"
 
+#include "stdlib.h"
+
 #include "polynomial.h"
 #include "rainbow_keypair_computation.h"
 
@@ -22,9 +24,33 @@ void UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsigned Awi
     unsigned char *runningC = btriC;
     unsigned Aheight = Awidth;
     for (unsigned i = 0; i < Aheight; i++) {
-        for(unsigned j=0;j<i;j++) {
-            unsigned idx = idx_of_trimat(j,i,Aheight);
-            gf256v_add( btriC + idx*size_batch , bA + size_batch*(i*Awidth+j) , size_batch );
+        for (unsigned j = 0; j < i; j++) {
+            unsigned idx = idx_of_trimat(j, i, Aheight);
+            gf256v_add(btriC + idx * size_batch, bA + size_batch * (i * Awidth + j), size_batch);
+        }
+        gf256v_add(runningC, bA + size_batch * (i * Awidth + i), size_batch * (Aheight - i));
+        runningC += size_batch * (Aheight - i);
+    }
+}
+
+// A is grade 3, C is empty, should be modified A afterwards
+void quartic_UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsigned Awidth, unsigned size_batch) {
+    unsigned char *runningC = btriC;
+    unsigned Aheight = Awidth;
+    unsigned o = N_CUBIC_POLY(_ID);
+    int e;
+    int final_o;
+    unsigned char *tmp_C = malloc(N_CUBIC_POLY(_ID));
+    for (unsigned i = 0; i < Aheight; i++) {
+        for (unsigned j = 0; j < i; j++) {
+            unsigned idx = idx_of_trimat(j, i, Aheight);
+            for (unsigned k = 0; k < size_batch * 2; k++) { //gf256 operates on bytes
+                //TODO: memcpy C, then go on ;)
+                gf16_quartic_poly_copy(tmp_C, btriC, k * N_CUBIC_POLY(_ID));
+                polynomial_add(N_CUBIC_POLY(_ID), tmp_C, full_e_power2, N_CUBIC_POLY(_ID), bA, full_e_power2, &final_o,
+                               btriC, k, &e);
+            }
+            //gf256v_add( btriC + idx*size_batch , bA + size_batch*(i*Awidth+j) , size_batch );
         }
         gf256v_add(runningC, bA + size_batch * (i * Awidth + i), size_batch * (Aheight - i));
         runningC += size_batch * (Aheight - i);

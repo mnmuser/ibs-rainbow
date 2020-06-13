@@ -66,7 +66,7 @@ unsigned idx_of_2trimat( unsigned i_row , unsigned j_col , unsigned n_var )
 ///
 void UpperTrianglize( unsigned char * btriC , const unsigned char * bA , unsigned Awidth, unsigned size_batch );
 
-
+void quartic_UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsigned Awidth, unsigned size_batch);
 
 
 ////////////////////  Section:  matrix multiplications  ///////////////////////////////
