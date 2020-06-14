@@ -35,12 +35,13 @@ void UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsigned Awi
 
 // A is grade 3, C is empty, should be modified A afterwards
 void quartic_UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsigned Awidth, unsigned size_batch) {
+
     unsigned char *runningC = btriC;
     unsigned Aheight = Awidth;
-    unsigned o = N_CUBIC_POLY(_ID);
-    int e;
-    int final_o;
+    unsigned e;
+    unsigned final_o;
     unsigned char *tmp_C = malloc(N_QUARTIC_POLY(_ID));
+
     for (unsigned i = 0; i < Aheight; i++) {
         for (unsigned j = 0; j < i; j++) {
             unsigned idx = idx_of_trimat(j, i, Aheight);

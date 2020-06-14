@@ -17,7 +17,7 @@
 
 /******************************************************************************/
 
-int i4_choose(int n, int k)
+unsigned i4_choose(unsigned n, unsigned k)
 
 /******************************************************************************/
 /*
@@ -28,7 +28,7 @@ int i4_choose(int n, int k)
   Discussion:
 
     The value is calculated in such a way as to avoid overflow and
-    roundoff.  The calculation is done in integer arithmetic.
+    roundoff.  The calculation is done in unsignedeger arithmetic.
 
     The formula used is:
 
@@ -56,16 +56,16 @@ int i4_choose(int n, int k)
 
   Parameters:
 
-    Input, int N, K, are the values of N and K.
+    Input, unsigned N, K, are the values of N and K.
 
-    Output, int I4_CHOOSE, the number of combinations of N
+    Output, unsigned I4_CHOOSE, the number of combinations of N
     things taken K at a time.
 */
 {
-    int i;
-    int mn;
-    int mx;
-    int value;
+    unsigned i;
+    unsigned mn;
+    unsigned mx;
+    unsigned value;
 
     mn = i4_min(k, n - k);
 
@@ -87,7 +87,7 @@ int i4_choose(int n, int k)
 
 /******************************************************************************/
 
-int i4_fall(int x, int n)
+unsigned i4_fall(unsigned x, unsigned n)
 
 /******************************************************************************/
 /*
@@ -103,7 +103,7 @@ int i4_fall(int x, int n)
     The number of permutations of N objects out of M is [M]_N.
 
     Moreover, the Stirling numbers of the first kind can be used
-    to convert a falling factorial into a polynomial, as follows:
+    to convert a falling factorial unsignedo a polynomial, as follows:
 
       [X]_N = S^0_N + S^1_N * X + S^2_N * X^2 + ... + S^N_N X^N.
 
@@ -125,17 +125,17 @@ int i4_fall(int x, int n)
 
   Parameters:
 
-    Input, int X, the argument of the falling factorial function.
+    Input, unsigned X, the argument of the falling factorial function.
 
-    Input, int N, the order of the falling factorial function.
+    Input, unsigned N, the order of the falling factorial function.
     If N = 0, FALL = 1, if N = 1, FALL = X.  Note that if N is
     negative, a "rising" factorial will be computed.
 
-    Output, int I4_FALL, the value of the falling factorial function.
+    Output, unsigned I4_FALL, the value of the falling factorial function.
 */
 {
-    int i;
-    int value;
+    unsigned i;
+    unsigned value;
 
     value = 1;
 
@@ -157,7 +157,7 @@ int i4_fall(int x, int n)
 
 /******************************************************************************/
 
-int i4_max(int i1, int i2)
+unsigned i4_max(unsigned i1, unsigned i2)
 
 /******************************************************************************/
 /*
@@ -179,12 +179,12 @@ int i4_max(int i1, int i2)
 
   Parameters:
 
-    Input, int I1, I2, are two integers to be compared.
+    Input, unsigned I1, I2, are two unsigneds to be compared.
 
-    Output, int I4_MAX, the larger of I1 and I2.
+    Output, unsigned I4_MAX, the larger of I1 and I2.
 */
 {
-    int value;
+    unsigned value;
 
     if (i2 < i1) {
         value = i1;
@@ -196,7 +196,7 @@ int i4_max(int i1, int i2)
 
 /******************************************************************************/
 
-int i4_min(int i1, int i2)
+unsigned i4_min(unsigned i1, unsigned i2)
 
 /******************************************************************************/
 /*
@@ -218,12 +218,12 @@ int i4_min(int i1, int i2)
 
   Parameters:
 
-    Input, int I1, I2, two integers to be compared.
+    Input, unsigned I1, I2, two unsigneds to be compared.
 
-    Output, int I4_MIN, the smaller of I1 and I2.
+    Output, unsigned I4_MIN, the smaller of I1 and I2.
 */
 {
-    int value;
+    unsigned value;
 
     if (i1 < i2) {
         value = i1;
@@ -235,7 +235,7 @@ int i4_min(int i1, int i2)
 
 /******************************************************************************/
 
-void i4vec_concatenate(int n1, const unsigned a[], int n2, const unsigned b[], unsigned c[])
+void i4vec_concatenate(unsigned n1, const unsigned a[], unsigned n2, const unsigned b[], unsigned c[])
 
 /******************************************************************************/
 /*
@@ -261,18 +261,18 @@ void i4vec_concatenate(int n1, const unsigned a[], int n2, const unsigned b[], u
 
   Parameters:
 
-    Input, int N1, the number of entries in the first vector.
+    Input, unsigned N1, the number of entries in the first vector.
 
-    Input, int A[N1], the first vector.
+    Input, unsigned A[N1], the first vector.
 
-    Input, int N2, the number of entries in the second vector.
+    Input, unsigned N2, the number of entries in the second vector.
 
-    Input, int B[N2], the second vector.
+    Input, unsigned B[N2], the second vector.
 
-    Output, int I4VEC_CONCATENATE[N1+N2], the concatenated vector.
+    Output, unsigned I4VEC_CONCATENATE[N1+N2], the concatenated vector.
 */
 {
-    int i;
+    unsigned i;
 
     for (i = 0; i < n1; i++) {
         c[i] = a[i];
@@ -284,7 +284,7 @@ void i4vec_concatenate(int n1, const unsigned a[], int n2, const unsigned b[], u
 
 /******************************************************************************/
 
-void i4vec_permute(int n, int p[], int a[])
+void i4vec_permute(unsigned n, unsigned p[], unsigned a[])
 
 /******************************************************************************/
 /*
@@ -296,7 +296,7 @@ void i4vec_permute(int n, int p[], int a[])
 
     An I4VEC is a vector of I4's.
 
-    This routine permutes an array of integer "objects", but the same
+    This routine permutes an array of unsignedeger "objects", but the same
     logic can be used to permute an array of objects of any arithmetic
     type, or an array of objects of any complexity.  The only temporary
     storage required is enough to store a single object.  The number
@@ -329,20 +329,20 @@ void i4vec_permute(int n, int p[], int a[])
 
   Parameters:
 
-    Input, int N, the number of objects.
+    Input, unsigned N, the number of objects.
 
-    Input, int P[N], the permutation.  P(I) = J means
+    Input, unsigned P[N], the permutation.  P(I) = J means
     that the I-th element of the output array should be the J-th
     element of the input array.
 
-    Input/output, int A[N], the array to be permuted.
+    Input/output, unsigned A[N], the array to be permuted.
 */
 {
-    int a_temp;
-    int i;
-    int iget;
-    int iput;
-    int istart;
+    unsigned a_temp;
+    unsigned i;
+    unsigned iget;
+    unsigned iput;
+    unsigned istart;
 
     perm_check0(n, p);
 /*
@@ -366,7 +366,7 @@ void i4vec_permute(int n, int p[], int a[])
             a_temp = a[istart - 1];
             iget = istart;
 /*
-  Copy the new value into the vacated entry.
+  Copy the new value unsignedo the vacated entry.
 */
             for (;;) {
                 iput = iget;
@@ -408,7 +408,7 @@ void i4vec_permute(int n, int p[], int a[])
 
 /******************************************************************************/
 
-int *i4vec_sort_heap_index_a(int n, int a[])
+unsigned *i4vec_sort_heap_index_a(unsigned n, unsigned a[])
 
 /******************************************************************************/
 /*
@@ -452,27 +452,27 @@ int *i4vec_sort_heap_index_a(int n, int a[])
 
   Parameters:
 
-    Input, int N, the number of entries in the array.
+    Input, unsigned N, the number of entries in the array.
 
-    Input, int A[N], an array to be index-sorted.
+    Input, unsigned A[N], an array to be index-sorted.
 
-    Output, int I4VEC_SORT_HEAP_INDEX_A[N], contains the sort index.  The
+    Output, unsigned I4VEC_SORT_HEAP_INDEX_A[N], contains the sort index.  The
     I-th element of the sorted array is A(INDX(I)).
 */
 {
-    int aval;
-    int i;
-    int *indx;
-    int indxt;
-    int ir;
-    int j;
-    int l;
+    unsigned aval;
+    unsigned i;
+    unsigned *indx;
+    unsigned indxt;
+    unsigned ir;
+    unsigned j;
+    unsigned l;
 
     if (n < 1) {
         return NULL;
     }
 
-    indx = (int *) malloc(n * sizeof(int));
+    indx = (unsigned *) malloc(n * sizeof(unsigned));
 
     for (i = 0; i < n; i++) {
         indx[i] = i;
@@ -530,7 +530,7 @@ int *i4vec_sort_heap_index_a(int n, int a[])
 
 /******************************************************************************/
 
-int i4vec_sum(int n, int a[])
+unsigned i4vec_sum(unsigned n, unsigned a[])
 
 /******************************************************************************/
 /*
@@ -566,15 +566,15 @@ int i4vec_sum(int n, int a[])
 
   Parameters:
 
-    Input, int N, the number of entries in the vector.
+    Input, unsigned N, the number of entries in the vector.
 
-    Input, int A[N], the vector to be summed.
+    Input, unsigned A[N], the vector to be summed.
 
-    Output, int I4VEC_SUM, the sum of the entries of A.
+    Output, unsigned I4VEC_SUM, the sum of the entries of A.
 */
 {
-    int i;
-    int sum;
+    unsigned i;
+    unsigned sum;
 
     sum = 0;
     for (i = 0; i < n; i++) {
@@ -586,7 +586,7 @@ int i4vec_sum(int n, int a[])
 
 /******************************************************************************/
 
-void mono_next_grlex(int m, int x[])
+void mono_next_grlex(unsigned m, unsigned x[])
 
 /******************************************************************************/
 /*
@@ -640,16 +640,16 @@ void mono_next_grlex(int m, int x[])
 
   Parameters:
 
-    Input, int M, the spatial dimension.
+    Input, unsigned M, the spatial dimension.
 
-    Input/output, int X[M], the current monomial.
+    Input/output, unsigned X[M], the current monomial.
     The first element is X = [ 0, 0, ..., 0, 0 ].
 */
 {
-    int i;
-    int im1;
-    int j;
-    int t;
+    unsigned i;
+    unsigned im1;
+    unsigned j;
+    unsigned t;
 /*
   Ensure that 1 <= D.
 */
@@ -706,7 +706,7 @@ void mono_next_grlex(int m, int x[])
 
 /******************************************************************************/
 
-int mono_rank_grlex(int m, int x[])
+unsigned mono_rank_grlex(unsigned m, unsigned x[])
 
 /******************************************************************************/
 /*
@@ -764,24 +764,24 @@ int mono_rank_grlex(int m, int x[])
 
   Parameters:
 
-    Input, int M, the spatial dimension.
+    Input, unsigned M, the spatial dimension.
     1 <= M.
 
-    Input, int X[M], the composition.
+    Input, unsigned X[M], the composition.
     For each 1 <= I <= M, we have 0 <= X(I).
 
-    Output, int MONO_RANK_GRLEX, the rank.
+    Output, unsigned MONO_RANK_GRLEX, the rank.
 */
 {
-    int i;
-    int j;
-    int ks;
-    int n;
-    int nm;
-    int ns;
-    int rank;
-    int tim1;
-    int *xs;
+    unsigned i;
+    unsigned j;
+    unsigned ks;
+    unsigned n;
+    unsigned nm;
+    unsigned ns;
+    unsigned rank;
+    unsigned tim1;
+    unsigned *xs;
 /*
   Ensure that 1 <= M.
 */
@@ -811,7 +811,7 @@ int mono_rank_grlex(int m, int x[])
 */
     ns = nm + m - 1;
     ks = m - 1;
-    xs = (int *) malloc(ks * sizeof(int));
+    xs = (unsigned *) malloc(ks * sizeof(unsigned));
     xs[0] = x[0] + 1;
     for (i = 2; i < m; i++) {
         xs[i - 1] = xs[i - 2] + x[i - 1] + 1;
@@ -846,7 +846,7 @@ int mono_rank_grlex(int m, int x[])
 
 /******************************************************************************/
 
-void mono_total_next_grlex(int m, int n, int x[])
+void mono_total_next_grlex(unsigned m, unsigned n, unsigned x[])
 
 /******************************************************************************/
 /*
@@ -890,12 +890,12 @@ void mono_total_next_grlex(int m, int n, int x[])
 
   Parameters:
 
-    Input, int M, the spatial dimension.
+    Input, unsigned M, the spatial dimension.
 
-    Input, int N, the degree.
+    Input, unsigned N, the degree.
     0 <= N.
 
-    Input/output, int X[M], the current monomial.
+    Input/output, unsigned X[M], the current monomial.
     To start the sequence, set X = [ 0, 0, ..., 0, N ].
     The last value in the sequence is X = [ N, 0, ..., 0, 0 ].
 */
@@ -929,7 +929,7 @@ void mono_total_next_grlex(int m, int n, int x[])
 
 /******************************************************************************/
 
-int *mono_unrank_grlex(int m, int rank)
+unsigned *mono_unrank_grlex(unsigned m, unsigned rank)
 
 /******************************************************************************/
 /*
@@ -951,27 +951,27 @@ int *mono_unrank_grlex(int m, int rank)
 
   Parameters:
 
-    Input, int M, the spatial dimension.
+    Input, unsigned M, the spatial dimension.
     1 <= M.
 
-    Input, int RANK, the rank of the composition.
+    Input, unsigned RANK, the rank of the composition.
     1 <= RANK.
 
-    Output, int COMP_UNRANK_GRLEX[M], the composition X of the given rank.
+    Output, unsigned COMP_UNRANK_GRLEX[M], the composition X of the given rank.
     For each I, 0 <= X[I] <= NM, and 
     sum ( 1 <= I <= M ) X[I] = NM.
 */
 {
-    int i;
-    int j;
-    int ks;
-    int nm;
-    int ns;
-    int r;
-    int rank1;
-    int rank2;
-    int *x;
-    int *xs;
+    unsigned i;
+    unsigned j;
+    unsigned ks;
+    unsigned nm;
+    unsigned ns;
+    unsigned r;
+    unsigned rank1;
+    unsigned rank2;
+    unsigned *x;
+    unsigned *xs;
 /*
   Ensure that 1 <= M.
 */
@@ -994,7 +994,7 @@ int *mono_unrank_grlex(int m, int rank)
   Special case M == 1.
 */
     if (m == 1) {
-        x = (int *) malloc(m * sizeof(int));
+        x = (unsigned *) malloc(m * sizeof(unsigned));
         x[0] = rank - 1;
         return x;
     }
@@ -1026,7 +1026,7 @@ int *mono_unrank_grlex(int m, int rank)
 */
     ks = m - 1;
     ns = nm + m - 1;
-    xs = (int *) malloc(ks * sizeof(int));
+    xs = (unsigned *) malloc(ks * sizeof(unsigned));
 
     j = 1;
 
@@ -1044,7 +1044,7 @@ int *mono_unrank_grlex(int m, int rank)
 /*
   Convert from KSUBSET format to COMP format.
 */
-    x = (int *) malloc(m * sizeof(int));
+    x = (unsigned *) malloc(m * sizeof(unsigned));
     x[0] = xs[0] - 1;
     for (i = 2; i < m; i++) {
         x[i - 1] = xs[i - 1] - xs[i - 2] - 1;
@@ -1058,7 +1058,7 @@ int *mono_unrank_grlex(int m, int rank)
 
 /******************************************************************************/
 
-int mono_upto_enum(int m, int n)
+unsigned mono_upto_enum(unsigned m, unsigned n)
 
 /******************************************************************************/
 /*
@@ -1097,15 +1097,15 @@ int mono_upto_enum(int m, int n)
 
   Parameters:
 
-    Input, int M, the spatial dimension.
+    Input, unsigned M, the spatial dimension.
 
-    Input, int N, the maximum degree.
+    Input, unsigned N, the maximum degree.
 
-    Output, int MONO_UPTO_ENUM, the number of monomials in
+    Output, unsigned MONO_UPTO_ENUM, the number of monomials in
     M variables, of total degree N or less.
 */
 {
-    int value;
+    unsigned value;
 
     value = i4_choose(n + m, n);
 
@@ -1114,7 +1114,7 @@ int mono_upto_enum(int m, int n)
 
 /******************************************************************************/
 
-double *mono_value(int m, int n, int f[], double x[])
+double *mono_value(unsigned m, unsigned n, unsigned f[], double x[])
 
 /******************************************************************************/
 /*
@@ -1136,19 +1136,19 @@ double *mono_value(int m, int n, int f[], double x[])
 
   Parameters:
 
-    Input, int M, the spatial dimension.
+    Input, unsigned M, the spatial dimension.
 
-    Input, int N, the number of evaluation points.
+    Input, unsigned N, the number of evaluation pounsigneds.
 
-    Input, int F[M], the exponents of the monomial.
+    Input, unsigned F[M], the exponents of the monomial.
 
-    Input, double X[M*N], the coordinates of the evaluation points.
+    Input, double X[M*N], the coordinates of the evaluation pounsigneds.
 
     Output, double MONO_VALUE[N], the value of the monomial at X.
 */
 {
-    int i;
-    int j;
+    unsigned i;
+    unsigned j;
     double *v;
 
     v = (double *) malloc(n * sizeof(double));
@@ -1156,7 +1156,7 @@ double *mono_value(int m, int n, int f[], double x[])
     for (j = 0; j < n; j++) {
         v[j] = 1.0;
         for (i = 0; i < m; i++) {
-            v[j] = v[j] * pow(x[i + j * m], f[i]);
+            //v[j] = v[j] * pow(x[i + j * m], f[i]);
         }
     }
 
@@ -1165,7 +1165,7 @@ double *mono_value(int m, int n, int f[], double x[])
 
 /******************************************************************************/
 
-void perm_check0(int n, int p[])
+void perm_check0(unsigned n, unsigned p[])
 
 /******************************************************************************/
 /*
@@ -1175,7 +1175,7 @@ void perm_check0(int n, int p[])
 
   Discussion:
 
-    The routine verifies that each of the integers from 0 to
+    The routine verifies that each of the unsigneds from 0 to
     to N-1 occurs among the N entries of the permutation.
 
   Licensing:
@@ -1192,14 +1192,14 @@ void perm_check0(int n, int p[])
 
   Parameters:
 
-    Input, int N, the number of entries.
+    Input, unsigned N, the number of entries.
 
-    Input, int P[N], the array to check.
+    Input, unsigned P[N], the array to check.
 */
 {
-    int ierror;
-    int location;
-    int value;
+    unsigned ierror;
+    unsigned location;
+    unsigned value;
 
     for (value = 0; value < n; value++) {
         ierror = 1;
@@ -1225,7 +1225,7 @@ void perm_check0(int n, int p[])
 
 /******************************************************************************/
 
-void perm_check1(int n, int p[])
+void perm_check1(unsigned n, unsigned p[])
 
 /******************************************************************************/
 /*
@@ -1235,7 +1235,7 @@ void perm_check1(int n, int p[])
 
   Discussion:
 
-    The routine verifies that each of the integers from 1 to
+    The routine verifies that each of the unsigneds from 1 to
     to N occurs among the N entries of the permutation.
 
   Licensing:
@@ -1252,14 +1252,14 @@ void perm_check1(int n, int p[])
 
   Parameters:
 
-    Input, int N, the number of entries.
+    Input, unsigned N, the number of entries.
 
-    Input, int P[N], the array to check.
+    Input, unsigned P[N], the array to check.
 */
 {
-    int ierror;
-    int location;
-    int value;
+    unsigned ierror;
+    unsigned location;
+    unsigned value;
 
     for (value = 1; value <= n; value++) {
         ierror = 1;
@@ -1283,8 +1283,8 @@ void perm_check1(int n, int p[])
 
 /******************************************************************************/
 
-void polynomial_add(int o1, unsigned char c1[], const unsigned e1[], int o2, unsigned char c2[],
-                    const unsigned e2[], int *o, unsigned char c[], unsigned offset, unsigned e[])
+void polynomial_add(unsigned o1, const unsigned char c1[], const unsigned e1[], unsigned o2, const unsigned char c2[],
+                    const unsigned e2[], unsigned *o, unsigned char c[], unsigned offset, unsigned e[])
 
 /******************************************************************************/
 /*
@@ -1307,25 +1307,25 @@ void polynomial_add(int o1, unsigned char c1[], const unsigned e1[], int o2, uns
 
   Parameters:
 
-    Input, int O1, the "order" of polynomial 1.
+    Input, unsigned O1, the "order" of polynomial 1.
 
     Input, double C1[O1], the coefficients of polynomial 1.
 
-    Input, int E1[O1], the indices of the exponents of 
+    Input, unsigned E1[O1], the indices of the exponents of 
     polynomial 1.
 
-    Input, int O2, the "order" of polynomial 2.
+    Input, unsigned O2, the "order" of polynomial 2.
 
     Input, double C2[O2], the coefficients of polynomial 2.
 
-    Input, int E2[O2], the indices of the exponents of 
+    Input, unsigned E2[O2], the indices of the exponents of 
     polynomial 2.
 
-    Output, int *O, the "order" of the polynomial sum.
+    Output, unsigned *O, the "order" of the polynomial sum.
 
     Output, double C[*O], the coefficients of the polynomial sum.
 
-    Output, int E[*O], the indices of the exponents of 
+    Output, unsigned E[*O], the indices of the exponents of 
     the polynomial sum.
 */
 {
@@ -1339,9 +1339,10 @@ void polynomial_add(int o1, unsigned char c1[], const unsigned e1[], int o2, uns
 
 /******************************************************************************/
 
-void polynomial_compress(int o1, unsigned char c1[], unsigned c1_offset, int e1[], int *o2, unsigned char c2[],
+void polynomial_compress(unsigned o1, unsigned char c1[], unsigned c1_offset, unsigned e1[], unsigned *o2,
+                         unsigned char c2[],
                          unsigned c2_offset,
-                         int e2[])
+                         unsigned e2[])
 
 /******************************************************************************/
 /*
@@ -1368,24 +1369,24 @@ void polynomial_compress(int o1, unsigned char c1[], unsigned c1_offset, int e1[
 
   Parameters:
 
-    Input, int O1, the "order" of the polynomial.
+    Input, unsigned O1, the "order" of the polynomial.
 
     Input, double C1[O1], the coefficients of the polynomial.
 
-    Input, int E1[O1], the indices of the exponents of 
+    Input, unsigned E1[O1], the indices of the exponents of 
     the polynomial.
 
-    Output, int *O2, the "order" of the polynomial.
+    Output, unsigned *O2, the "order" of the polynomial.
 
     Output, double C2[*O2], the coefficients of the polynomial.
 
-    Output, int E2[*O2], the indices of the exponents of 
+    Output, unsigned E2[*O2], the indices of the exponents of 
     the polynomial.
 */
 {
 
-    int get;
-    int put;
+    unsigned get;
+    unsigned put;
     const double r8_epsilon_sqrt = 0.1490116119384766E-07;
 /*
   Add coefficients associated with the same exponent.
@@ -1418,8 +1419,8 @@ void polynomial_compress(int o1, unsigned char c1[], unsigned c1_offset, int e1[
 
 /******************************************************************************/
 
-void polynomial_dif(int m, int o1, double c1[], int e1[], int dif[],
-                    int *o2, double c2[], int e2[])
+void polynomial_dif(unsigned m, unsigned o1, double c1[], unsigned e1[], unsigned dif[],
+                    unsigned *o2, double c2[], unsigned e2[])
 
 /******************************************************************************/
 /*
@@ -1441,30 +1442,30 @@ void polynomial_dif(int m, int o1, double c1[], int e1[], int dif[],
 
   Parameters:
 
-    Input, int M, the spatial dimension.
+    Input, unsigned M, the spatial dimension.
 
-    Input, int O1, the "order" of polynomial 1.
+    Input, unsigned O1, the "order" of polynomial 1.
 
     Input, double C1[O1], the coefficients of polynomial 1.
 
-    Input, int E1[O1], the indices of the exponents of 
+    Input, unsigned E1[O1], the indices of the exponents of 
     polynomial 1.
 
-    Input, int DIF[M], indicates the number of 
+    Input, unsigned DIF[M], indicates the number of 
     differentiations in each component.
 
-    Output, int *O2, the "order" of the polynomial derivative.
+    Output, unsigned *O2, the "order" of the polynomial derivative.
 
     Output, double C2[*O2], the coefficients of the polynomial 
     derivative.
 
-    Output, int E2[*O2], the indices of the exponents of the
+    Output, unsigned E2[*O2], the indices of the exponents of the
     polynomial derivative.
 */
 {
-    int *f1;
-    int i;
-    int j;
+    unsigned *f1;
+    unsigned i;
+    unsigned j;
 
     *o2 = o1;
     for (j = 0; j < o1; j++) {
@@ -1488,9 +1489,10 @@ void polynomial_dif(int m, int o1, double c1[], int e1[], int dif[],
 
 /******************************************************************************/
 
-void polynomial_mul(int o1, const unsigned char c1[], unsigned c1_offset, int e1[], int o2, const unsigned char c2[],
+void polynomial_mul(unsigned o1, const unsigned char c1[], unsigned c1_offset, unsigned e1[], unsigned o2,
+                    const unsigned char c2[],
                     unsigned c2_offset,
-                    int e2[], int *o, unsigned char c[], unsigned c_offset, int e[])
+                    unsigned e2[], unsigned *o, unsigned char c[], unsigned c_offset, unsigned e[])
 
 /******************************************************************************/
 /*
@@ -1512,40 +1514,40 @@ void polynomial_mul(int o1, const unsigned char c1[], unsigned c1_offset, int e1
 
   Parameters:
 
-    Input, int M, the spatial dimension. -> in this case same as _ID
+    Input, unsigned M, the spatial dimension. -> in this case same as _ID
 
-    Input, int O1, the "order" of polynomial 1.
+    Input, unsigned O1, the "order" of polynomial 1.
 
     Input, double C1[O1], the coefficients of polynomial 1.
 
-    Input, int E1[O1], the indices of the exponents of 
+    Input, unsigned E1[O1], the indices of the exponents of 
     polynomial 1.
 
-    Input, int O2, the "order" of polynomial 2.
+    Input, unsigned O2, the "order" of polynomial 2.
 
     Input, double C2[O2], the coefficients of polynomial 2.
 
-    Input, int E2[O2], the indices of the exponents of 
+    Input, unsigned E2[O2], the indices of the exponents of 
     polynomial 2.
 
-    Output, int *O, the "order" of the polynomial product.
+    Output, unsigned *O, the "order" of the polynomial product.
 
     Output, double C[*O], the coefficients of the polynomial product.
 
-    Output, int E[*O], the indices of the exponents of the 
+    Output, unsigned E[*O], the indices of the exponents of the 
     polynomial product.
 */
 {
-    int m = _ID;
+    unsigned m = _ID;
 
-    int *f;
-    int *f1;
-    int *f2;
-    int i;
-    int j;
-    int k;
+    unsigned *f;
+    unsigned *f1;
+    unsigned *f2;
+    unsigned i;
+    unsigned j;
+    unsigned k;
 
-    f = (int *) malloc(m * sizeof(int));
+    f = (unsigned *) malloc(m * sizeof(unsigned));
 
     *o = 0;
     for (j = 0; j < o2; j++) {
@@ -1578,13 +1580,13 @@ void polynomial_mul(int o1, const unsigned char c1[], unsigned c1_offset, int e1
 
 /******************************************************************************/
 
-void polynomial_print(int o, const unsigned char c[], unsigned gf16_offset, int e[], char *title)
+void polynomial_prunsigned(unsigned o, const unsigned char c[], unsigned gf16_offset, unsigned e[], char *title)
 
 /******************************************************************************/
 /*
   Purpose:
 
-    POLYNOMIAL_PRINT prints a polynomial.
+    POLYNOMIAL_PRunsigned prunsigneds a polynomial.
 
   Licensing:
 
@@ -1600,25 +1602,25 @@ void polynomial_print(int o, const unsigned char c[], unsigned gf16_offset, int 
 
   Parameters:
 
-    Input, int M, the spatial dimension.
+    Input, unsigned M, the spatial dimension.
 
-    Input, int O, the "order" of the polynomial, that is,
+    Input, unsigned O, the "order" of the polynomial, that is,
     simply the number of terms.
 
     Input, double C[O], the coefficients.
 
-    Input, int E[O], the indices of the exponents.
+    Input, unsigned E[O], the indices of the exponents.
 
     Input, char *TITLE, a title.
 */
 {
-    int *f;
-    int i;
-    int j;
+    unsigned *f;
+    unsigned i;
+    unsigned j;
 
     printf("%s\n", title);
 
-    int m = _ID;
+    unsigned m = _ID;
 
     if (o == 0) {
         printf("      0.\n");
@@ -1653,7 +1655,7 @@ void polynomial_print(int o, const unsigned char c[], unsigned gf16_offset, int 
 
 /******************************************************************************/
 
-void polynomial_scale(double s, int m, int o, double c[], int e[])
+void polynomial_scale(double s, unsigned m, unsigned o, double c[], unsigned e[])
 
 /******************************************************************************/
 /*
@@ -1677,17 +1679,17 @@ void polynomial_scale(double s, int m, int o, double c[], int e[])
 
     Input, double S, the scale factor.
 
-    Input, int M, the spatial dimension.
+    Input, unsigned M, the spatial dimension.
 
-    Input, int O, the "order" of the polynomial.
+    Input, unsigned O, the "order" of the polynomial.
 
     Input/output, double C[O], the coefficients of the scaled polynomial.
 
-    Input, int E[O], the indices of the exponents of 
+    Input, unsigned E[O], the indices of the exponents of 
     the scaled polynomial.
 */
 {
-    int i;
+    unsigned i;
 
     for (i = 0; i < o; i++) {
         c[i] = c[i] * s;
@@ -1696,7 +1698,7 @@ void polynomial_scale(double s, int m, int o, double c[], int e[])
 
 /******************************************************************************/
 
-void polynomial_sort(int o, unsigned char c[], unsigned offset, int e[])
+void polynomial_sort(unsigned o, unsigned char c[], unsigned offset, unsigned e[])
 
 /******************************************************************************/
 /*
@@ -1723,15 +1725,15 @@ void polynomial_sort(int o, unsigned char c[], unsigned offset, int e[])
 
   Parameters:
 
-    Input, int O, the "order" of the polynomial.
+    Input, unsigned O, the "order" of the polynomial.
 
     Input/output, double C[O], the coefficients of the polynomial.
 
-    Input/output, int E[O], the indices of the exponents of 
+    Input/output, unsigned E[O], the indices of the exponents of 
     the polynomial.
 */
 {
-    int *indx;
+    unsigned *indx;
 
     indx = i4vec_sort_heap_index_a(o, e);
 
@@ -1743,7 +1745,7 @@ void polynomial_sort(int o, unsigned char c[], unsigned offset, int e[])
 
 /******************************************************************************/
 
-double *polynomial_value(int m, int o, double c[], int e[], int nx,
+double *polynomial_value(unsigned m, unsigned o, double c[], unsigned e[], unsigned nx,
                          double x[])
 
 /******************************************************************************/
@@ -1771,25 +1773,25 @@ double *polynomial_value(int m, int o, double c[], int e[], int nx,
 
   Parameters:
 
-    Input, int M, the spatial dimension.
+    Input, unsigned M, the spatial dimension.
 
-    Input, int O, the "order" of the polynomial.
+    Input, unsigned O, the "order" of the polynomial.
 
     Input, double C[O], the coefficients of the polynomial.
 
-    Input, int E[O], the indices of the exponents 
+    Input, unsigned E[O], the indices of the exponents 
     of the polynomial.
 
-    Input, int NX, the number of evaluation points.
+    Input, unsigned NX, the number of evaluation pounsigneds.
 
-    Input, double X[M*NX], the coordinates of the evaluation points.
+    Input, double X[M*NX], the coordinates of the evaluation pounsigneds.
 
     Output, double POLYNOMIAL_VALUE[NX], the value of the polynomial at X.
 */
 {
-    int *f;
-    int j;
-    int k;
+    unsigned *f;
+    unsigned j;
+    unsigned k;
     double *p;
     double *v;
 
@@ -1814,7 +1816,8 @@ double *polynomial_value(int m, int o, double c[], int e[], int nx,
 
 /******************************************************************************/
 
-void r8vec_concatenate(int n1, unsigned char a[], int n2, unsigned char b[], unsigned char c[], unsigned offset)
+void
+r8vec_concatenate(unsigned n1, unsigned char a[], unsigned n2, unsigned char b[], unsigned char c[], unsigned offset)
 
 /******************************************************************************/
 /*
@@ -1840,18 +1843,18 @@ void r8vec_concatenate(int n1, unsigned char a[], int n2, unsigned char b[], uns
 
   Parameters:
 
-    Input, int N1, the number of entries in the first vector.
+    Input, unsigned N1, the number of entries in the first vector.
 
     Input, double A[N1], the first vector.
 
-    Input, int N2, the number of entries in the second vector.
+    Input, unsigned N2, the number of entries in the second vector.
 
     Input, double B[N2], the second vector.
 
     Output, double C[N1+N2], the concatenated vector.
 */
 {
-    int i;
+    unsigned i;
 
     for (i = 0; i < n1; i++) {
         gf16v_set_ele(c, i + offset, gf16v_get_ele(a, i));
@@ -1865,7 +1868,7 @@ void r8vec_concatenate(int n1, unsigned char a[], int n2, unsigned char b[], uns
 
 /******************************************************************************/
 
-void r8vec_permute(int n, int p[], unsigned char a[], unsigned offset)
+void r8vec_permute(unsigned n, unsigned p[], unsigned char a[], unsigned offset)
 
 /******************************************************************************/
 /*
@@ -1910,18 +1913,18 @@ void r8vec_permute(int n, int p[], unsigned char a[], unsigned offset)
 
   Parameters:
 
-    Input, int N, the number of objects.
+    Input, unsigned N, the number of objects.
 
-    Input, int P[N], the permutation.
+    Input, unsigned P[N], the permutation.
 
     Input/output, double A[N], the array to be permuted.
 */
 {
     unsigned char a_temp;
-    int i;
-    int iget;
-    int iput;
-    int istart;
+    unsigned i;
+    unsigned iget;
+    unsigned iput;
+    unsigned istart;
 
     perm_check0(n, p);
 /*
@@ -1945,7 +1948,7 @@ void r8vec_permute(int n, int p[], unsigned char a[], unsigned offset)
             a_temp = gf16v_get_ele(a, istart - 1 + offset);
             iget = istart;
 /*
-  Copy the new value into the vacated entry.
+  Copy the new value unsignedo the vacated entry.
 */
             for (;;) {
                 iput = iget;
