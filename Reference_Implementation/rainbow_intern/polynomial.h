@@ -6,7 +6,7 @@ int i4_max(int i1, int i2);
 
 int i4_min(int i1, int i2);
 
-void i4vec_concatenate(int n1, int a[], int n2, int b[], int c[]);
+void i4vec_concatenate(int n1, const unsigned a[], int n2, const unsigned b[], unsigned c[]);
 
 void i4vec_permute(int n, int p[], int a[]);
 
@@ -30,8 +30,8 @@ void perm_check0(int n, int p[]);
 
 void perm_check1(int n, int p[]);
 
-void polynomial_add(int o1, unsigned char c1[], int e1[], int o2, unsigned char c2[],
-                    int e2[], int *o, unsigned char c[], unsigned offset, int e[]);
+void polynomial_add(int o1, unsigned char c1[], const unsigned e1[], int o2, unsigned char c2[],
+                    const unsigned e2[], int *o, unsigned char c[], unsigned offset, int e[]);
 
 void polynomial_axpy(double s, int o1, double c1[], int e1[], int o2, double c2[],
                      int e2[], int *o, double c[], unsigned offset, int e[]);

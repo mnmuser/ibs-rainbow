@@ -40,15 +40,15 @@ void quartic_UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsi
     unsigned o = N_CUBIC_POLY(_ID);
     int e;
     int final_o;
-    unsigned char *tmp_C = malloc(N_CUBIC_POLY(_ID));
+    unsigned char *tmp_C = malloc(N_QUARTIC_POLY(_ID));
     for (unsigned i = 0; i < Aheight; i++) {
         for (unsigned j = 0; j < i; j++) {
             unsigned idx = idx_of_trimat(j, i, Aheight);
             for (unsigned k = 0; k < size_batch * 2; k++) { //gf256 operates on bytes
                 //TODO: memcpy C, then go on ;)
-                gf16_quartic_poly_copy(tmp_C, btriC, k * N_CUBIC_POLY(_ID));
+                gf16_quartic_poly_copy(tmp_C, btriC, (2 * idx * size_batch) + k * N_QUARTIC_POLY(_ID));
                 polynomial_add(N_CUBIC_POLY(_ID), tmp_C, full_e_power2, N_CUBIC_POLY(_ID), bA, full_e_power2, &final_o,
-                               btriC, k, &e);
+                               btriC, k * N_QUARTIC_POLY(_ID), &e);
             }
             //gf256v_add( btriC + idx*size_batch , bA + size_batch*(i*Awidth+j) , size_batch );
         }
