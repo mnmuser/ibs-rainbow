@@ -43,7 +43,7 @@ void quartic_UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsi
     for (unsigned i = 0; i < Aheight; i++) {
         for (unsigned j = 0; j < i; j++) {
             unsigned idx = idx_of_trimat(j, i, Aheight);
-            for (unsigned k = 0; k < size_batch * N_QUARTIC_POLY(_ID); k++) {
+            for (unsigned k = 0; k < size_batch; k++) {
                 gf16_quartic_poly_copy(btriC, (idx * size_batch * 2) + (N_QUARTIC_POLY(_ID) * k), bA,
                                        (size_batch * (i * Awidth + j) * 2) + (N_QUARTIC_POLY(_ID) * k));
             }
