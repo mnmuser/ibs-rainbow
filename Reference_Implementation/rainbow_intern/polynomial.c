@@ -284,7 +284,7 @@ void i4vec_concatenate(unsigned n1, const unsigned a[], unsigned n2, const unsig
 
 /******************************************************************************/
 
-void i4vec_permute(unsigned n, unsigned p[], unsigned a[])
+void i4vec_permute(int n, int p[], int a[])
 
 /******************************************************************************/
 /*
@@ -296,7 +296,7 @@ void i4vec_permute(unsigned n, unsigned p[], unsigned a[])
 
     An I4VEC is a vector of I4's.
 
-    This routine permutes an array of unsignedeger "objects", but the same
+    This routine permutes an array of integer "objects", but the same
     logic can be used to permute an array of objects of any arithmetic
     type, or an array of objects of any complexity.  The only temporary
     storage required is enough to store a single object.  The number
@@ -329,20 +329,20 @@ void i4vec_permute(unsigned n, unsigned p[], unsigned a[])
 
   Parameters:
 
-    Input, unsigned N, the number of objects.
+    Input, int N, the number of objects.
 
-    Input, unsigned P[N], the permutation.  P(I) = J means
+    Input, int P[N], the permutation.  P(I) = J means
     that the I-th element of the output array should be the J-th
     element of the input array.
 
-    Input/output, unsigned A[N], the array to be permuted.
+    Input/output, int A[N], the array to be permuted.
 */
 {
-    unsigned a_temp;
-    unsigned i;
-    unsigned iget;
-    unsigned iput;
-    unsigned istart;
+    int a_temp;
+    int i;
+    int iget;
+    int iput;
+    int istart;
 
     perm_check0(n, p);
 /*
@@ -366,7 +366,7 @@ void i4vec_permute(unsigned n, unsigned p[], unsigned a[])
             a_temp = a[istart - 1];
             iget = istart;
 /*
-  Copy the new value unsignedo the vacated entry.
+  Copy the new value into the vacated entry.
 */
             for (;;) {
                 iput = iget;
@@ -1868,7 +1868,7 @@ r8vec_concatenate(unsigned n1, unsigned char a[], unsigned n2, unsigned char b[]
 
 /******************************************************************************/
 
-void r8vec_permute(unsigned n, unsigned p[], unsigned char a[], unsigned offset)
+void r8vec_permute(int n, int p[], unsigned char a[], unsigned offset)
 
 /******************************************************************************/
 /*
@@ -1921,10 +1921,10 @@ void r8vec_permute(unsigned n, unsigned p[], unsigned char a[], unsigned offset)
 */
 {
     unsigned char a_temp;
-    unsigned i;
-    unsigned iget;
-    unsigned iput;
-    unsigned istart;
+    int i;
+    int iget;
+    int iput;
+    int istart;
 
     perm_check0(n, p);
 /*

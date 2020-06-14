@@ -12,6 +12,7 @@
 #include "rainbow_keypair.h"
 
 #include "stdlib.h"
+#include "string.h"
 
 #include "polynomial.h"
 #include "rainbow_keypair_computation.h"
@@ -33,28 +34,28 @@ void UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsigned Awi
     }
 }
 
-// A is grade 3, C is empty, should be modified A afterwards
+// A is grade 4, C is empty, should be modified A afterwards
 void quartic_UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsigned Awidth, unsigned size_batch) {
 
     unsigned char *runningC = btriC;
     unsigned Aheight = Awidth;
-    unsigned e;
-    unsigned final_o;
-    unsigned char *tmp_C = malloc(N_QUARTIC_POLY(_ID));
 
     for (unsigned i = 0; i < Aheight; i++) {
         for (unsigned j = 0; j < i; j++) {
             unsigned idx = idx_of_trimat(j, i, Aheight);
-            for (unsigned k = 0; k < size_batch * 2; k++) { //gf256 operates on bytes
-                //TODO: memcpy C, then go on ;)
-                gf16_quartic_poly_copy(tmp_C, btriC, (2 * idx * size_batch) + k * N_QUARTIC_POLY(_ID));
-                polynomial_add(N_CUBIC_POLY(_ID), tmp_C, full_e_power2, N_CUBIC_POLY(_ID), bA, full_e_power2, &final_o,
-                               btriC, k * N_QUARTIC_POLY(_ID), &e);
+            for (unsigned k = 0; k < size_batch * N_QUARTIC_POLY(_ID); k++) {
+                gf16_quartic_poly_copy(btriC, (idx * size_batch * 2) + (N_QUARTIC_POLY(_ID) * k), bA,
+                                       (size_batch * (i * Awidth + j) * 2) + (N_QUARTIC_POLY(_ID) * k));
             }
+            /// I hope this is correct and not to easy
             //gf256v_add( btriC + idx*size_batch , bA + size_batch*(i*Awidth+j) , size_batch );
         }
-        gf256v_add(runningC, bA + size_batch * (i * Awidth + i), size_batch * (Aheight - i));
-        runningC += size_batch * (Aheight - i);
+        for (unsigned l = 0; l < size_batch * (Aheight - i); l++) {
+            gf16_quartic_poly_copy(runningC, N_QUARTIC_POLY(_ID) * l + (i * 2 * size_batch * (Aheight - i)), bA,
+                                   (size_batch * (i * Awidth + i) * 2) + l * N_QUARTIC_POLY(_ID));
+        }
+        //gf256v_add(runningC, bA + size_batch * (i * Awidth + i), size_batch * (Aheight - i));
+        //runningC += size_batch * (Aheight - i) * N_QUARTIC_POLY(_ID);
     }
 }
 
@@ -453,18 +454,16 @@ void quartic_gf16v_madd(uint8_t *C, const uint8_t *A, unsigned A_pointer_index, 
                         unsigned B_pointer_index, unsigned B_offset, unsigned size_batch, unsigned size_Bcolvec) {
 
     ///SHOULD BE DONE BETTER (WIP)--///
-    int e_linear[2] = {2, 3}; // the structure of the sk-fields (do we need a constant factor?)
+    unsigned e_linear[2] = {2, 3}; // the structure of the sk-fields (do we need a constant factor?)
     unsigned char tmp_product[(N_QUARTIC_POLY(_ID) + 1) / 2]; // could be better calculated with i4.. in poly.c
     unsigned char tmp_summand[(_ID + 2) / 2]; //GF16, round up, one extra field for constant
 
-    int tmp_e[15]; //size is too big..
-    int final_e[15];
+    unsigned tmp_e[15]; //size is too big..
+    unsigned final_e[15];
 
-    int tmp_o = 0;
-    int final_o = 0;
+    unsigned tmp_o = 0;
+    unsigned final_o = 0;
 
-    //#define e_standard(n) (n+1) -> mal ersetzen
-    int full_e_power2[15] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
     ///--SHOULD BE DONE BETTER (WIP)///
 
     for (unsigned l = 0; l < size_batch * 2; l++) { // *2 for gf16 (size is in byte)
@@ -487,21 +486,18 @@ void quartic_gf16v_madd2(uint8_t *C, const uint8_t *Av, unsigned A_pointer_index
                          unsigned size_Bcolvec) {
 
     ///SHOULD BE DONE BETTER (WIP)--///
-    int e_linear[2] = {2, 3}; // the structure of the sk-fields (do we need a constant factor?)
+    unsigned e_linear[2] = {2, 3}; // the structure of the sk-fields (do we need a constant factor?)
     unsigned char tmp_product[(N_QUARTIC_POLY(_ID) + 1) / 2]; // could be better calculated with i4.. in poly.c
     unsigned char tmp_summand[(_ID + 2) / 2]; //GF16, round up, one extra field for constant
 
-    int tmp_e[15]; //size is too big..
-    int final_e[15];
+    unsigned tmp_e[15]; //size is too big..
+    unsigned final_e[15];
 
-    int tmp_o = 0;
-    int final_o = 0;
+    unsigned tmp_o = 0;
+    unsigned final_o = 0;
 
-    //#define e_standard(n) (n+1) -> mal ersetzen
-    int full_e_power2[15] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
-
-    int *e_A;
-    int o_A;
+    unsigned *e_A;
+    unsigned o_A;
     unsigned A_loop_offset;
 
     if (A_linear) {
@@ -553,15 +549,15 @@ void quartic_linear_gf16v_madd(uint8_t *C, const uint8_t *A, unsigned A_pointer_
                                unsigned size_Bcolvec) {
 
     ///SHOULD BE DONE BETTER (WIP)--///
-    int e_linear[2] = {2, 3}; // the structure of the sk-fields (do we need a constant factor?)
+    unsigned e_linear[2] = {2, 3}; // the structure of the sk-fields (do we need a constant factor?)
     unsigned char tmp_product[(N_QUADRATIC_POLY(_ID) + 1) / 2]; // could be better calculated with i4.. in poly.c
     unsigned char tmp_summand[(_ID + 2) / 2]; //GF16, round up, one extra field for constant
 
-    int tmp_e[15]; //size is too big..
-    int final_e[15];
+    unsigned tmp_e[15]; //size is too big..
+    unsigned final_e[15];
 
-    int tmp_o = 0;
-    int final_o = 0;
+    unsigned tmp_o = 0;
+    unsigned final_o = 0;
 
     ///--SHOULD BE DONE BETTER (WIP)///
 

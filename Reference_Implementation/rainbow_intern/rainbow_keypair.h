@@ -25,7 +25,7 @@ extern  "C" {
 #endif
 
 /// standard e TODO: only for ID2
-const unsigned full_e_power2[N_QUARTIC_POLY(_ID)] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+extern const unsigned full_e_power2[N_QUARTIC_POLY(_ID)];
 
 /// @brief public key for classic rainbow
 ///

@@ -189,32 +189,3 @@ int rainbow_verify( const uint8_t * digest , const uint8_t * signature , const p
     }
     return (0==cc)? 0: -1;
 }
-
-
-
-///////////////  cyclic version  ///////////////////////////
-
-
-int rainbow_sign_cyclic( uint8_t * signature , const csk_t * csk , const uint8_t * digest )
-{
-    sk_t * sk = aligned_alloc( 32 , sizeof(sk_t) + 32 );
-    if( NULL == sk ) return -1;
-    generate_secretkey_cyclic( sk, csk->pk_seed , csk->sk_seed );   // generating classic secret key.
-
-    int r = rainbow_sign( signature , sk , digest );
-    free( sk );
-    return r;
-}
-
-int rainbow_verify_cyclic( const uint8_t * digest , const uint8_t * signature , const cpk_t * _pk )
-{
-    pk_t * pk = aligned_alloc( 32 , sizeof(pk_t) + 32 );
-    if( NULL == pk ) return -1;
-    cpk_to_pk( pk , _pk );         // generating classic public key.
-
-    int r = rainbow_verify( digest , signature , pk );
-    free( pk );
-    return r;
-}
-
-

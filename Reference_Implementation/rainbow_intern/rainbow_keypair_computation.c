@@ -220,7 +220,7 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const sk_t *sk) {
 //    polynomial_print(15, tempQ, 0, full_e_power2, "tempQ(0): ");
 //    polynomial_print(15, tempQ, 15, full_e_power2, "tempQ(60): ");
     //TODO: this triangle shit ->
-    UpperTrianglize(cpk->l1_Q5, tempQ, _O1, _O1_BYTE * N_QUARTIC_POLY(_ID));    // UT( ... )   // Q5
+    quartic_UpperTrianglize(cpk->l1_Q5, tempQ, _O1, _O1_BYTE * N_QUARTIC_POLY(_ID));    // UT( ... )   // Q5
 
 //    polynomial_print(15, cpk->l1_Q5, 0, full_e_power2, "l1_Q5(0): ");
 
@@ -241,7 +241,7 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const sk_t *sk) {
     set_quartic_zero(tempQ, _O1_BYTE * _O2 * _O2);                                              // l1_Q9
     quartic_batch_matTr_madd_gf16(tempQ, t2, _V1, _V1_BYTE, _O2, cpk->l1_Q3, _O2,
                                   _O1_BYTE);           // T2tr * ( F1_T2 + F2_T3 )
-    UpperTrianglize(cpk->l1_Q9, tempQ, _O2, _O1_BYTE);                                   // Q9
+    quartic_UpperTrianglize(cpk->l1_Q9, tempQ, _O2, _O1_BYTE);                                   // Q9
 
     quartic_batch_trimatTr_madd_gf16(cpk->l1_Q3, sk->l1_F1, t2, _V1, _V1_BYTE, _O2,
                                      _O1_BYTE);        // F1_F1T_T2 + F2_T3  // Q3
@@ -265,7 +265,7 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const sk_t *sk) {
     set_quartic_zero(tempQ, _O2_BYTE * _O1 * _O1);                                               // l2_Q5
     quartic_batch_matTr_madd_gf16(tempQ, sk->t1, _V1, _V1_BYTE, _O1, cpk->l2_Q2, _O1,
                                   _O2_BYTE);        // t1_tr*(F1*T1 + F2)
-    UpperTrianglize(cpk->l2_Q5, tempQ, _O1, _O2_BYTE);                                     // UT( ... )   // Q5
+    quartic_UpperTrianglize(cpk->l2_Q5, tempQ, _O1, _O2_BYTE);                                     // UT( ... )   // Q5
 
     quartic_batch_trimatTr_madd_gf16(cpk->l2_Q2, sk->l2_F1, sk->t1, _V1, _V1_BYTE, _O1, _O2_BYTE);    // Q2
 
@@ -294,7 +294,7 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const sk_t *sk) {
     quartic_batch_matTr_madd_gf16(tempQ, sk->t3, _O1, _O1_BYTE, _O2, cpk->l2_Q6, _O2,
                                   _O2_BYTE);       // T2tr*( ..... ) + T3tr*( ..... )
     set_quartic_zero(cpk->l2_Q9, _O2_BYTE * N_TRIANGLE_TERMS(_O2));
-    UpperTrianglize(cpk->l2_Q9, tempQ, _O2, _O2_BYTE);                                   // Q9
+    quartic_UpperTrianglize(cpk->l2_Q9, tempQ, _O2, _O2_BYTE);                                   // Q9
 
     quartic_batch_trimatTr_madd_gf16(cpk->l2_Q3, sk->l2_F1, t2, _V1, _V1_BYTE, _O2,
                                      _O2_BYTE);        // F1_F1T_T2 + F2_T3 + F3 // Q3
@@ -357,8 +357,9 @@ void gf16_quadratic_poly_copy(unsigned char *dest, const unsigned char *src, uns
     }
 }
 
-void gf16_quartic_poly_copy(unsigned char *dest, const unsigned char *src, unsigned gf16_offset_src) {
+void gf16_quartic_poly_copy(unsigned char *dest, unsigned dest_gf16_offset_src, const unsigned char *src,
+                            unsigned src_gf16_offset_src) {
     for (unsigned i = 0; i < N_QUARTIC_POLY(_ID); i++) {
-        gf16v_set_ele(dest, i, gf16v_get_ele(src, gf16_offset_src + i));
+        gf16v_set_ele(dest, dest_gf16_offset_src + i, gf16v_get_ele(src, src_gf16_offset_src + i));
     }
 }
