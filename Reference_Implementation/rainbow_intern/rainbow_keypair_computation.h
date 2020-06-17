@@ -42,14 +42,14 @@ struct rainbow_extend_publickey {
 
 
 ///
-/// @brief converting formats of public keys : from ext_cpk_t version to pk_t
+/// @brief converting formats of public keys : from ext_cpk_t version to mpk_t
 ///
 /// @param[out] pk       - the classic public key.
 /// @param[in]  cpk      - the internal public key.
 ///
-void extcpk_to_pk(pk_t *pk, const ext_cpk_t *cpk);
+void extcpk_to_pk(mpk_t *pk, const ext_cpk_t *cpk);
 
-void quartic_extcpk_to_pk(pk_t *pk, const ext_cpk_t *cpk);
+void quartic_extcpk_to_pk(mpk_t *pk, const ext_cpk_t *cpk);
 
 /////////////////////////////////////////////////
 
@@ -59,7 +59,7 @@ void quartic_extcpk_to_pk(pk_t *pk, const ext_cpk_t *cpk);
 /// @param[out] Qs       - the public key
 /// @param[in]  Fs       - the secret key
 ///
-void calculate_Q_from_F(ext_cpk_t *Qs, const sk_t *Fs);
+void calculate_Q_from_F(ext_cpk_t *Qs, const msk_t *Fs);
 
 
 ///
@@ -69,7 +69,7 @@ void calculate_Q_from_F(ext_cpk_t *Qs, const sk_t *Fs);
 /// @param[in]  Qs       - parts of the pk: l1_Q1, l1_Q2, l2_Q1, l2_Q2, l2_Q3, l2_Q5, l2_Q6
 /// @param[in]  Ts       - parts of the sk: T1, T4, T3
 ///
-void calculate_F_from_Q( sk_t * Fs , const sk_t * Qs , sk_t * Ts );
+void calculate_F_from_Q(msk_t *Fs, const msk_t *Qs, msk_t *Ts);
 
 ///
 /// @brief Computing parts of the pk from the secret key
@@ -78,7 +78,7 @@ void calculate_F_from_Q( sk_t * Fs , const sk_t * Qs , sk_t * Ts );
 /// @param[in]  Fs       - parts of the sk: l1_F1, l1_F2, l2_F1, l2_F2, l2_F3, l2_F5, l2_F6
 /// @param[in]  Ts       - parts of the sk: T1, T4, T3
 ///
-void calculate_Q_from_F_cyclic(cpk_t *Qs, const sk_t *Fs, const sk_t *Ts);
+void calculate_Q_from_F_cyclic(cpk_t *Qs, const msk_t *Fs, const msk_t *Ts);
 
 void write_gf16_to_quartic(unsigned char *q, const unsigned char *f, unsigned long length_f);
 

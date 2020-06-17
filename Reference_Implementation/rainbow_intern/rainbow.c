@@ -32,17 +32,16 @@
 
 
 
-int rainbow_sign( uint8_t * signature , const sk_t * sk , const uint8_t * _digest )
-{
+int rainbow_sign(uint8_t *signature, const msk_t *sk, const uint8_t *_digest) {
     // allocate temporary storage.
-    uint8_t * mat_l1 = aligned_alloc( 32 , _O1*_O1_BYTE );
-    uint8_t * mat_l2 = aligned_alloc( 32 , _O2*_O2_BYTE );
-    uint8_t * mat_buffer = aligned_alloc( 32 , 2*_MAX_O*_MAX_O_BYTE );
+    uint8_t *mat_l1 = aligned_alloc(32, _O1 * _O1_BYTE);
+    uint8_t *mat_l2 = aligned_alloc(32, _O2 * _O2_BYTE);
+    uint8_t *mat_buffer = aligned_alloc(32, 2 * _MAX_O * _MAX_O_BYTE);
 
     // setup PRNG
     prng_t prng_sign;
-    uint8_t prng_preseed[LEN_SKSEED+_HASH_LEN];
-    memcpy( prng_preseed , sk->sk_seed , LEN_SKSEED );
+    uint8_t prng_preseed[LEN_SKSEED + _HASH_LEN];
+    memcpy(prng_preseed, sk->sk_seed, LEN_SKSEED);
     memcpy( prng_preseed + LEN_SKSEED , _digest , _HASH_LEN );                        // prng_preseed = sk_seed || digest
     uint8_t prng_seed[_HASH_LEN];
     hash_msg( prng_seed , _HASH_LEN , prng_preseed , _HASH_LEN+LEN_SKSEED );
@@ -167,20 +166,16 @@ int rainbow_sign( uint8_t * signature , const sk_t * sk , const uint8_t * _diges
 }
 
 
-
-
-
-int rainbow_verify( const uint8_t * digest , const uint8_t * signature , const pk_t * pk )
-{
+int rainbow_verify(const uint8_t *digest, const uint8_t *signature, const mpk_t *pk) {
     unsigned char digest_ck[_PUB_M_BYTE];
     // public_map( digest_ck , pk , signature ); Evaluating the quadratic public polynomials.
-    batch_quad_trimat_eval( digest_ck , pk->pk , signature , _PUB_N , _PUB_M_BYTE );
+    batch_quad_trimat_eval(digest_ck, pk->pk, signature, _PUB_N, _PUB_M_BYTE);
 
     unsigned char correct[_PUB_M_BYTE];
     unsigned char digest_salt[_HASH_LEN + _SALT_BYTE];
-    memcpy( digest_salt , digest , _HASH_LEN );
-    memcpy( digest_salt+_HASH_LEN , signature+_PUB_N_BYTE , _SALT_BYTE );
-    hash_msg( correct , _PUB_M_BYTE , digest_salt , _HASH_LEN+_SALT_BYTE );  // H( digest || salt )
+    memcpy(digest_salt, digest, _HASH_LEN);
+    memcpy(digest_salt + _HASH_LEN, signature + _PUB_N_BYTE, _SALT_BYTE);
+    hash_msg(correct, _PUB_M_BYTE, digest_salt, _HASH_LEN + _SALT_BYTE);  // H( digest || salt )
 
     // check consistancy.
     unsigned char cc = 0;

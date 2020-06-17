@@ -20,15 +20,14 @@
 
 
 
-void extcpk_to_pk( pk_t * pk , const ext_cpk_t * cpk )
-{
-    const unsigned char * idx_l1 = cpk->l1_Q1;
-    const unsigned char * idx_l2 = cpk->l2_Q1;
-    for(unsigned i=0;i<_V1;i++) {
-        for(unsigned j=i;j<_V1;j++) {
-            unsigned pub_idx = idx_of_trimat(i,j,_PUB_N);
-            memcpy( & pk->pk[ _PUB_M_BYTE*pub_idx ] , idx_l1 , _O1_BYTE );
-            memcpy( (&pk->pk[ _PUB_M_BYTE*pub_idx ]) + _O1_BYTE , idx_l2 , _O2_BYTE );
+void extcpk_to_pk(mpk_t *pk, const ext_cpk_t *cpk) {
+    const unsigned char *idx_l1 = cpk->l1_Q1;
+    const unsigned char *idx_l2 = cpk->l2_Q1;
+    for (unsigned i = 0; i < _V1; i++) {
+        for (unsigned j = i; j < _V1; j++) {
+            unsigned pub_idx = idx_of_trimat(i, j, _PUB_N);
+            memcpy(&pk->pk[_PUB_M_BYTE * pub_idx], idx_l1, _O1_BYTE);
+            memcpy((&pk->pk[_PUB_M_BYTE * pub_idx]) + _O1_BYTE, idx_l2, _O2_BYTE);
             idx_l1 += _O1_BYTE;
             idx_l2 += _O2_BYTE;
         }
@@ -90,7 +89,7 @@ void extcpk_to_pk( pk_t * pk , const ext_cpk_t * cpk )
     }
 }
 
-void quartic_extcpk_to_pk(pk_t *pk, const ext_cpk_t *cpk) {
+void quartic_extcpk_to_pk(mpk_t *pk, const ext_cpk_t *cpk) {
     const unsigned char *idx_l1 = cpk->l1_Q1;
     const unsigned char *idx_l2 = cpk->l2_Q1;
     for (unsigned i = 0; i < _V1; i++) {
@@ -171,7 +170,7 @@ void quartic_extcpk_to_pk(pk_t *pk, const ext_cpk_t *cpk) {
 
 
 static
-void calculate_Q_from_F_ref(ext_cpk_t *cpk, const sk_t *sk) {
+void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
     //TODO: hey you, this should be done multi-threaded https://doi.org/10.1007/978-1-4419-5906-5
 /*
     Layer 1
@@ -325,7 +324,7 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const sk_t *sk) {
 #endif
 
 
-void calculate_Q_from_F(ext_cpk_t *Qs, const sk_t *Fs) {
+void calculate_Q_from_F(ext_cpk_t *Qs, const msk_t *Fs) {
     calculate_Q_from_F_impl(Qs, Fs);
 }
 

@@ -26,14 +26,14 @@ crypto_sign_keypair(unsigned char *pk, unsigned char *sk)
 
 #if defined _RAINBOW_CLASSIC
 
-    generate_keypair((pk_t *) pk, (sk_t *) sk, sk_seed);
+    generate_keypair((mpk_t *) pk, (msk_t *) sk, sk_seed);
 
 
 #elif defined _RAINBOW_CYCLIC
 
     unsigned char pk_seed[LEN_PKSEED] = {0};
     randombytes( pk_seed , LEN_PKSEED );
-    generate_keypair_cyclic( (cpk_t*) pk , (sk_t*) sk , pk_seed , sk_seed );
+    generate_keypair_cyclic( (cpk_t*) pk , (msk_t*) sk , pk_seed , sk_seed );
 
 #elif defined _RAINBOW_CYCLIC_COMPRESSED
 
@@ -52,26 +52,25 @@ error here
 
 
 int
-crypto_sign(unsigned char *sm, unsigned long long *smlen, const unsigned char *m, unsigned long long mlen, const unsigned char *sk)
-{
-	unsigned char digest[_HASH_LEN];
+crypto_sign(unsigned char *sm, unsigned long long *smlen, const unsigned char *m, unsigned long long mlen, const unsigned char *sk) {
+    unsigned char digest[_HASH_LEN];
 
-	hash_msg( digest , _HASH_LEN , m , mlen );
+    hash_msg(digest, _HASH_LEN, m, mlen);
 
-	memcpy( sm , m , mlen );
-	smlen[0] = mlen + _SIGNATURE_BYTE;
+    memcpy(sm, m, mlen);
+    smlen[0] = mlen + _SIGNATURE_BYTE;
 
 #if defined _RAINBOW_CLASSIC
 
-	return rainbow_sign( sm + mlen , (const sk_t*)sk , digest );
+    return rainbow_sign(sm + mlen, (const msk_t *) sk, digest);
 
 #elif defined _RAINBOW_CYCLIC
 
-	return rainbow_sign( sm + mlen , (const sk_t*)sk , digest );
+    return rainbow_sign( sm + mlen , (const msk_t*)sk , digest );
 
 #elif defined _RAINBOW_CYCLIC_COMPRESSED
 
-	return rainbow_sign_cyclic( sm + mlen , (const csk_t*)sk , digest );
+    return rainbow_sign_cyclic( sm + mlen , (const csk_t*)sk , digest );
 
 #else
 error here
@@ -86,26 +85,25 @@ error here
 
 
 int
-crypto_sign_open(unsigned char *m, unsigned long long *mlen,const unsigned char *sm, unsigned long long smlen,const unsigned char *pk)
-{
-	if( _SIGNATURE_BYTE > smlen ) return -1;
-	memcpy( m , sm , smlen-_SIGNATURE_BYTE );
-	mlen[0] = smlen-_SIGNATURE_BYTE;
+crypto_sign_open(unsigned char *m, unsigned long long *mlen,const unsigned char *sm, unsigned long long smlen,const unsigned char *pk) {
+    if (_SIGNATURE_BYTE > smlen) return -1;
+    memcpy(m, sm, smlen - _SIGNATURE_BYTE);
+    mlen[0] = smlen - _SIGNATURE_BYTE;
 
-	unsigned char digest[_HASH_LEN];
-	hash_msg( digest , _HASH_LEN , m , *mlen );
+    unsigned char digest[_HASH_LEN];
+    hash_msg(digest, _HASH_LEN, m, *mlen);
 
 #if defined _RAINBOW_CLASSIC
 
-	return rainbow_verify( digest , sm + mlen[0] , (const pk_t *)pk );
+    return rainbow_verify(digest, sm + mlen[0], (const mpk_t *) pk);
 
 #elif defined _RAINBOW_CYCLIC
 
-	return rainbow_verify_cyclic( digest , sm + mlen[0] , (const cpk_t *)pk );
+    return rainbow_verify_cyclic( digest , sm + mlen[0] , (const cpk_t *)pk );
 
 #elif defined _RAINBOW_CYCLIC_COMPRESSED
 
-	return rainbow_verify_cyclic( digest , sm + mlen[0] , (const cpk_t *)pk );
+    return rainbow_verify_cyclic( digest , sm + mlen[0] , (const cpk_t *)pk );
 
 #else
 error here

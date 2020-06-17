@@ -93,15 +93,14 @@ void generate_B1_B2( unsigned char * sk , prng_t * prng0 ) {
 
 
 
-void cpk_to_pk( pk_t * rpk, const cpk_t * cpk )
-{
-    // procedure:  cpk_t --> extcpk_t  --> pk_t
+void cpk_to_pk(mpk_t *rpk, const cpk_t *cpk) {
+    // procedure:  cpk_t --> extcpk_t  --> mpk_t
 
     // convert from cpk_t to extcpk_t
-    ext_cpk_t * pk = (ext_cpk_t *) aligned_alloc( 32, sizeof(ext_cpk_t) );
+    ext_cpk_t *pk = (ext_cpk_t *) aligned_alloc(32, sizeof(ext_cpk_t));
     // setup prng
     prng_t prng0;
-    prng_set( &prng0 , cpk->pk_seed , LEN_SKSEED );
+    prng_set(&prng0, cpk->pk_seed, LEN_SKSEED);
 
     // generating parts of key with prng
     generate_l1_F12( pk->l1_Q1 , &prng0 );
@@ -113,7 +112,7 @@ void cpk_to_pk( pk_t * rpk, const cpk_t * cpk )
     // copying parts of key from input: l2_Q9
     memcpy( pk->l2_Q9 , cpk->l2_Q9 , _O2_BYTE* N_TRIANGLE_TERMS(_O2) );
 
-    // convert from extcpk_t to pk_t
+    // convert from extcpk_t to mpk_t
     extcpk_to_pk( rpk , pk );
 
     free( pk );
@@ -201,7 +200,7 @@ void quartic_obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2
 
 
 static
-void _generate_secretkey(sk_t *sk, const unsigned char *sk_seed) {
+void _generate_secretkey(msk_t *sk, const unsigned char *sk_seed) {
     memcpy(sk->sk_seed, sk_seed, LEN_SKSEED);
 
     // set up prng
@@ -217,13 +216,13 @@ void _generate_secretkey(sk_t *sk, const unsigned char *sk_seed) {
 }
 
 
-void generate_secretkey(sk_t *sk, const unsigned char *sk_seed) {
+void generate_secretkey(msk_t *sk, const unsigned char *sk_seed) {
     _generate_secretkey(sk, sk_seed);
     calculate_t4(sk->t4, sk->t1, sk->t3);
 }
 
 
-void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed) {
+void generate_keypair(mpk_t *rpk, msk_t *sk, const unsigned char *sk_seed) {
 
     _generate_secretkey(sk, sk_seed);
 
@@ -243,13 +242,21 @@ void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed) {
     quartic_obsfucate_l1_polys(pk->l1_Q9, pk->l2_Q9, N_TRIANGLE_TERMS(_O2), sk->s1);
     // so far, the pk contains the full pk but in ext_cpk_t format.
 
-    quartic_extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to pk_t.
+    quartic_extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to mpk_t.
 
     free(pk);
 }
 
 
 ////////////////////// IDENTITY ///////////////////////////
+
+void calculate_usk(usk_t *usk, msk_t *msk, unsigned *id) {
+
+}
+
+void calculate_upk(upk_t *upk, msk_t *mpk, unsigned *id) {
+    //TODO:
+}
 
 void generate_identity_hash(unsigned char *digest, const unsigned char *id) {
     unsigned long long int id_length;
@@ -260,7 +267,7 @@ void generate_identity_hash(unsigned char *digest, const unsigned char *id) {
 /// works because F,S,T and P are homogeneous
 void multiply_identity_GF16(uint8_t *usk, uint8_t *upk, const unsigned char *id_hash, const uint8_t *msk,
                             const uint8_t *mpk) {
-    int sk_size = sizeof(sk_t) - offsetof(sk_t, l1_F1);
+    int sk_size = sizeof(msk_t) - offsetof(msk_t, l1_F1);
 
     //Loop over sk
     multiply_ID_over_key(usk, msk, sk_size, id_hash);

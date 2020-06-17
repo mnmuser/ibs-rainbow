@@ -24,12 +24,12 @@
 
 #if defined _RAINBOW_CLASSIC
 
-#define CRYPTO_SECRETKEYBYTES sizeof(sk_t)
-#define CRYPTO_PUBLICKEYBYTES sizeof(pk_t)
+#define CRYPTO_SECRETKEYBYTES sizeof(msk_t)
+#define CRYPTO_PUBLICKEYBYTES sizeof(mpk_t)
 
 #elif defined _RAINBOW_CYCLIC
 
-#define CRYPTO_SECRETKEYBYTES sizeof(sk_t)
+#define CRYPTO_SECRETKEYBYTES sizeof(msk_t)
 #define CRYPTO_PUBLICKEYBYTES sizeof(cpk_t)
 
 #elif defined _RAINBOW_CYCLIC_COMPRESSED
