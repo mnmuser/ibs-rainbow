@@ -1,5 +1,5 @@
-///  @file rainbow-genkey.c
-///  @brief A command-line tool for generating key pairs.
+///  @file rainbow-gen-masterkey.c
+///  @brief A command-line tool for generating master key pairs.
 ///
 
 #include <stdio.h>
@@ -29,7 +29,8 @@ int main( int argc , char ** argv )
 
     // set random seed
     unsigned char rnd_seed[48] = {0};
-    int rr = byte_from_binfile(rnd_seed, 48, (4 == argc) ? argv[3] : "/dev/random");
+    int rr = byte_from_binfile(rnd_seed, 48, (4 == argc) ? argv[3]
+                                                         : "/dev/random"); //TODO: wenn also kein rnd übergeben wird, dann /dev/random
     if (0 != rr) printf("read seed file fail.\n");
     randombytes_init(rnd_seed, NULL, 256);
 

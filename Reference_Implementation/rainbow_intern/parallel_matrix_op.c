@@ -44,15 +44,15 @@ void quartic_UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsi
         for (unsigned j = 0; j < i; j++) {
             unsigned idx = idx_of_trimat(j, i, Aheight);
             for (unsigned k = 0; k < size_batch; k++) {
-                gf16_quartic_poly_copy(btriC, (idx * size_batch * 2) + (N_QUARTIC_POLY(_ID) * k), bA,
-                                       (size_batch * (i * Awidth + j) * 2) + (N_QUARTIC_POLY(_ID) * k));
+                gf16_quartic_poly_copy(btriC, (idx * size_batch) + (N_QUARTIC_POLY(_ID) * k), bA,
+                                       (size_batch * (i * Awidth + j)) + (N_QUARTIC_POLY(_ID) * k));
             }
             /// I hope this is correct and not to easy
             //gf256v_add( btriC + idx*size_batch , bA + size_batch*(i*Awidth+j) , size_batch );
         }
         for (unsigned l = 0; l < size_batch * (Aheight - i); l++) {
-            gf16_quartic_poly_copy(runningC, N_QUARTIC_POLY(_ID) * l + (i * 2 * size_batch * (Aheight - i)), bA,
-                                   (size_batch * (i * Awidth + i) * 2) + l * N_QUARTIC_POLY(_ID));
+            gf16_quartic_poly_copy(runningC, N_QUARTIC_POLY(_ID) * l + (i * size_batch * (Aheight - i)), bA,
+                                   (size_batch * (i * Awidth + i)) + l * N_QUARTIC_POLY(_ID));
         }
         //gf256v_add(runningC, bA + size_batch * (i * Awidth + i), size_batch * (Aheight - i));
         //runningC += size_batch * (Aheight - i) * N_QUARTIC_POLY(_ID);
