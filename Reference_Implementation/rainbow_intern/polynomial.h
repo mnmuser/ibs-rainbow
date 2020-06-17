@@ -24,7 +24,7 @@ unsigned *mono_unrank_grlex(unsigned m, unsigned rank);
 
 unsigned mono_upto_enum(unsigned m, unsigned n);
 
-double *mono_value(unsigned m, unsigned n, unsigned f[], double x[]);
+unsigned char *mono_value(unsigned m, unsigned n, unsigned f[], unsigned char x[]);
 
 void perm_check0(unsigned n, unsigned p[]);
 
@@ -49,14 +49,13 @@ void polynomial_mul(unsigned o1, const unsigned char c1[], unsigned c1_offset, u
                     unsigned c2_offset,
                     unsigned e2[], unsigned *o, unsigned char c[], unsigned c_offset, unsigned e[]);
 
-void polynomial_prunsigned(unsigned o, const unsigned char c[], unsigned gf16_offset, unsigned e[], char *title);
+void polynomial_print(unsigned o, const unsigned char *c, unsigned gf16_offset, unsigned *e, char *title);
 
 void polynomial_scale(double s, unsigned m, unsigned o1, double c1[], unsigned e1[]);
 
 void polynomial_sort(unsigned o, unsigned char c[], unsigned offset, unsigned e[]);
 
-double *polynomial_value(unsigned m, unsigned o, double c[], unsigned e[], unsigned nx,
-                         double x[]);
+unsigned char *polynomial_value(unsigned m, unsigned o, unsigned char c[], unsigned e[], unsigned char x[]);
 
 void
 r8vec_concatenate(unsigned n1, unsigned char a[], unsigned n2, unsigned char b[], unsigned char c[], unsigned offset);

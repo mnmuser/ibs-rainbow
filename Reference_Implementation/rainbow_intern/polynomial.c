@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <math.h>
+
 #include "polynomial.h"
 #include "rainbow_blas.h"
 
@@ -1114,7 +1116,7 @@ unsigned mono_upto_enum(unsigned m, unsigned n)
 
 /******************************************************************************/
 
-double *mono_value(unsigned m, unsigned n, unsigned f[], double x[])
+unsigned char *mono_value(unsigned m, unsigned n, unsigned f[], unsigned char x[])
 
 /******************************************************************************/
 /*
@@ -1149,14 +1151,14 @@ double *mono_value(unsigned m, unsigned n, unsigned f[], double x[])
 {
     unsigned i;
     unsigned j;
-    double *v;
+    unsigned char *v;
 
-    v = (double *) malloc(n * sizeof(double));
+    v = (unsigned char *) malloc(n * sizeof(unsigned char));
 
     for (j = 0; j < n; j++) {
-        v[j] = 1.0;
+        v[j] = 1;
         for (i = 0; i < m; i++) {
-            //v[j] = v[j] * pow(x[i + j * m], f[i]);
+            v[j] = v[j] * (unsigned) pow(x[i + j * m], f[i]); //TODO: Casting not the best way?
         }
     }
 
@@ -1580,7 +1582,7 @@ void polynomial_mul(unsigned o1, const unsigned char c1[], unsigned c1_offset, u
 
 /******************************************************************************/
 
-void polynomial_prunsigned(unsigned o, const unsigned char c[], unsigned gf16_offset, unsigned e[], char *title)
+void polynomial_print(unsigned o, const unsigned char *c, unsigned gf16_offset, unsigned *e, char *title)
 
 /******************************************************************************/
 /*
@@ -1745,8 +1747,8 @@ void polynomial_sort(unsigned o, unsigned char c[], unsigned offset, unsigned e[
 
 /******************************************************************************/
 
-double *polynomial_value(unsigned m, unsigned o, double c[], unsigned e[], unsigned nx,
-                         double x[])
+unsigned char *polynomial_value(unsigned m, unsigned o, unsigned char c[], unsigned e[],
+                                unsigned char x[])
 
 /******************************************************************************/
 /*
@@ -1789,16 +1791,17 @@ double *polynomial_value(unsigned m, unsigned o, double c[], unsigned e[], unsig
     Output, double POLYNOMIAL_VALUE[NX], the value of the polynomial at X.
 */
 {
+    unsigned nx = _ID;
     unsigned *f;
     unsigned j;
     unsigned k;
-    double *p;
+    unsigned char *p;
     double *v;
 
-    p = (double *) malloc(nx * sizeof(double));
+    p = (unsigned char *) malloc(nx * sizeof(unsigned char));
 
     for (k = 0; k < nx; k++) {
-        p[k] = 0.0;
+        p[k] = 0;
     }
 
     for (j = 0; j < o; j++) {
