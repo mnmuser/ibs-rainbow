@@ -496,7 +496,7 @@ void quartic_gf16v_madd2(uint8_t *C, const uint8_t *Av, unsigned A_pointer_index
     unsigned tmp_o = 0;
     unsigned final_o = 0;
 
-    unsigned *e_A;
+    unsigned const *e_A;
     unsigned o_A;
     unsigned A_loop_offset;
 

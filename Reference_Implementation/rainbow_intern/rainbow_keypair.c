@@ -148,9 +148,8 @@ void quartic_calculate_t4(unsigned char *t2_to_t4, const unsigned char *t1, cons
         quartic_linear_gf16mat_prod_ref(temp, t1, _V1_BYTE, _O1, t3);
         //gf256v_add( t4 , temp , _V1_BYTE );
 
-        int e[25]; //e has to be long enough (?) for poly_add
-        int o = 0;
-        int full_e_power2[15] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+        unsigned e[25]; //e has to be long enough (?) for poly_add
+        unsigned o = 0;
         unsigned char *tmp_t4 = malloc((N_QUADRATIC_POLY(_ID) + 1) / 2);
         for (unsigned j = 0; i < _O1; i++) {
             gf16_quadratic_poly_copy(tmp_t4, t4, j * _ID);
@@ -182,9 +181,8 @@ void quartic_obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2
     unsigned char temp[_O1_BYTE * N_QUARTIC_POLY(_ID) + 32];
     while (n_terms--) { //for-loop *for* runaways
         quartic_gf16mat_prod_ref(temp, s1, _O1_BYTE, _O2, l2_polys); //(s1*l2 -> temp has grade4)
-        int e[25]; //e has to be long enough (?) for poly_add
-        int o = 0;
-        int full_e_power2[15] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+        unsigned e[25]; //e has to be long enough (?) for poly_add
+        unsigned o = 0;
         unsigned char *tmp_l1_polys = malloc(N_QUARTIC_POLY((_ID) + 1) / 2);
         for (unsigned i = 0; i < _O1; i++) {
             gf16_quartic_poly_copy(tmp_l1_polys, 0, l1_polys, i * N_QUARTIC_POLY(_ID));

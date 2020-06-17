@@ -24,7 +24,7 @@ SRCS_O_ND = $(subst $(PROJ_DIR)/,,$(SRCS_O))
 
 OBJ = $(SRCS_O_ND)
 
-EXE= rainbow-gen-masterkey rainbow-sign rainbow-verify
+EXE= rainbow-gen-masterkey rainbow-gen-userpk rainbow-gen-usersk rainbow-sign rainbow-verify
 
 
 CSRC= $(wildcard *.c)
@@ -76,6 +76,12 @@ all: $(OBJ) $(EXE)
 rainbow-gen-masterkey: $(OBJ) rainbow-gen-masterkey.o
 	$(LD) $(LDFLAGS) $(LIBPATH) -o $@ $^ $(LIBS)
 
+rainbow-gen-userpk: $(OBJ) rainbow-gen-userpk.o
+	$(LD) $(LDFLAGS) $(LIBPATH) -o $@ $^ $(LIBS)
+
+rainbow-gen-usersk: $(OBJ) rainbow-gen-usersk.o
+	$(LD) $(LDFLAGS) $(LIBPATH) -o $@ $^ $(LIBS)
+
 rainbow-sign: $(OBJ) rainbow-sign.o
 	$(LD) $(LDFLAGS) $(LIBPATH) -o $@ $^ $(LIBS)
 
@@ -89,4 +95,4 @@ rainbow-verify: $(OBJ) rainbow-verify.o
 	$(CC) $(CFLAGS) $(INCPATH) -c $<
 
 clean:
-	rm *.o  rainbow-gen-masterkey rainbow-sign rainbow-verify pk.txt sk.txt signature.txt || true;
+	rm *.o  rainbow-gen-masterkey rainbow-gen-usersk rainbow-gen-userpk rainbow-sign rainbow-verify pk.txt sk.txt signature.txt || true;

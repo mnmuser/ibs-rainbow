@@ -58,7 +58,9 @@ dkms.conf
 *.json
 
 #Rainbow-specific
-/Reference_Implementation/rainbow-genkey
+/Reference_Implementation/rainbow-gen-masterkey
+/Reference_Implementation/rainbow-gen-userpk
+/Reference_Implementation/rainbow-gen-usersk
 /Reference_Implementation/rainbow-sign
 /Reference_Implementation/rainbow-verify
 /Reference_Implementation/PQCgenKAT_sign
