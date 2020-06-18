@@ -348,10 +348,11 @@ void quartic_batch_bmatTr_madd_gf16(unsigned char *bC, const unsigned char *bA_t
 
 void calculate_values_public_key(unsigned char *upk, unsigned char *mpk, unsigned char *id);
 
+void calculate_values_secret_key(unsigned char *usk, unsigned char *msk, unsigned char *id);
+
 #ifdef  __cplusplus
 }
 #endif
 
 
 #endif // _P_MATRIX_OP_H_
-

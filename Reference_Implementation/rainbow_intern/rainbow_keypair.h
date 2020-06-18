@@ -27,6 +27,8 @@ extern  "C" {
 /// standard e TODO: only for ID2
 extern const unsigned _full_e_power2[N_QUARTIC_POLY(_ID)];
 
+extern const unsigned _lin_e_power2[_ID];
+
 /// @brief master public key for classic rainbow
 ///
 ///  master public key for classic rainbow

@@ -577,8 +577,14 @@ void quartic_linear_gf16v_madd(uint8_t *C, const uint8_t *A, unsigned A_pointer_
 }
 
 void calculate_values_public_key(unsigned char *upk, unsigned char *mpk, unsigned char *id) {
-    for(unsigned i =0; i < sizeof(upk_t)*2;i++){
-        gf16v_set_ele(upk,i,polynomial_value(4, N_QUARTIC_POLY(_ID), mpk, _full_e_power2, id)); //TODO: define offset
+    for (unsigned i = 0; i < sizeof(upk_t) * 2; i++) {
+        gf16v_set_ele(upk, i, polynomial_value(N_QUARTIC_POLY(_ID), mpk, i, _full_e_power2, id));
+    }
+}
+
+void calculate_values_secret_key(unsigned char *usk, unsigned char *msk, unsigned char *id) {
+    for (unsigned i = 0; i < sizeof(upk_t) * 2; i++) {
+        gf16v_set_ele(usk, i, polynomial_value(_ID, msk, i, _lin_e_power2, id));
     }
 }
 

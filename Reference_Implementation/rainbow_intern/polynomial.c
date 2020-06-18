@@ -30,7 +30,7 @@ unsigned i4_choose(unsigned n, unsigned k)
   Discussion:
 
     The value is calculated in such a way as to avoid overflow and
-    roundoff.  The calculation is done in unsignedeger arithmetic.
+    roundoff.  The calculation is done in integer arithmetic.
 
     The formula used is:
 
@@ -105,7 +105,7 @@ unsigned i4_fall(unsigned x, unsigned n)
     The number of permutations of N objects out of M is [M]_N.
 
     Moreover, the Stirling numbers of the first kind can be used
-    to convert a falling factorial unsignedo a polynomial, as follows:
+    to convert a falling factorial into a polynomial, as follows:
 
       [X]_N = S^0_N + S^1_N * X + S^2_N * X^2 + ... + S^N_N X^N.
 
@@ -181,7 +181,7 @@ unsigned i4_max(unsigned i1, unsigned i2)
 
   Parameters:
 
-    Input, unsigned I1, I2, are two unsigneds to be compared.
+    Input, unsigned I1, I2, are two ints to be compared.
 
     Output, unsigned I4_MAX, the larger of I1 and I2.
 */
@@ -220,7 +220,7 @@ unsigned i4_min(unsigned i1, unsigned i2)
 
   Parameters:
 
-    Input, unsigned I1, I2, two unsigneds to be compared.
+    Input, unsigned I1, I2, two ints to be compared.
 
     Output, unsigned I4_MIN, the smaller of I1 and I2.
 */
@@ -404,8 +404,6 @@ void i4vec_permute(int n, int p[], int a[])
     for (i = 0; i < n; i++) {
         p[i] = p[i] - 1;
     }
-
-    return;
 }
 
 /******************************************************************************/
@@ -1116,7 +1114,7 @@ unsigned mono_upto_enum(unsigned m, unsigned n)
 
 /******************************************************************************/
 
-unsigned *mono_value(unsigned m, unsigned n, unsigned f[], unsigned char x[])
+unsigned char mono_value(unsigned f[], unsigned char x[])
 
 /******************************************************************************/
 /*
@@ -1149,18 +1147,15 @@ unsigned *mono_value(unsigned m, unsigned n, unsigned f[], unsigned char x[])
     Output, double MONO_VALUE[N], the value of the monomial at X.
 */
 {
+    unsigned m = _ID;
     unsigned i;
-    unsigned j;
-    unsigned *v;
+    unsigned char v = 1;
 
-    v = (unsigned *) malloc(n * sizeof(unsigned));
-
-    for (j = 0; j < n; j++) {
-        v[j] = 1;
-        for (i = 0; i < m; i++) {
-            v[j] = v[j] * (unsigned) pow(x[i + j * m], f[i]); //TODO: Casting not the best way?
-        }
+    for (i = 0; i < m; i++) {
+        v = v * (unsigned char) pow(gf16v_get_ele(x, i), f[i]);//TODO: Casting not the best way?
+        v = v % 16;
     }
+
 
     return v;
 }
@@ -1177,7 +1172,7 @@ void perm_check0(unsigned n, unsigned p[])
 
   Discussion:
 
-    The routine verifies that each of the unsigneds from 0 to
+    The routine verifies that each of the ints from 0 to
     to N-1 occurs among the N entries of the permutation.
 
   Licensing:
@@ -1235,7 +1230,7 @@ void perm_check1(unsigned n, unsigned p[])
 
   Discussion:
 
-    The routine verifies that each of the unsigneds from 1 to
+    The routine verifies that each of the ints from 1 to
     to N occurs among the N entries of the permutation.
 
   Licensing:
@@ -1586,7 +1581,7 @@ void polynomial_print(unsigned o, const unsigned char *c, unsigned gf16_offset, 
 /*
   Purpose:
 
-    POLYNOMIAL_PRunsigned prunsigneds a polynomial.
+    POLYNOMIAL_PRint prints a polynomial.
 
   Licensing:
 
@@ -1745,8 +1740,8 @@ void polynomial_sort(unsigned o, unsigned char c[], unsigned offset, unsigned e[
 
 /******************************************************************************/
 
-unsigned char *polynomial_value(unsigned m, unsigned o, unsigned char c[], unsigned const e[],
-                                unsigned char x[])
+unsigned char polynomial_value(unsigned o, const unsigned char *c, unsigned offset, unsigned const e[],
+                               unsigned char *x)
 
 /******************************************************************************/
 /*
@@ -1789,20 +1784,20 @@ unsigned char *polynomial_value(unsigned m, unsigned o, unsigned char c[], unsig
     Output, double POLYNOMIAL_VALUE[NX], the value of the polynomial at X.
 */
 {
+    unsigned m = _ID;
     unsigned *f;
     unsigned j;
-    unsigned char *p;
-    unsigned *v;
+    unsigned char p;
+    unsigned char v;
 
     p = 0;
 
 
     for (j = 0; j < o; j++) {
         f = mono_unrank_grlex(m, e[j]);
-        v = mono_value(m, nx, f, x);
-        p = p + c[j] * *v;
+        v = mono_value(f, x);
+        p = (p + gf16v_get_ele(c, offset + j) * v) % 16;
         free(f);
-        free(v);
     }
 
     return p;
@@ -1942,7 +1937,7 @@ void r8vec_permute(int n, int p[], unsigned char a[], unsigned offset)
             a_temp = gf16v_get_ele(a, istart - 1 + offset);
             iget = istart;
 /*
-  Copy the new value unsignedo the vacated entry.
+  Copy the new value into the vacated entry.
 */
             for (;;) {
                 iput = iget;

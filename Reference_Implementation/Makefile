@@ -31,8 +31,8 @@ CSRC= $(wildcard *.c)
 
 
 ifdef DEBUG_FAST # normal debugging with sanitizers needs 3 minutes, so I decided for a fast variant
-        CFLAGS=  -D_DEBUG_ -g -O3 -march=native -std=c11 -Wall -Wextra
-        CXXFLAGS= -D_DEBUG_ -g -O3 -march=native -Wall -Wextra
+        CFLAGS=  -D_DEBUG_ -g -O3 -march=native -mtune=native -std=c11 -Wall -Wextra
+        CXXFLAGS= -D_DEBUG_ -g -O3 -march=native -mtune=native -Wall -Wextra
 endif
 
 ifdef DEBUG
@@ -52,6 +52,7 @@ endif
 
 ifeq ($(shell uname -s),Darwin) # for macOS you need special openssl (homebrew)
 DFLAGS=
+LIBPATH= -L/usr/local/lib -L/usr/lib
 LDFLAGS+= -L/usr/local/opt/openssl@1.1/lib
 INCPATH+= -I/usr/local/opt/openssl@1.1/include/
 endif
