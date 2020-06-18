@@ -474,7 +474,7 @@ void quartic_gf16v_madd(uint8_t *C, const uint8_t *A, unsigned A_pointer_index, 
 
         gf16_lin_poly_copy(tmp_summand, C, (l * N_QUARTIC_POLY(_ID)));
 
-        polynomial_add(tmp_o, tmp_product, tmp_e, _ID + 1, tmp_summand, full_e_power2, &final_o,
+        polynomial_add(tmp_o, tmp_product, tmp_e, _ID + 1, tmp_summand, _full_e_power2, &final_o,
                        C, (l * N_QUARTIC_POLY(_ID)), final_e);
 
         //Hint: Das hier funktioniert soweit gut für l1_Q2 (oft gedebuggt)
@@ -505,7 +505,7 @@ void quartic_gf16v_madd2(uint8_t *C, const uint8_t *Av, unsigned A_pointer_index
         o_A = 2;
         A_loop_offset = _ID;
     } else {
-        e_A = full_e_power2;
+        e_A = _full_e_power2;
         o_A = 6;
         A_loop_offset = N_QUARTIC_POLY(_ID);
     }
@@ -526,7 +526,7 @@ void quartic_gf16v_madd2(uint8_t *C, const uint8_t *Av, unsigned A_pointer_index
 
         gf16_lin_poly_copy(tmp_summand, C, (l * N_QUARTIC_POLY(_ID)));
 
-        polynomial_add(tmp_o, tmp_product, tmp_e, _ID + 1, tmp_summand, full_e_power2, &final_o,
+        polynomial_add(tmp_o, tmp_product, tmp_e, _ID + 1, tmp_summand, _full_e_power2, &final_o,
                        C, (l * N_QUARTIC_POLY(_ID)), final_e);
 
 //        polynomial_print(final_o,C,(l * N_QUARTIC_POLY(_ID)),final_e,"Written:");
@@ -576,5 +576,10 @@ void quartic_linear_gf16v_madd(uint8_t *C, const uint8_t *A, unsigned A_pointer_
     }
 }
 
+void calculate_values_public_key(unsigned char *upk, unsigned char *mpk, unsigned char *id) {
+    for(unsigned i =0; i < sizeof(upk_t)*2;i++){
+        gf16v_set_ele(upk,i,polynomial_value(4, N_QUARTIC_POLY(_ID), mpk, _full_e_power2, id)); //TODO: define offset
+    }
+}
 
 

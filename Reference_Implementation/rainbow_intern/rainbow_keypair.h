@@ -25,7 +25,7 @@ extern  "C" {
 #endif
 
 /// standard e TODO: only for ID2
-extern const unsigned full_e_power2[N_QUARTIC_POLY(_ID)];
+extern const unsigned _full_e_power2[N_QUARTIC_POLY(_ID)];
 
 /// @brief master public key for classic rainbow
 ///
@@ -140,9 +140,9 @@ void generate_secretkey(msk_t *sk, const unsigned char *sk_seed);
 
 ////////////////////////////////////
 
-void calculate_usk(usk_t *usk, msk_t *msk, unsigned *id);
+int calculate_usk(usk_t *usk, msk_t *msk, unsigned *id);
 
-void calculate_upk(upk_t *upk, msk_t *mpk, unsigned *id);
+int calculate_upk(upk_t *upk, mpk_t *mpk, unsigned char *id);
 
 /////////////////ID///////////////////
 

@@ -187,13 +187,13 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
 
     int full_e_power2[15] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
-//    polynomial_print(3, cpk->l1_Q2, 0, full_e_power2, "L1_Q2_1 before Operation: ");
-//    polynomial_print(3, cpk->l1_Q2, 491520 - 15, full_e_power2, "L1_Q2_2 before Operation: ");
+//    polynomial_print(3, cpk->l1_Q2, 0, _full_e_power2, "L1_Q2_1 before Operation: ");
+//    polynomial_print(3, cpk->l1_Q2, 491520 - 15, _full_e_power2, "L1_Q2_2 before Operation: ");
 
     quartic_batch_trimat_madd(cpk->l1_Q2, sk->l1_F1, sk->t1, _V1, _V1_BYTE, _O1, _O1_BYTE); // Q2 += F1*T1
 
-//    polynomial_print(6, cpk->l1_Q2, 0, full_e_power2, "L1_Q2_1: ");
-//    polynomial_print(6, cpk->l1_Q2, 491520 - 15, full_e_power2, "L1_Q2_2: "); //last position in Q2
+//    polynomial_print(6, cpk->l1_Q2, 0, _full_e_power2, "L1_Q2_1: ");
+//    polynomial_print(6, cpk->l1_Q2, 491520 - 15, _full_e_power2, "L1_Q2_2: "); //last position in Q2
 
     set_quartic_zero(cpk->l1_Q3, _O1_BYTE * _V1 * _O2);
     set_quartic_zero(cpk->l1_Q5, _O1_BYTE * N_TRIANGLE_TERMS(_O1));
@@ -216,12 +216,12 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
     set_quartic_zero(tempQ, _O1_BYTE * _O1 * _O1);   // l1_Q5
 
     quartic_batch_matTr_madd_gf16(tempQ, sk->t1, _V1, _V1_BYTE, _O1, cpk->l1_Q2, _O1, _O1_BYTE); // t1_tr*(F1*T1 + F2)
-//    polynomial_print(15, tempQ, 0, full_e_power2, "tempQ(0): ");
-//    polynomial_print(15, tempQ, 15, full_e_power2, "tempQ(60): ");
+//    polynomial_print(15, tempQ, 0, _full_e_power2, "tempQ(0): ");
+//    polynomial_print(15, tempQ, 15, _full_e_power2, "tempQ(60): ");
     //TODO: this triangle shit ->
     quartic_UpperTrianglize(cpk->l1_Q5, tempQ, _O1, _O1_BYTE * N_QUARTIC_POLY(_ID));    // UT( ... )   // Q5
 
-//    polynomial_print(15, cpk->l1_Q5, 0, full_e_power2, "l1_Q5(0): ");
+//    polynomial_print(15, cpk->l1_Q5, 0, _full_e_power2, "l1_Q5(0): ");
 
     quartic_batch_trimatTr_madd_gf16(cpk->l1_Q2, sk->l1_F1, sk->t1, _V1, _V1_BYTE, _O1, _O1_BYTE); // Q2
 

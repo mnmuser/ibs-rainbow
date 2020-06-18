@@ -71,15 +71,6 @@ void calculate_Q_from_F(ext_cpk_t *Qs, const msk_t *Fs);
 ///
 void calculate_F_from_Q(msk_t *Fs, const msk_t *Qs, msk_t *Ts);
 
-///
-/// @brief Computing parts of the pk from the secret key
-///
-/// @param[out] Qs       - parts of the pk: l1_Q3, l1_Q5, l2_Q6, l1_Q9, l2_Q9
-/// @param[in]  Fs       - parts of the sk: l1_F1, l1_F2, l2_F1, l2_F2, l2_F3, l2_F5, l2_F6
-/// @param[in]  Ts       - parts of the sk: T1, T4, T3
-///
-void calculate_Q_from_F_cyclic(cpk_t *Qs, const msk_t *Fs, const msk_t *Ts);
-
 void write_gf16_to_quartic(unsigned char *q, const unsigned char *f, unsigned long length_f);
 
 void set_quartic_zero(unsigned char *q, unsigned length);

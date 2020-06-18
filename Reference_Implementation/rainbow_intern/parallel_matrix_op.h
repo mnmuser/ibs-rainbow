@@ -7,6 +7,7 @@
 #define _P_MATRIX_OP_H_
 
 
+#include "rainbow_keypair.h"
 
 #ifdef  __cplusplus
 extern  "C" {
@@ -344,6 +345,8 @@ void quartic_batch_mat_madd_gf16(unsigned char *bC, const unsigned char *bA, uns
 void quartic_batch_bmatTr_madd_gf16(unsigned char *bC, const unsigned char *bA_to_tr, unsigned Awidth_before_tr,
                                     const unsigned char *B, unsigned Bheight, unsigned size_Bcolvec, unsigned Bwidth,
                                     unsigned size_batch);
+
+void calculate_values_public_key(unsigned char *upk, unsigned char *mpk, unsigned char *id);
 
 #ifdef  __cplusplus
 }

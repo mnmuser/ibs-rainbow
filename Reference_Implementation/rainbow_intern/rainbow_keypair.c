@@ -19,12 +19,10 @@
 #include "polynomial.h"
 
 
-const unsigned full_e_power2[N_QUARTIC_POLY(_ID)] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+const unsigned _full_e_power2[N_QUARTIC_POLY(_ID)] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
 
 /////////////////////////////////////////////////////////////////
-
-
 
 
 
@@ -89,37 +87,6 @@ void generate_B1_B2( unsigned char * sk , prng_t * prng0 ) {
 }
 
 
-//////////////////////////////////////////////////////////
-
-
-
-void cpk_to_pk(mpk_t *rpk, const cpk_t *cpk) {
-    // procedure:  cpk_t --> extcpk_t  --> mpk_t
-
-    // convert from cpk_t to extcpk_t
-    ext_cpk_t *pk = (ext_cpk_t *) aligned_alloc(32, sizeof(ext_cpk_t));
-    // setup prng
-    prng_t prng0;
-    prng_set(&prng0, cpk->pk_seed, LEN_SKSEED);
-
-    // generating parts of key with prng
-    generate_l1_F12( pk->l1_Q1 , &prng0 );
-    // copying parts of key from input. l1_Q3, l1_Q5, l1_Q6, l1_Q9
-    memcpy( pk->l1_Q3 , cpk->l1_Q3 , _O1_BYTE*( _V1*_O2 + N_TRIANGLE_TERMS(_O1) + _O1*_O2 + N_TRIANGLE_TERMS(_O2) ) );
-
-    // generating parts of key with prng
-    generate_l2_F12356( pk->l2_Q1 , &prng0 );
-    // copying parts of key from input: l2_Q9
-    memcpy( pk->l2_Q9 , cpk->l2_Q9 , _O2_BYTE* N_TRIANGLE_TERMS(_O2) );
-
-    // convert from extcpk_t to mpk_t
-    extcpk_to_pk( rpk , pk );
-
-    free( pk );
-}
-
-
-
 /////////////////////////////////////////////////////////
 
 
@@ -152,7 +119,7 @@ void quartic_calculate_t4(unsigned char *t2_to_t4, const unsigned char *t1, cons
         unsigned char *tmp_t4 = malloc((N_QUADRATIC_POLY(_ID) + 1) / 2);
         for (unsigned j = 0; i < _O1; i++) {
             gf16_quadratic_poly_copy(tmp_t4, t4, j * _ID);
-            polynomial_add(5, tmp_t4, full_e_power2, 5, temp, full_e_power2, &o, t4, 0, e);
+            polynomial_add(5, tmp_t4, _full_e_power2, 5, temp, _full_e_power2, &o, t4, 0, e);
         }
         free(tmp_t4);
 
@@ -185,7 +152,7 @@ void quartic_obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2
         unsigned char *tmp_l1_polys = malloc(N_QUARTIC_POLY((_ID) + 1) / 2);
         for (unsigned i = 0; i < _O1; i++) {
             gf16_quartic_poly_copy(tmp_l1_polys, 0, l1_polys, i * N_QUARTIC_POLY(_ID));
-            polynomial_add(10, tmp_l1_polys, full_e_power2, 15, temp, full_e_power2, &o, l1_polys, 0, e);
+            polynomial_add(10, tmp_l1_polys, _full_e_power2, 15, temp, _full_e_power2, &o, l1_polys, 0, e);
         }
 //        polynomial_print(o, l1_polys, 0, e, "temp:");
         free(tmp_l1_polys);
@@ -250,13 +217,18 @@ void generate_keypair(mpk_t *rpk, msk_t *sk, const unsigned char *sk_seed) {
 
 ////////////////////// IDENTITY ///////////////////////////
 
-void calculate_usk(usk_t *usk, msk_t *msk, unsigned *id) {
+int calculate_usk(usk_t *usk, msk_t *msk, unsigned *id) {
 
 }
 
-void calculate_upk(upk_t *upk, msk_t *mpk, unsigned *id) {
+int calculate_upk(upk_t *upk, mpk_t *mpk, unsigned char *id) {
     //TODO:
+    calculate_values_public_key(upk,mpk,id);
+
+    return 0;
 }
+
+
 
 void generate_identity_hash(unsigned char *digest, const unsigned char *id) {
     unsigned long long int id_length;

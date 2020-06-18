@@ -1116,7 +1116,7 @@ unsigned mono_upto_enum(unsigned m, unsigned n)
 
 /******************************************************************************/
 
-unsigned char *mono_value(unsigned m, unsigned n, unsigned f[], unsigned char x[])
+unsigned *mono_value(unsigned m, unsigned n, unsigned f[], unsigned char x[])
 
 /******************************************************************************/
 /*
@@ -1140,20 +1140,20 @@ unsigned char *mono_value(unsigned m, unsigned n, unsigned f[], unsigned char x[
 
     Input, unsigned M, the spatial dimension.
 
-    Input, unsigned N, the number of evaluation pounsigneds.
+    Input, unsigned N, the number of evaluation points.
 
     Input, unsigned F[M], the exponents of the monomial.
 
-    Input, double X[M*N], the coordinates of the evaluation pounsigneds.
+    Input, double X[M*N], the coordinates of the evaluation points.
 
     Output, double MONO_VALUE[N], the value of the monomial at X.
 */
 {
     unsigned i;
     unsigned j;
-    unsigned char *v;
+    unsigned *v;
 
-    v = (unsigned char *) malloc(n * sizeof(unsigned char));
+    v = (unsigned *) malloc(n * sizeof(unsigned));
 
     for (j = 0; j < n; j++) {
         v[j] = 1;
@@ -1221,8 +1221,6 @@ void perm_check0(unsigned n, unsigned p[])
         }
 
     }
-
-    return;
 }
 
 /******************************************************************************/
@@ -1747,7 +1745,7 @@ void polynomial_sort(unsigned o, unsigned char c[], unsigned offset, unsigned e[
 
 /******************************************************************************/
 
-unsigned char *polynomial_value(unsigned m, unsigned o, unsigned char c[], unsigned e[],
+unsigned char *polynomial_value(unsigned m, unsigned o, unsigned char c[], unsigned const e[],
                                 unsigned char x[])
 
 /******************************************************************************/
@@ -1784,32 +1782,25 @@ unsigned char *polynomial_value(unsigned m, unsigned o, unsigned char c[], unsig
     Input, unsigned E[O], the indices of the exponents 
     of the polynomial.
 
-    Input, unsigned NX, the number of evaluation pounsigneds.
+    Input, unsigned NX, the number of evaluation points.
 
-    Input, double X[M*NX], the coordinates of the evaluation pounsigneds.
+    Input, double X[M*NX], the coordinates of the evaluation points.
 
     Output, double POLYNOMIAL_VALUE[NX], the value of the polynomial at X.
 */
 {
-    unsigned nx = _ID;
     unsigned *f;
     unsigned j;
-    unsigned k;
     unsigned char *p;
-    double *v;
+    unsigned *v;
 
-    p = (unsigned char *) malloc(nx * sizeof(unsigned char));
+    p = 0;
 
-    for (k = 0; k < nx; k++) {
-        p[k] = 0;
-    }
 
     for (j = 0; j < o; j++) {
         f = mono_unrank_grlex(m, e[j]);
         v = mono_value(m, nx, f, x);
-        for (k = 0; k < nx; k++) {
-            p[k] = p[k] + c[j] * v[k];
-        }
+        p = p + c[j] * *v;
         free(f);
         free(v);
     }
