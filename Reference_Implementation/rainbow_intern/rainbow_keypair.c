@@ -228,12 +228,9 @@ int calculate_upk(upk_t *upk, mpk_t *mpk, unsigned char *id) {
     return 0;
 }
 
-
-
-void generate_identity_hash(unsigned char *digest, const unsigned char *id) {
-    unsigned long long int id_length;
-    id_length = sizeof(*id);
-    hash_msg(digest, sizeof(*digest), id, id_length); // for simplicity I use the hash-function for messages
+void generate_identity_hash(unsigned char *digest, const unsigned char *id, unsigned id_length) {
+    unsigned hash_length = (_ID+1)/2;
+    hash_msg(digest, hash_length, id, id_length); // for simplicity I use the hash-function for messages
 }
 
 /// works because F,S,T and P are homogeneous

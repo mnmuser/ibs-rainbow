@@ -23,7 +23,7 @@ int main( int argc , char ** argv )
     printf("signature size: %d\n\n", CRYPTO_BYTES);
 
     if (!((3 == argc) || (4 == argc))) {
-        printf("Usage:\n\n\trainbow-genkey pk_file_name sk_file_name [random_seed_file]\n\n");
+        printf("Usage:\n\n\trainbow-gen-masterkey pk_file_name sk_file_name [random_seed_file]\n\n");
         return -1;
     }
 

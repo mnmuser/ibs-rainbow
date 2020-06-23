@@ -63,7 +63,8 @@ dkms.conf
 /Reference_Implementation/rainbow-gen-usersk
 /Reference_Implementation/rainbow-sign
 /Reference_Implementation/rainbow-verify
-/Reference_Implementation/PQCgenKAT_sign
-/Reference_Implementation/pk.txt
-/Reference_Implementation/sk.txt
+/Reference_Implementation/mpk.txt
+/Reference_Implementation/msk.txt
+/Reference_Implementation/upk.txt
+/Reference_Implementation/usk.txt
 /Reference_Implementation/signature.txt

@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <api.h>
 #include <utils.h>
+#include <string.h>
+#include <blas.h>
 
 int main(int argc, char **argv) {
 
@@ -17,7 +19,7 @@ int main(int argc, char **argv) {
     printf("signature size: %d\n\n", CRYPTO_BYTES);
 
     if (4 != argc) {
-        printf("Usage:\n\n\trainbow-gen-userpk mpk_file_name identity_file upk_file_name\n\n");
+        printf("Usage:\n\n\trainbow-gen-userpk mpk_file_name identity upk_file_name\n\n");
         return -1;
     }
 
@@ -40,20 +42,19 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    unsigned char * _identity = malloc(_ID);
+    unsigned char * _identity = malloc((_ID+1)/2);
     r = 0;
 
-    fp = fopen( argv[2] , "r");
-    if( NULL == fp ) {
-        printf("fail to open identity file.\n");
+    generate_identity_hash(_identity,argv[2],strlen(argv[2]));
+    if( NULL == _identity ) {
+        printf("fail to create identity hash.\n");
         return -1;
     }
-    r = byte_fget( fp ,  _identity , _ID);
-    fclose( fp );
-    if( _ID != r ) {
-        printf("fail to load identity file.\n");
-        return -1;
+    printf("identity hash: ");
+    for(unsigned i = 0; i<_ID; i++){
+        printf("%hhu ",gf16v_get_ele(_identity,i));
     }
+    printf("\n\n");
 
     uint8_t *_upk = malloc(sizeof(upk_t));
 

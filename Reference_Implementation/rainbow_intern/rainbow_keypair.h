@@ -148,7 +148,7 @@ int calculate_upk(upk_t *upk, mpk_t *mpk, unsigned char *id);
 
 /////////////////ID///////////////////
 
-void generate_identity_hash(unsigned char *digest, const unsigned char *id);
+void generate_identity_hash(unsigned char *digest, const unsigned char *id, unsigned id_length);
 
 void multiply_identity_sk(msk_t *usk, const unsigned char *id_hash, msk_t *msk);
 
