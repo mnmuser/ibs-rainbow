@@ -61,7 +61,7 @@ struct rainbow_master_secretkey {
 
     unsigned char s1[_O1_BYTE * _O2 * _ID];   ///< part of S map (upper right corner in matrix, p.3 in doc)
     unsigned char t1[_V1_BYTE * _O1 * _ID];   ///< part of T map
-    unsigned char t4[_V1_BYTE * _O2 * N_QUADRATIC_POLY(_ID)];   ///< part of T map (gets quadratic)
+    unsigned char t2[_V1_BYTE * _O2 * _ID];   ///< part of T map (gets quadratic) -> also known as t2
     unsigned char t3[_O1_BYTE * _O2 * _ID];   ///< part of T map
 
     unsigned char l1_F1[_O1_BYTE * N_TRIANGLE_TERMS(_V1) * _ID];  ///< part of C-map, F1, Layer1

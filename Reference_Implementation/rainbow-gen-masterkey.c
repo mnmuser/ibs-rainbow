@@ -59,7 +59,7 @@ int main( int argc , char ** argv )
         return -1;
     }
     //ptr = (unsigned char *)&sk;
-    //sprintf(msg,"%s secret key", name);
+    //printf(msg,"%s secret key", name);
     byte_fdump(fp, CRYPTO_ALGNAME " secret key", _sk, CRYPTO_SECRETKEYBYTES); // sk speichern und beschriften
     fclose(fp);
 

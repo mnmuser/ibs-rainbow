@@ -19,9 +19,6 @@
 #include "polynomial.h"
 
 
-const unsigned _full_e_power2[N_QUARTIC_POLY(_ID)] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
-const unsigned _lin_e_power2[_ID] = {2, 3};
-
 /////////////////////////////////////////////////////////////////
 
 
@@ -32,7 +29,7 @@ void generate_S_T(unsigned char *s_and_t, prng_t *prng0) {
     s_and_t += _O1_BYTE * _O2 * _ID;
     prng_gen(prng0, s_and_t, _V1_BYTE * _O1 * _ID); // T1
     s_and_t += _V1_BYTE * _O1 * _ID;
-    prng_gen(prng0, s_and_t, _V1_BYTE * _O2 * _ID); // T2
+    prng_gen(prng0, s_and_t, _V1_BYTE * _O2 * _ID); // T2 bzw. T4
     s_and_t += _V1_BYTE * _O2 * _ID;
     prng_gen(prng0, s_and_t, _O1_BYTE * _O2 * _ID); // T3
 }
@@ -90,45 +87,6 @@ void generate_B1_B2( unsigned char * sk , prng_t * prng0 ) {
 /////////////////////////////////////////////////////////
 
 
-
-static
-void calculate_t4( unsigned char * t2_to_t4 , const unsigned char *t1 , const unsigned char *t3 )
-{
-    //  t4 = T_sk.t1 * T_sk.t3 - T_sk.t2
-    unsigned char temp[_V1_BYTE + 32];
-    unsigned char *t4 = t2_to_t4;
-    for (unsigned i = 0; i < _O2; i++) {  /// t3 width
-        gfmat_prod(temp, t1, _V1_BYTE, _O1, t3);
-        gf256v_add(t4, temp, _V1_BYTE);
-        t4 += _V1_BYTE;
-        t3 += _O1_BYTE;
-    }
-}
-
-static
-void quartic_calculate_t4(unsigned char *t2_to_t4, const unsigned char *t1, const unsigned char *t3) {
-    //  t4 = T_sk.t1 * T_sk.t3 - T_sk.t2
-    unsigned char temp[(_O1_BYTE + 32) * N_QUADRATIC_POLY(_ID)];
-    unsigned char *t4 = t2_to_t4;
-    for (unsigned i = 0; i < _O2; i++) {  /// t3 width
-        quartic_linear_gf16mat_prod_ref(temp, t1, _V1_BYTE, _O1, t3);
-        //gf256v_add( t4 , temp , _V1_BYTE );
-
-        unsigned e[25]; //e has to be long enough (?) for poly_add
-        unsigned o = 0;
-        unsigned char *tmp_t4 = malloc((N_QUADRATIC_POLY(_ID) + 1) / 2);
-        for (unsigned j = 0; i < _O1; i++) {
-            gf16_quadratic_poly_copy(tmp_t4, t4, j * _ID);
-            polynomial_add(5, tmp_t4, _full_e_power2, 5, temp, _full_e_power2, &o, t4, 0, e);
-        }
-        free(tmp_t4);
-
-        t4 += _V1_BYTE * N_QUADRATIC_POLY(_ID);
-        t3 += _O1_BYTE * _ID;
-    }
-}
-
-
 static
 void
 obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2_polys, unsigned n_terms, const unsigned char *s1) {
@@ -183,12 +141,6 @@ void _generate_secretkey(msk_t *sk, const unsigned char *sk_seed) {
 }
 
 
-void generate_secretkey(msk_t *sk, const unsigned char *sk_seed) {
-    _generate_secretkey(sk, sk_seed);
-    calculate_t4(sk->t4, sk->t1, sk->t3);
-}
-
-
 void generate_keypair(mpk_t *rpk, msk_t *sk, const unsigned char *sk_seed) {
 
     _generate_secretkey(sk, sk_seed);
@@ -199,9 +151,10 @@ void generate_keypair(mpk_t *rpk, msk_t *sk, const unsigned char *sk_seed) {
 
     /// at this point P = F o T ; S is still missing and P/Q is cubic on ID
 
-    quartic_calculate_t4(sk->t4, sk->t1, sk->t3); // t4 = t4 + t1*t3
+    ///TODO: only for cyclic Rainbow!?
+    //quartic_calculate_t4(sk->t2, sk->t1, sk->t3); // t2 = t2 + t1*t3
 
-    obsfucate_l1_polys(pk->l1_Q1, pk->l2_Q1, N_TRIANGLE_TERMS(_V1), sk->s1); // -> integrate S :)
+    quartic_obsfucate_l1_polys(pk->l1_Q1, pk->l2_Q1, N_TRIANGLE_TERMS(_V1), sk->s1); // -> integrate S :)
     quartic_obsfucate_l1_polys(pk->l1_Q2, pk->l2_Q2, _V1 * _O1, sk->s1);
     quartic_obsfucate_l1_polys(pk->l1_Q3, pk->l2_Q3, _V1 * _O2, sk->s1);
     quartic_obsfucate_l1_polys(pk->l1_Q5, pk->l2_Q5, N_TRIANGLE_TERMS(_O1), sk->s1);

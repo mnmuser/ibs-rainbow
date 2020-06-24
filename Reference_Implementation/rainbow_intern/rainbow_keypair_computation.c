@@ -180,12 +180,10 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
     Q_pk.l1_F2s[i] = (F1* T1 + F2) + F1tr * t1
     Q_pk.l1_F5s[i] = UT( T1tr* (F1 * T1 + F2) )
 */
-    const unsigned char *t2 = sk->t4;
+    const unsigned char *t2 = sk->t2;
 
-    memcpy(cpk->l1_Q1, sk->l1_F1, _O1_BYTE * N_TRIANGLE_TERMS(_V1));
+    write_gf16_to_quartic(cpk->l1_Q1, sk->l1_F1, _O1_BYTE * N_TRIANGLE_TERMS(_V1));
     write_gf16_to_quartic(cpk->l1_Q2, sk->l1_F2, _O1_BYTE * _V1 * _O1);
-
-    int full_e_power2[15] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
 //    polynomial_print(3, cpk->l1_Q2, 0, _full_e_power2, "L1_Q2_1 before Operation: ");
 //    polynomial_print(3, cpk->l1_Q2, 491520 - 15, _full_e_power2, "L1_Q2_2 before Operation: ");
@@ -218,7 +216,7 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
     quartic_batch_matTr_madd_gf16(tempQ, sk->t1, _V1, _V1_BYTE, _O1, cpk->l1_Q2, _O1, _O1_BYTE); // t1_tr*(F1*T1 + F2)
 //    polynomial_print(15, tempQ, 0, _full_e_power2, "tempQ(0): ");
 //    polynomial_print(15, tempQ, 15, _full_e_power2, "tempQ(60): ");
-    //TODO: this triangle shit ->
+
     quartic_UpperTrianglize(cpk->l1_Q5, tempQ, _O1, _O1_BYTE * N_QUARTIC_POLY(_ID));    // UT( ... )   // Q5
 
 //    polynomial_print(15, cpk->l1_Q5, 0, _full_e_power2, "l1_Q5(0): ");
@@ -255,7 +253,7 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
     Q2 = F1_F1T*T1 + F2
     Q5 = UT( T1tr( F1*T1 + F2 )  + F5 )
 */
-    memcpy(cpk->l2_Q1, sk->l2_F1, _O2_BYTE * N_TRIANGLE_TERMS(_V1));
+    write_gf16_to_quartic(cpk->l2_Q1, sk->l2_F1, _O2_BYTE * N_TRIANGLE_TERMS(_V1));
 
     write_gf16_to_quartic(cpk->l2_Q2, sk->l2_F2, _O2_BYTE * _V1 * _O1);
     quartic_batch_trimat_madd(cpk->l2_Q2, sk->l2_F1, sk->t1, _V1, _V1_BYTE, _O1, _O2_BYTE);      // F1*T1 + F2
@@ -304,7 +302,7 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
                                      _O2_BYTE);    //   F2tr*T2 + F5_F5T*T3 + F6
     quartic_batch_matTr_madd_gf16(cpk->l2_Q6, sk->t1, _V1, _V1_BYTE, _O1, cpk->l2_Q3, _O2, _O2_BYTE);    // Q6
 
-    //TODO: upper triangilize, checking, GF16-naming
+    //TODO: checking, GF16-naming
     memset(tempQ, 0, size_tempQ + 32);
     free(tempQ);
 }

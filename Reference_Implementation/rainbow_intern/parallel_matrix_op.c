@@ -47,7 +47,6 @@ void quartic_UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsi
                 gf16_quartic_poly_copy(btriC, (idx * size_batch) + (N_QUARTIC_POLY(_ID) * k), bA,
                                        (size_batch * (i * Awidth + j)) + (N_QUARTIC_POLY(_ID) * k));
             }
-            /// I hope this is correct and not to easy
             //gf256v_add( btriC + idx*size_batch , bA + size_batch*(i*Awidth+j) , size_batch );
         }
         for (unsigned l = 0; l < size_batch * (Aheight - i); l++) {

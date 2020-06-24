@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
 
     //calculate usk with msk and ID
 
-    ///calculate_usk
+    ///calculate_usk (attention! T1 and S1)
 
     //write usk to disk
 

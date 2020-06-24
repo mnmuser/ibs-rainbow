@@ -31,8 +31,8 @@ CSRC= $(wildcard *.c)
 
 
 ifdef DEBUG_FAST # normal debugging with sanitizers needs 3 minutes, so I decided for a fast variant
-        CFLAGS=  -D_DEBUG_ -g -O3 -march=native -mtune=native -std=c11 -Wall -Wextra
-        CXXFLAGS= -D_DEBUG_ -g -O3 -march=native -mtune=native -Wall -Wextra
+        CFLAGS=  -D_DEBUG_ -g -O2 -march=native -mtune=native -std=c11 -Wall -Wextra
+        CXXFLAGS= -D_DEBUG_ -g -O2 -march=native -mtune=native -Wall -Wextra
 endif
 
 ifdef DEBUG
@@ -49,6 +49,7 @@ endif
 #-> O3 w/o march		13 seconds
 #-> Debug O3 march=native 3:10 minutes
 #-> DEBUG O3 march=native w/o sanitizers 14 seconds
+#-> O3 optimizes parts of the keys out.. -> back to O2
 
 ifeq ($(shell uname -s),Darwin) # for macOS you need special openssl (homebrew)
 DFLAGS=
@@ -96,4 +97,4 @@ rainbow-verify: $(OBJ) rainbow-verify.o
 	$(CC) $(CFLAGS) $(INCPATH) -c $<
 
 clean:
-	rm *.o  rainbow-gen-masterkey rainbow-gen-usersk rainbow-gen-userpk rainbow-sign rainbow-verify pk.txt sk.txt signature.txt || true;
+	rm *.o  rainbow-gen-masterkey rainbow-gen-usersk rainbow-gen-userpk rainbow-sign rainbow-verify mpk.txt msk.txt usk.txt upk.txt signature.txt || true;
