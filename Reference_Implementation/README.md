@@ -10,7 +10,7 @@ Rainbow Signature system.
    set the variable $PROJ_DIR = Ia_Classic in the makefile.
    It will build the codes in the `Ia_Classic' folder only.
 
-   The default variant is `Ia_Classic' and all possiable variants are 
+   The default variant is `Ia_Classic` and all possiable variants are 
    `Ia_Classic',   `Ia_Cyclic',       `Ia_CompressedCyclic', 
    `IIIc_Classic', `IIIc_Cyclic',     `IIIc_CompressedCyclic',
    `Vc_Classic',   `Vc_Cyclic',   and `Vc_CompressedCyclic'.
