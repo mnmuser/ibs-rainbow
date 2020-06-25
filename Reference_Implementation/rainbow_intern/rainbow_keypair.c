@@ -198,19 +198,19 @@ void generate_keypair(pk_t *rpk, sk_t *sk, const unsigned char *sk_seed, const u
     ///////////////TEST/////////////////
 
     ///////////////ID/////////////////
-    unsigned char id_digest[8]; // in GF 16
-    generate_identity_hash(id_digest, id);
-    ///////////////ID/////////////////
-    int sk_size = sizeof(sk_t) - offsetof(sk_t, l1_F1);
-
-
-    unsigned char usk[sk_size];
-    pk_t upk;
-
-    multiply_identity_GF16(usk, &upk, &id_digest, sk->l1_F1, rpk);
-
-    memcpy(rpk, &upk, CRYPTO_PUBLICKEYBYTES);
-    memcpy(sk->l1_F1, usk, sk_size);
+//    unsigned char id_digest[8]; // in GF 16
+//    generate_identity_hash(id_digest, id);
+//    ///////////////ID/////////////////
+//    int sk_size = sizeof(sk_t) - offsetof(sk_t, l1_F1);
+//
+//
+//    unsigned char usk[sk_size];
+//    pk_t upk;
+//
+//    multiply_identity_GF16(usk, &upk, &id_digest, sk->l1_F1, rpk);
+//
+//    memcpy(rpk, &upk, CRYPTO_PUBLICKEYBYTES);
+//    memcpy(sk->l1_F1, usk, sk_size);
     ///////////////TEST/////////////////
 
 
