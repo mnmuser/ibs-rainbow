@@ -1484,10 +1484,10 @@ void polynomial_dif(unsigned m, unsigned o1, double c1[], unsigned e1[], unsigne
 
 /******************************************************************************/
 
-void polynomial_mul(unsigned o1, const unsigned char c1[], unsigned c1_offset, unsigned e1[], unsigned o2,
+void polynomial_mul(unsigned o1, const unsigned char c1[], unsigned c1_offset, const unsigned e1[], unsigned o2,
                     const unsigned char c2[],
                     unsigned c2_offset,
-                    unsigned e2[], unsigned *o, unsigned char c[], unsigned c_offset, unsigned e[])
+                    const unsigned e2[], unsigned *o, unsigned char c[], unsigned c_offset, unsigned e[])
 
 /******************************************************************************/
 /*
@@ -1575,7 +1575,7 @@ void polynomial_mul(unsigned o1, const unsigned char c1[], unsigned c1_offset, u
 
 /******************************************************************************/
 
-void polynomial_print(unsigned o, const unsigned char *c, unsigned gf16_offset, unsigned *e, char *title)
+void polynomial_print(unsigned o, const unsigned char *c, unsigned gf16_offset, const unsigned *e, char *title)
 
 /******************************************************************************/
 /*
@@ -1732,7 +1732,7 @@ void polynomial_sort(unsigned o, unsigned char c[], unsigned offset, unsigned e[
 
     indx = i4vec_sort_heap_index_a(o, e);
 
-    i4vec_permute(o, indx, e);
+    i4vec_permute(o, indx, e); // indx=3
     r8vec_permute(o, indx, c, offset);
 
     free(indx);

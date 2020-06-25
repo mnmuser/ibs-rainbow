@@ -215,11 +215,13 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
 
     quartic_batch_matTr_madd_gf16(tempQ, sk->t1, _V1, _V1_BYTE, _O1, cpk->l1_Q2, _O1, _O1_BYTE); // t1_tr*(F1*T1 + F2)
 //    polynomial_print(15, tempQ, 0, _full_e_power2, "tempQ(0): ");
-//    polynomial_print(15, tempQ, 15, _full_e_power2, "tempQ(60): ");
-
+//    polynomial_print(15, tempQ, 60, _full_e_power2, "tempQ(60): ");
+    /// tempQ looks good
     quartic_UpperTrianglize(cpk->l1_Q5, tempQ, _O1, _O1_BYTE * N_QUARTIC_POLY(_ID));    // UT( ... )   // Q5
-
+    /// l1_Q5 looks good
 //    polynomial_print(15, cpk->l1_Q5, 0, _full_e_power2, "l1_Q5(0): ");
+//    polynomial_print(15, cpk->l1_Q5, 15, _full_e_power2, "l1_Q5(15): ");
+//    polynomial_print(15, cpk->l1_Q5, 60, _full_e_power2, "l1_Q5(60): ");
 
     quartic_batch_trimatTr_madd_gf16(cpk->l1_Q2, sk->l1_F1, sk->t1, _V1, _V1_BYTE, _O1, _O1_BYTE); // Q2
 
@@ -228,11 +230,14 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
     F1_T2     = F1 * t2
     F2_T3     = F2 * t3
     F1_F1T_T2 + F2_T3 = F1_T2 + F2_T3 + F1tr * t2
-    Q_pk.l1_F3s[i] =         F1_F1T_T2 + F2_T3
-    Q_pk.l1_F6s[i] = T1tr* ( F1_F1T_T2 + F2_T3 ) + F2tr * t2
+    Q_pk.l1_F3s[i] =         F1_F1T_T2 + F2_T3                  ///linear
+    Q_pk.l1_F6s[i] = T1tr* ( F1_F1T_T2 + F2_T3 ) + F2tr * t2    ///
     Q_pk.l1_F9s[i] = UT( T2tr* ( F1_T2 + F2_T3 ) )
 */
     quartic_batch_trimat_madd(cpk->l1_Q3, sk->l1_F1, t2, _V1, _V1_BYTE, _O2, _O1_BYTE);         // F1*T2
+    polynomial_print(15, cpk->l1_Q3, 0, _full_e_power2, "Q3:");
+    polynomial_print(15, cpk->l1_Q3, 15, _full_e_power2, "Q3[15]:");
+    /// here Q3 is alright (quadratic)
     quartic_batch_mat_madd_gf16(cpk->l1_Q3, sk->l1_F2, _V1, sk->t3, _O1, _O1_BYTE, _O2, _O1_BYTE);   // F1_T2 + F2_T3
 
     set_quartic_zero(tempQ, _O1_BYTE * _O2 * _O2);                                              // l1_Q9

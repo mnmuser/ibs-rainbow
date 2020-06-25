@@ -20,6 +20,8 @@
 
 #define N_CUBIC_POLY(id_var) ((id_var+1)*(id_var+2)*(id_var+3)/6)
 
+#define N_LINEAR_POLY(id_var) ((id_var+1))
+
 #ifdef  __cplusplus
 extern  "C" {
 #endif

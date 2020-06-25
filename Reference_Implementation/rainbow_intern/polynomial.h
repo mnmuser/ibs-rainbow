@@ -44,12 +44,12 @@ void polynomial_compress(unsigned o1, unsigned char c1[], unsigned c1_offset, un
 void polynomial_dif(unsigned m, unsigned o1, double c1[], unsigned e1[], unsigned dif[],
                     unsigned *o2, double c2[], unsigned e2[]);
 
-void polynomial_mul(unsigned o1, const unsigned char c1[], unsigned c1_offset, unsigned e1[], unsigned o2,
+void polynomial_mul(unsigned o1, const unsigned char c1[], unsigned c1_offset, const unsigned e1[], unsigned o2,
                     const unsigned char c2[],
                     unsigned c2_offset,
-                    unsigned e2[], unsigned *o, unsigned char c[], unsigned c_offset, unsigned e[]);
+                    const unsigned e2[], unsigned *o, unsigned char c[], unsigned c_offset, unsigned e[]);
 
-void polynomial_print(unsigned o, const unsigned char *c, unsigned gf16_offset, unsigned *e, char *title);
+void polynomial_print(unsigned o, const unsigned char *c, unsigned gf16_offset, const unsigned *e, char *title);
 
 void polynomial_scale(double s, unsigned m, unsigned o1, double c1[], unsigned e1[]);
 
