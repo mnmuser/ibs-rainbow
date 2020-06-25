@@ -180,7 +180,7 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
     Q_pk.l1_F2s[i] = (F1* T1 + F2) + F1tr * t1
     Q_pk.l1_F5s[i] = UT( T1tr* (F1 * T1 + F2) )
 */
-    const unsigned char *t2 = sk->t2;
+    const unsigned char *t2 = sk->t4;
 
     write_gf16_to_quartic(cpk->l1_Q1, sk->l1_F1, _O1_BYTE * N_TRIANGLE_TERMS(_V1));
     write_gf16_to_quartic(cpk->l1_Q2, sk->l1_F2, _O1_BYTE * _V1 * _O1);

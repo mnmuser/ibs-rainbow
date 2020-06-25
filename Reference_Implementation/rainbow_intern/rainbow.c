@@ -129,8 +129,8 @@ int rainbow_sign(uint8_t *signature, const msk_t *sk, const uint8_t *_digest) {
     // Computing the t1 part.
     gfmat_prod(y, sk->t1, _V1_BYTE , _O1 , x_o1 );
     gf256v_add(w, y, _V1_BYTE );
-    // Computing the t2 part.
-    gfmat_prod(y, sk->t2, _V1_BYTE , _O2 , x_o2 );
+    // Computing the t4 part.
+    gfmat_prod(y, sk->t4, _V1_BYTE , _O2 , x_o2 );
     gf256v_add(w, y, _V1_BYTE );
     // Computing the t3 part.
     gfmat_prod(y, sk->t3, _O1_BYTE , _O2 , x_o2 );
