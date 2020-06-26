@@ -1379,10 +1379,9 @@ void polynomial_compress(unsigned o1, unsigned char c1[], unsigned c1_offset, un
     the polynomial.
 */
 {
-
-    unsigned get;
-    unsigned put;
-    const double r8_epsilon_sqrt = 0.1490116119384766E-07;
+    unsigned char tmp;
+    int get;
+    int put;
 /*
   Add coefficients associated with the same exponent.
 */
@@ -1398,7 +1397,7 @@ void polynomial_compress(unsigned o1, unsigned char c1[], unsigned c1_offset, un
             e2[put - 1] = e1[get - 1];
         } else {
             if (e2[put - 1] == e1[get - 1]) {
-                unsigned char tmp = gf16v_get_ele(c2, put - 1 + c2_offset) + gf16v_get_ele(c1, get - 1 + c1_offset);
+                tmp = gf16v_get_ele(c2, put - 1 + c2_offset) + gf16v_get_ele(c1, get - 1 + c1_offset);
                 tmp %= 16; //TODO: check
                 gf16v_set_ele(c2, put - 1, tmp);
             } else {
@@ -1410,76 +1409,6 @@ void polynomial_compress(unsigned o1, unsigned char c1[], unsigned c1_offset, un
     }
 
     *o2 = put;
-}
-
-/******************************************************************************/
-
-void polynomial_dif(unsigned m, unsigned o1, double c1[], unsigned e1[], unsigned dif[],
-                    unsigned *o2, double c2[], unsigned e2[])
-
-/******************************************************************************/
-/*
-  Purpose:
-
-    POLYNOMIAL_DIF differentiates a polynomial.
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    01 December 2013
-
-  Author:
-
-    John Burkardt
-
-  Parameters:
-
-    Input, unsigned M, the spatial dimension.
-
-    Input, unsigned O1, the "order" of polynomial 1.
-
-    Input, double C1[O1], the coefficients of polynomial 1.
-
-    Input, unsigned E1[O1], the indices of the exponents of 
-    polynomial 1.
-
-    Input, unsigned DIF[M], indicates the number of 
-    differentiations in each component.
-
-    Output, unsigned *O2, the "order" of the polynomial derivative.
-
-    Output, double C2[*O2], the coefficients of the polynomial 
-    derivative.
-
-    Output, unsigned E2[*O2], the indices of the exponents of the
-    polynomial derivative.
-*/
-{
-    unsigned *f1;
-    unsigned i;
-    unsigned j;
-
-    *o2 = o1;
-    for (j = 0; j < o1; j++) {
-        c2[j] = c1[j];
-    }
-
-    for (j = 0; j < o1; j++) {
-        f1 = mono_unrank_grlex(m, e1[j]);
-        for (i = 0; i < m; i++) {
-            c2[j] = c2[j] * i4_fall(f1[i], dif[i]);
-            f1[i] = i4_max(f1[i] - dif[i], 0);
-        }
-        e2[j] = mono_rank_grlex(m, f1);
-        free(f1);
-    }
-
-    polynomial_sort(*o2, c2, 0, e2);
-
-    polynomial_compress(*o2, c2, 0, e2, o2, c2, 0, e2); //TODO
 }
 
 /******************************************************************************/
@@ -1650,48 +1579,6 @@ void polynomial_print(unsigned o, const unsigned char *c, unsigned gf16_offset, 
 
 /******************************************************************************/
 
-void polynomial_scale(double s, unsigned m, unsigned o, double c[], unsigned e[])
-
-/******************************************************************************/
-/*
-  Purpose:
-
-    POLYNOMIAL_SCALE scales a polynomial.
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    01 January 2013
-
-  Author:
-
-    John Burkardt
-
-  Parameters:
-
-    Input, double S, the scale factor.
-
-    Input, unsigned M, the spatial dimension.
-
-    Input, unsigned O, the "order" of the polynomial.
-
-    Input/output, double C[O], the coefficients of the scaled polynomial.
-
-    Input, unsigned E[O], the indices of the exponents of 
-    the scaled polynomial.
-*/
-{
-    unsigned i;
-
-    for (i = 0; i < o; i++) {
-        c[i] = c[i] * s;
-    }
-}
-
-/******************************************************************************/
 
 void polynomial_sort(unsigned o, unsigned char c[], unsigned offset, unsigned e[])
 
