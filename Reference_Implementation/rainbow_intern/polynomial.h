@@ -8,7 +8,7 @@ unsigned i4_min(unsigned i1, unsigned i2);
 
 void i4vec_concatenate(unsigned n1, const unsigned a[], unsigned n2, const unsigned b[], unsigned c[]);
 
-void i4vec_permute(int n, int p[], int a[]);
+void i4vec_permute(unsigned n, unsigned p[], unsigned a[]);
 
 unsigned *i4vec_sort_heap_index_a(unsigned n, unsigned a[]);
 
@@ -61,4 +61,4 @@ polynomial_value(unsigned o, const unsigned char *c, unsigned offset, unsigned c
 void
 r8vec_concatenate(unsigned n1, unsigned char a[], unsigned n2, unsigned char b[], unsigned char c[], unsigned offset);
 
-void r8vec_permute(int n, int p[], unsigned char a[], unsigned offset);
+void r8vec_permute(unsigned n, unsigned p[], unsigned char a[], unsigned offset);

@@ -132,7 +132,7 @@ void quartic_batch_trimatTr_madd_gf16(unsigned char *bC, const unsigned char *bt
         for (unsigned j = 0; j < Bwidth; j++) {
             for (unsigned k = 0; k < Bheight; k++) {
                 if (i < k) continue;
-                quartic_gf16v_madd2(bC, btriA, (idx_of_trimat(k, i, Aheight)), 1, B, j * size_Bcolvec, k,
+                quartic_gf16v_madd2(bC, btriA, (idx_of_trimat(k, i, Aheight)), 1, B, j, k,
                                     size_batch,
                                     size_Bcolvec);
                 //gf16v_madd( bC , & btriA[ size_batch*(idx_of_trimat(k,i,Aheight)) ] , gf16v_get_ele( &B[j*size_Bcolvec] , k ) , size_batch );
@@ -522,7 +522,7 @@ void quartic_gf16v_madd2(uint8_t *C, const uint8_t *Av, unsigned A_pointer_index
                        B_offset * _ID,
                        _lin_e_power2, &tmp_o, tmp_product, 0, tmp_e);
 
-//        polynomial_print(tmp_o, tmp_product, 0, tmp_e, "Produkt:");
+        polynomial_print(tmp_o, tmp_product, 0, tmp_e, "Produkt:");
 
         gf16_lin_poly_copy(tmp_summand, C, (l * N_QUARTIC_POLY(_ID)));
 

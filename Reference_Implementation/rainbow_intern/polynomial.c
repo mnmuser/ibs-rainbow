@@ -286,7 +286,7 @@ void i4vec_concatenate(unsigned n1, const unsigned a[], unsigned n2, const unsig
 
 /******************************************************************************/
 
-void i4vec_permute(int n, int p[], int a[])
+void i4vec_permute(unsigned n1, unsigned p1[], unsigned a[])
 
 /******************************************************************************/
 /*
@@ -340,13 +340,16 @@ void i4vec_permute(int n, int p[], int a[])
     Input/output, int A[N], the array to be permuted.
 */
 {
+    int *p = (int *) p1; //CAST unsigned to signed for this operations
+    int n = (int) n1;
+
     int a_temp;
     int i;
     int iget;
     int iput;
     int istart;
 
-    perm_check0(n, p);
+    perm_check0(n, p1);
 /*
   In order for the sign negation trick to work, we need to assume that the
   entries of P are strictly positive.  Presumably, the lowest number is 0.
@@ -374,7 +377,7 @@ void i4vec_permute(int n, int p[], int a[])
                 iput = iget;
                 iget = p[iget - 1];
 
-                p[iput - 1] = -p[iput - 1];
+                p[iput - 1] = -p[iput - 1]; //TODO: hier geht was schief
 
                 if (iget < 1 || n < iget) {
                     fprintf(stderr, "\n");
@@ -1380,8 +1383,8 @@ void polynomial_compress(unsigned o1, unsigned char c1[], unsigned c1_offset, un
 */
 {
     unsigned char tmp;
-    int get;
-    int put;
+    unsigned get;
+    unsigned put;
 /*
   Add coefficients associated with the same exponent.
 */
@@ -1551,11 +1554,7 @@ void polynomial_print(unsigned o, const unsigned char *c, unsigned gf16_offset, 
     } else {
         for (j = 0; j < o; j++) {
             printf("    ");
-            if (gf16v_get_ele(c, j + gf16_offset) < 0) {
-                printf("- ");
-            } else {
-                printf("+ ");
-            }
+            printf("+ ");
             printf("%hhu * x^(", gf16v_get_ele(c, j + gf16_offset));
 
             f = mono_unrank_grlex(m, e[j]);
@@ -1744,7 +1743,7 @@ r8vec_concatenate(unsigned n1, unsigned char a[], unsigned n2, unsigned char b[]
 
 /******************************************************************************/
 
-void r8vec_permute(int n, int p[], unsigned char a[], unsigned offset)
+void r8vec_permute(unsigned n1, unsigned p1[], unsigned char a[], unsigned offset)
 
 /******************************************************************************/
 /*
@@ -1796,13 +1795,16 @@ void r8vec_permute(int n, int p[], unsigned char a[], unsigned offset)
     Input/output, double A[N], the array to be permuted.
 */
 {
+    int *p = (int *) p1;
+    int n = (int) n1;
+
     unsigned char a_temp;
     int i;
     int iget;
     int iput;
     int istart;
 
-    perm_check0(n, p);
+    perm_check0(n, p1);
 /*
   In order for the sign negation trick to work, we need to assume that the
   entries of P are strictly positive.  Presumably, the lowest number is 0.
