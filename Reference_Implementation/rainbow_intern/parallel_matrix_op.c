@@ -522,12 +522,12 @@ void quartic_gf16v_madd2(uint8_t *C, const uint8_t *Av, unsigned A_pointer_index
                        B_offset * _ID,
                        _lin_e_power2, &tmp_o, tmp_product, 0, tmp_e);
 
-        polynomial_print(tmp_o, tmp_product, 0, tmp_e, "Produkt:");
+//        polynomial_print(tmp_o, tmp_product, 0, tmp_e, "Produkt:");
 
         gf16_lin_poly_copy(tmp_summand, C, (l * N_QUARTIC_POLY(_ID)));
 
-        polynomial_add(tmp_o, tmp_product, tmp_e, 1, tmp_summand, _full_e_power2, &final_o,
-                       C, (l * N_QUARTIC_POLY(_ID)), final_e);
+        polynomial_add(tmp_o, tmp_product, tmp_e, 3, tmp_summand, _full_e_power2, &final_o,
+                       C, (l * N_QUARTIC_POLY(_ID)), final_e); //TODO: right value for o2
 
 //        polynomial_print(15,C,(l * N_QUARTIC_POLY(_ID)),_full_e_power2,"Written:");
     }
