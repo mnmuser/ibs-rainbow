@@ -79,6 +79,8 @@ void gf16_lin_poly_copy(unsigned char *dest, const unsigned char *src, unsigned 
 
 void gf16_quadratic_poly_copy(unsigned char *dest, const unsigned char *src, unsigned gf16_offset_src);
 
+void gf16_cubic_poly_copy(unsigned char *dest, const unsigned char *src, unsigned gf16_offset_src);
+
 void gf16_quartic_poly_copy(unsigned char *dest, unsigned dest_gf16_offset_src, const unsigned char *src,
                             unsigned gf16_offset_src);
 

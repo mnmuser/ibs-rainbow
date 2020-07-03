@@ -132,9 +132,9 @@ void quartic_batch_trimatTr_madd_gf16(unsigned char *bC, const unsigned char *bt
         for (unsigned j = 0; j < Bwidth; j++) {
             for (unsigned k = 0; k < Bheight; k++) {
                 if (i < k) continue;
-                quartic_gf16v_madd2(bC, btriA, (idx_of_trimat(k, i, Aheight)), 1, B, j, k,
+                quartic_gf16v_madd2(bC, btriA, (idx_of_trimat(k, i, Aheight)), 1, B, j * size_Bcolvec, k,
                                     size_batch,
-                                    size_Bcolvec);
+                                    size_Bcolvec); //TODO: sizeBcolvec?
                 //gf16v_madd( bC , & btriA[ size_batch*(idx_of_trimat(k,i,Aheight)) ] , gf16v_get_ele( &B[j*size_Bcolvec] , k ) , size_batch );
             }
             bC += size_batch * N_QUARTIC_POLY(_ID);
@@ -488,10 +488,10 @@ void quartic_gf16v_madd2(uint8_t *C, const uint8_t *Av, unsigned A_pointer_index
 
     ///SHOULD BE DONE BETTER (WIP)--///
     unsigned char tmp_product[(N_CUBIC_POLY(_ID) + 2) / 2]; // could be better calculated with i4.. in poly.c
-    unsigned char tmp_summand[(_ID + 2) / 2]; //GF16, round up, one extra field for constant
+    unsigned char tmp_summand[(N_CUBIC_POLY(_ID) + 2) / 2]; //GF16, round up, one extra field for constant
 
     unsigned tmp_e[N_CUBIC_POLY(_ID) + 2]; //size is too big..
-    unsigned final_e[N_CUBIC_POLY(_ID)];
+    unsigned final_e[25];
 
     unsigned tmp_o = 0;
     unsigned final_o = 0;
@@ -500,14 +500,18 @@ void quartic_gf16v_madd2(uint8_t *C, const uint8_t *Av, unsigned A_pointer_index
     unsigned o_A;
     unsigned A_loop_offset;
 
+    unsigned o2;
+
     if (A_linear) {
         e_A = _lin_e_power2;
         o_A = N_LINEAR_POLY(_ID) - 1;
         A_loop_offset = _ID;
+        o2 = N_CUBIC_POLY(_ID);
     } else {
         e_A = _full_e_power2;
         o_A = N_QUADRATIC_POLY(_ID);
         A_loop_offset = N_QUARTIC_POLY(_ID);
+        o2 = 1; //hack for Q5 etc.
     }
     ///--SHOULD BE DONE BETTER (WIP)///
 
@@ -524,14 +528,52 @@ void quartic_gf16v_madd2(uint8_t *C, const uint8_t *Av, unsigned A_pointer_index
 
 //        polynomial_print(tmp_o, tmp_product, 0, tmp_e, "Produkt:");
 
-        gf16_lin_poly_copy(tmp_summand, C, (l * N_QUARTIC_POLY(_ID)));
+        gf16_cubic_poly_copy(tmp_summand, C, (l * N_QUARTIC_POLY(_ID))); //TODO: not working with tempQ
 
-        polynomial_add(tmp_o, tmp_product, tmp_e, 3, tmp_summand, _full_e_power2, &final_o,
+//        polynomial_print(10,tmp_summand,(l * N_QUARTIC_POLY(_ID)),_full_e_power2,"tmp_sum");
+
+        polynomial_add(tmp_o, tmp_product, tmp_e, o2, tmp_summand, _full_e_power2, &final_o,
                        C, (l * N_QUARTIC_POLY(_ID)), final_e); //TODO: right value for o2
 
 //        polynomial_print(15,C,(l * N_QUARTIC_POLY(_ID)),_full_e_power2,"Written:");
     }
 }
+
+void quartic_gf16v_madd_to_grade4(uint8_t *C, const uint8_t *A, unsigned A_pointer_index, const unsigned char *B,
+                                  unsigned B_pointer_index, unsigned B_offset, unsigned size_batch,
+                                  unsigned size_Bcolvec) {
+
+    ///SHOULD BE DONE BETTER (WIP)--///
+    unsigned char tmp_product[(N_QUARTIC_POLY(_ID) + 1) / 2]; // could be better calculated with i4.. in poly.c
+    unsigned char tmp_summand[(_ID + 2) / 2]; //GF16, round up, one extra field for constant
+
+    unsigned tmp_e[15 + 2]; //size is too big..
+    unsigned final_e[15 + 2];
+
+    unsigned tmp_o = 0;
+    unsigned final_o = 0;
+
+    ///--SHOULD BE DONE BETTER (WIP)///
+
+    //A is grade 1, B is grade 3, C is empty
+
+    for (unsigned l = 0; l < size_batch * 2; l++) { // *2 for gf16 (size is in byte)
+        //the inner loop of gf16vmadd
+        polynomial_mul(2, &A[(A_pointer_index) * _ID * size_batch], l, _lin_e_power2, N_CUBIC_POLY(_ID),
+                       &B[B_pointer_index * size_Bcolvec],
+                       B_offset * N_CUBIC_POLY(_ID), // u.U l * _ID ????
+                       _full_e_power2, &tmp_o, tmp_product, 0, tmp_e);
+
+        gf16_lin_poly_copy(tmp_summand, C, (l * N_QUARTIC_POLY(_ID)));
+
+        polynomial_add(tmp_o, tmp_product, tmp_e, _ID + 1, tmp_summand, _full_e_power2, &final_o,
+                       C, (l * N_QUARTIC_POLY(_ID)), final_e);
+
+        //Hint: Das hier funktioniert soweit gut für l1_Q2 (oft gedebuggt)
+    }
+}
+
+//TODO: ONE gf16v_madd and you can choose grade of all inputs
 
 ///
 /// \param C
@@ -569,7 +611,7 @@ void quartic_linear_gf16v_madd(uint8_t *C, const uint8_t *A, unsigned A_pointer_
 
         gf16_lin_poly_copy(tmp_summand, C, (l * _ID));
 
-        polynomial_add(tmp_o, tmp_product, tmp_e, 2, tmp_summand, e_linear, &final_o,
+        polynomial_add(tmp_o, tmp_product, tmp_e, _ID, tmp_summand, e_linear, &final_o,
                        C, (l * _ID), final_e);
 
         //Hint: Das hier funktioniert soweit gut für l1_Q2 (oft gedebuggt)

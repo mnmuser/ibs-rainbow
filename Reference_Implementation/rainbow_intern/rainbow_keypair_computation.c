@@ -185,13 +185,11 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
     write_gf16_to_quartic(cpk->l1_Q1, sk->l1_F1, _O1_BYTE * N_TRIANGLE_TERMS(_V1));
     write_gf16_to_quartic(cpk->l1_Q2, sk->l1_F2, _O1_BYTE * _V1 * _O1);
 
-//    polynomial_print(3, cpk->l1_Q2, 0, _full_e_power2, "L1_Q2_1 before Operation: ");
-//    polynomial_print(3, cpk->l1_Q2, 491520 - 15, _full_e_power2, "L1_Q2_2 before Operation: ");
+    polynomial_print(15, cpk->l1_Q1, 0, _full_e_power2, "L1_Q1 ");
+    polynomial_print(15, cpk->l1_Q1, 126720 * 2 - 15, _full_e_power2, "L1_Q1 end");
+
 
     quartic_batch_trimat_madd(cpk->l1_Q2, sk->l1_F1, sk->t1, _V1, _V1_BYTE, _O1, _O1_BYTE); // Q2 += F1*T1
-
-//    polynomial_print(6, cpk->l1_Q2, 0, _full_e_power2, "L1_Q2_1: ");
-//    polynomial_print(6, cpk->l1_Q2, 491520 - 15, _full_e_power2, "L1_Q2_2: "); //last position in Q2
 
     set_quartic_zero(cpk->l1_Q3, _O1_BYTE * _V1 * _O2);
     set_quartic_zero(cpk->l1_Q5, _O1_BYTE * N_TRIANGLE_TERMS(_O1));
@@ -211,19 +209,25 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
         size_tempQ = _O2_BYTE * _O2 * _O2 * N_QUARTIC_POLY(_ID);
     unsigned char *tempQ = (unsigned char *) aligned_alloc(32, size_tempQ + 32);
 
-    set_quartic_zero(tempQ, _O1_BYTE * _O1 * _O1);   // l1_Q5
+    memset(tempQ, 0, size_tempQ);  // l1_Q5
+
 
     quartic_batch_matTr_madd_gf16(tempQ, sk->t1, _V1, _V1_BYTE, _O1, cpk->l1_Q2, _O1, _O1_BYTE); // t1_tr*(F1*T1 + F2)
-//    polynomial_print(15, tempQ, 0, _full_e_power2, "tempQ(0): ");
-//    polynomial_print(15, tempQ, 60, _full_e_power2, "tempQ(60): ");
+
+    polynomial_print(15, tempQ, 0, _full_e_power2, "tempQ(0): ");
+    polynomial_print(15, tempQ, 126720 * 2 - 15, _full_e_power2, "tempQ(end): ");
+
     /// tempQ looks good
-    quartic_UpperTrianglize(cpk->l1_Q5, tempQ, _O1, _O1_BYTE * N_QUARTIC_POLY(_ID));    // UT( ... )   // Q5
+    quartic_UpperTrianglize(cpk->l1_Q5, tempQ, _O1, _O1_BYTE * N_QUARTIC_POLY(
+            _ID));    // UT( ... )   // Q5 //TODO: here is a bug, tempQ is okay, Q5 is too small
     /// l1_Q5 looks good
-//    polynomial_print(15, cpk->l1_Q5, 0, _full_e_power2, "l1_Q5(0): ");
-//    polynomial_print(15, cpk->l1_Q5, 15, _full_e_power2, "l1_Q5(15): ");
-//    polynomial_print(15, cpk->l1_Q5, 60, _full_e_power2, "l1_Q5(60): ");
+    polynomial_print(15, cpk->l1_Q5, 0, _full_e_power2, "l1_Q5(0): ");
+    polynomial_print(15, cpk->l1_Q5, 126720 * 2 - 15, _full_e_power2, "L1_Q5 end");
 
     quartic_batch_trimatTr_madd_gf16(cpk->l1_Q2, sk->l1_F1, sk->t1, _V1, _V1_BYTE, _O1, _O1_BYTE); // Q2
+
+    polynomial_print(15, cpk->l1_Q2, 0, _full_e_power2, "L1_Q2_1: ");
+    polynomial_print(15, cpk->l1_Q2, 491520 - 15, _full_e_power2, "L1_Q2_2: "); //last position in Q2
 
 /*
     Computing:
@@ -244,16 +248,22 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
                                   _O1_BYTE);           // T2tr * ( F1_T2 + F2_T3 )
     quartic_UpperTrianglize(cpk->l1_Q9, tempQ, _O2, _O1_BYTE);                                   // Q9
 
-    polynomial_print(15, cpk->l1_Q3, 0, _full_e_power2, "Q3:");
+    polynomial_print(15, cpk->l1_Q9, 0, _full_e_power2, "l1_Q9(0): ");
+    polynomial_print(15, cpk->l1_Q9, 126720 * 2 - 15, _full_e_power2, "L1_Q9 end");
+
 
     quartic_batch_trimatTr_madd_gf16(cpk->l1_Q3, sk->l1_F1, t2, _V1, _V1_BYTE, _O2,
                                      _O1_BYTE);        // F1_F1T_T2 + F2_T3  // Q3
 
     polynomial_print(15, cpk->l1_Q3, 0, _full_e_power2, "Q3:");
-    polynomial_print(15, cpk->l1_Q3, 15, _full_e_power2, "Q3[15]:");
+    polynomial_print(15, cpk->l1_Q3, 491520 - 15, _full_e_power2, "L1_Q3 end: ");
 
     quartic_batch_bmatTr_madd_gf16(cpk->l1_Q6, sk->l1_F2, _O1, t2, _V1, _V1_BYTE, _O2, _O1_BYTE);       // F2tr*T2
     quartic_batch_matTr_madd_gf16(cpk->l1_Q6, sk->t1, _V1, _V1_BYTE, _O1, cpk->l1_Q3, _O2, _O1_BYTE);    // Q6
+
+    polynomial_print(15, cpk->l1_Q6, 0, _full_e_power2, "Q6:");
+    polynomial_print(15, cpk->l1_Q6, 491520 - 15, _full_e_power2, "L1_Q6 end: ");
+
 
 /*
     layer 2
@@ -275,6 +285,8 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
 
     quartic_batch_trimatTr_madd_gf16(cpk->l2_Q2, sk->l2_F1, sk->t1, _V1, _V1_BYTE, _O1, _O2_BYTE);    // Q2
     polynomial_print(15, cpk->l1_Q2, 0, _full_e_power2, "Q2:");
+
+    //TODO: write polynomial_fill_checker?
 
 /*
     Computing:
@@ -360,6 +372,12 @@ void gf16_lin_poly_copy(unsigned char *dest, const unsigned char *src, unsigned 
 
 void gf16_quadratic_poly_copy(unsigned char *dest, const unsigned char *src, unsigned gf16_offset_src) {
     for (unsigned i = 0; i < N_QUADRATIC_POLY(_ID); i++) {
+        gf16v_set_ele(dest, i, gf16v_get_ele(src, gf16_offset_src + i));
+    }
+}
+
+void gf16_cubic_poly_copy(unsigned char *dest, const unsigned char *src, unsigned gf16_offset_src) {
+    for (unsigned i = 0; i < N_CUBIC_POLY(_ID); i++) {
         gf16v_set_ele(dest, i, gf16v_get_ele(src, gf16_offset_src + i));
     }
 }
