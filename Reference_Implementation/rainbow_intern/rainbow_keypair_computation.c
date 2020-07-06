@@ -382,9 +382,9 @@ void gf16_cubic_poly_copy(unsigned char *dest, const unsigned char *src, unsigne
     }
 }
 
-void gf16_quartic_poly_copy(unsigned char *dest, unsigned dest_gf16_offset_src, const unsigned char *src,
+void gf16_quartic_poly_copy(unsigned char *dest, unsigned dest_gf16_offset_dest, const unsigned char *src,
                             unsigned src_gf16_offset_src) {
     for (unsigned i = 0; i < N_QUARTIC_POLY(_ID); i++) {
-        gf16v_set_ele(dest, dest_gf16_offset_src + i, gf16v_get_ele(src, src_gf16_offset_src + i));
+        gf16v_set_ele(dest, dest_gf16_offset_dest + i, gf16v_get_ele(src, src_gf16_offset_src + i));
     }
 }
