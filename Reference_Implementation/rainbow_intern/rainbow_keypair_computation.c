@@ -263,8 +263,8 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
 
     quartic_batch_bmatTr_madd_gf16(cpk->l1_Q6, sk->l1_F2, _O1, t2, _V1, _V1_BYTE, _O2, _O1_BYTE);       // F2tr*T2
 
-    quartic_Q6_batch_matTr_madd_gf16(cpk->l1_Q6, sk->t1, _V1, _V1_BYTE, _O1, cpk->l1_Q3, _O2,
-                                     _O1_BYTE);    // Q6 //TODO: here is a bug, Q6 should be 7 digits, is only 4
+    quartic_batch_matTr_madd_gf16(cpk->l1_Q6, sk->t1, _V1, _V1_BYTE, _O1, cpk->l1_Q3, _O2,
+                                  _O1_BYTE);    // Q6
 
     polynomial_print(15, cpk->l1_Q6, 0, _full_e_power2, "Q6:");
     polynomial_print(15, cpk->l1_Q6, 491520 - 15, _full_e_power2, "L1_Q6 end: ");
