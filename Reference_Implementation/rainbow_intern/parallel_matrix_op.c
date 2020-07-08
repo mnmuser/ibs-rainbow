@@ -237,6 +237,23 @@ quartic_batch_matTr_madd_gf16(unsigned char *bC, const unsigned char *A_to_tr, u
     }
 }
 
+/// Q6, t1, Q3
+void
+quartic_Q6_batch_matTr_madd_gf16(unsigned char *bC, const unsigned char *A_to_tr, unsigned Aheight,
+                                 unsigned size_Acolvec,
+                                 unsigned Awidth,
+                                 const unsigned char *bB, unsigned Bwidth, unsigned size_batch) {
+    unsigned Atr_height = Awidth;
+    unsigned Atr_width = Aheight;
+    for (unsigned i = 0; i < Atr_height; i++) {
+        for (unsigned j = 0; j < Atr_width; j++) {
+            quartic_gf16v_madd_Q6(bC, bB, j, A_to_tr, i, j, size_batch * Bwidth, size_Acolvec);
+            //gf16v_madd(bC, &bB[j * Bwidth * size_batch], gf16v_get_ele(&A_to_tr[size_Acolvec * i], j),size_batch * Bwidth);
+        }
+        bC += size_batch * Bwidth * N_QUARTIC_POLY(_ID);
+    }
+}
+
 void batch_matTr_madd_gf256(unsigned char *bC, const unsigned char *A_to_tr, unsigned Aheight, unsigned size_Acolvec,
                             unsigned Awidth,
                             const unsigned char *bB, unsigned Bwidth, unsigned size_batch) {
@@ -263,7 +280,7 @@ void quartic_batch_bmatTr_madd_gf16(unsigned char *bC, const unsigned char *bA_t
                 quartic_gf16v_madd(bC, bA, i + k + Aheight, B, j, k, size_batch, size_Bcolvec);
                 //gf16v_madd( bC , & bA[ size_batch*(i+k*Aheight) ] , gf16v_get_ele( &B[j*size_Bcolvec] , k ) , size_batch );
             }
-            bC += size_batch;
+            bC += size_batch * N_QUARTIC_POLY(_ID);
         }
     }
 }
@@ -509,11 +526,13 @@ void quartic_gf16v_madd2(uint8_t *C, const uint8_t *Av, unsigned A_pointer_index
         o_A = N_LINEAR_POLY(_ID) - 1;
         A_loop_offset = _ID;
         o2 = N_CUBIC_POLY(_ID);
+    } else if (A_linear == 6) { //only for Q6.....
+
     } else {
         e_A = _full_e_power2;
         o_A = N_QUADRATIC_POLY(_ID);
         A_loop_offset = N_QUARTIC_POLY(_ID);
-        o2 = 1; //hack for Q5 etc.
+        o2 = 1; //hack for Q5 etc. //TODO: hack not working for Q6
     }
     ///--SHOULD BE DONE BETTER (WIP)///
 
@@ -530,7 +549,7 @@ void quartic_gf16v_madd2(uint8_t *C, const uint8_t *Av, unsigned A_pointer_index
 
 //        polynomial_print(tmp_o, tmp_product, 0, tmp_e, "Produkt:");
 
-        gf16_cubic_poly_copy(tmp_summand, C, (l * N_QUARTIC_POLY(_ID))); //TODO: not working with tempQ
+        gf16_cubic_poly_copy(tmp_summand, 0, C, (l * N_QUARTIC_POLY(_ID))); //TODO: not working with tempQ
 
 //        polynomial_print(10,tmp_summand,(l * N_QUARTIC_POLY(_ID)),_full_e_power2,"tmp_sum");
 
@@ -572,6 +591,60 @@ void quartic_gf16v_madd_to_grade4(uint8_t *C, const uint8_t *A, unsigned A_point
                        C, (l * N_QUARTIC_POLY(_ID)), final_e);
 
         //Hint: Das hier funktioniert soweit gut für l1_Q2 (oft gedebuggt)
+    }
+}
+
+/// C: Q6 (3(6)), A: Q3(3(6)), B: t1 (2)
+void quartic_gf16v_madd_Q6(uint8_t *C, const uint8_t *Av, unsigned A_pointer_index, const unsigned char *B,
+                           unsigned B_pointer_index, unsigned B_offset, unsigned size_batch,
+                           unsigned size_Bcolvec) {
+
+    ///SHOULD BE DONE BETTER (WIP)--///
+    unsigned char tmp_product[(N_CUBIC_POLY(_ID) + 5) / 2]; // could be better calculated with i4.. in poly.c
+    unsigned char tmp_summand[(N_CUBIC_POLY(_ID) + 5) / 2]; //GF16, round up, one extra field for constant
+
+    unsigned tmp_e[N_CUBIC_POLY(_ID) + 2]; //size is too big..
+    unsigned final_e[25];
+
+    unsigned tmp_o = 0;
+    unsigned final_o = 0;
+
+    unsigned const *e_A = _full_e_power2;
+    unsigned o_A = N_QUADRATIC_POLY(_ID);
+    unsigned A_loop_offset = N_QUARTIC_POLY(_ID);
+
+    unsigned o2 = 6;
+
+    unsigned char tmp_C[N_QUARTIC_POLY(_ID)]; //needed, because poly_add writes in last fields of C for calculation..
+
+    ///--SHOULD BE DONE BETTER (WIP)///
+
+    for (unsigned l = 0; l < size_batch * 2; l++) { // *2 for gf16 (size is in byte)
+        //the inner loop of gf16vmadd
+
+//        polynomial_print(o_A, &Av[(A_pointer_index) * size_batch * A_loop_offset], l * A_loop_offset, e_A, "Q3:");
+//        polynomial_print(2, &B[B_pointer_index * size_Bcolvec], B_offset * _ID, _lin_e_power2, "T1");
+
+        polynomial_mul(o_A, &Av[(A_pointer_index) * size_batch * A_loop_offset], l * A_loop_offset, e_A, 2,
+                       &B[B_pointer_index * size_Bcolvec],
+                       B_offset * _ID,
+                       _lin_e_power2, &tmp_o, tmp_product, 0, tmp_e);
+
+//        polynomial_print(tmp_o, tmp_product, 0, tmp_e, "Produkt:");
+
+        gf16_cubic_poly_copy(tmp_summand, 0, C, (l * N_QUARTIC_POLY(_ID))); //TODO: not working with tempQ
+
+//        polynomial_print(10,tmp_summand,0,_full_e_power2,"tmp_sum");
+
+        polynomial_add(tmp_o, tmp_product, tmp_e, o2, tmp_summand, _full_e_power2, &final_o,
+                       tmp_C, 0, final_e); //TODO: right value for o2
+
+        gf16_cubic_poly_copy(C, (l * N_QUARTIC_POLY(_ID)), tmp_C,
+                             0); /// THE solution, because poly_add will write too far into C
+
+
+//        polynomial_print(15,C,(l * N_QUARTIC_POLY(_ID)),_full_e_power2,"Written:");
+//        polynomial_print(15,C,(l * N_QUARTIC_POLY(_ID)),final_e,"should be:");
     }
 }
 
