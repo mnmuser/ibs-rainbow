@@ -34,26 +34,56 @@ void UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsigned Awi
     }
 }
 
-// A is grade 4, C is empty, should be modified A afterwards
+
 void quartic_UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsigned Awidth, unsigned size_batch) {
 
     unsigned char *runningC = btriC;
     unsigned Aheight = Awidth;
 
+    unsigned char tmp_summand_A[(N_LINEAR_POLY(_ID) + 1) / 2];
+    unsigned char tmp_summand_B[(N_CUBIC_POLY(_ID) + 1) / 2];
+    unsigned char tmp_sum[N_QUARTIC_POLY(_ID)];
+
+    unsigned final_o = 0;
+
+    unsigned final_e[15];
+
     for (unsigned i = 0; i < Aheight; i++) {
         for (unsigned j = 0; j < i; j++) {
             unsigned idx = idx_of_trimat(j, i, Aheight);
             for (unsigned k = 0; k < size_batch * 2; k++) { //*2 because GF16
-                gf16_quartic_poly_copy(btriC + idx * size_batch * N_QUARTIC_POLY(_ID), N_QUARTIC_POLY(_ID) * k,
-                                       bA + size_batch * (i * Awidth + j) * N_QUARTIC_POLY(_ID),
-                                       N_QUARTIC_POLY(_ID) * k);
+
+                gf16_lin_poly_copy(tmp_summand_A, btriC + idx * size_batch * N_QUARTIC_POLY(_ID),
+                                   N_QUARTIC_POLY(_ID) * k);
+                gf16_cubic_poly_copy(tmp_summand_B, 0, bA + size_batch * (i * Awidth + j) * N_QUARTIC_POLY(_ID),
+                                     N_QUARTIC_POLY(_ID) * k);
+
+                polynomial_add(N_LINEAR_POLY(_ID), tmp_summand_A, _full_e_power2, N_CUBIC_POLY(_ID), tmp_summand_B,
+                               _full_e_power2, &final_o, tmp_sum, 0, final_e);
+
+                gf16_cubic_poly_copy(btriC + idx * size_batch * N_QUARTIC_POLY(_ID), N_QUARTIC_POLY(_ID) * k, tmp_sum,
+                                     0);
+
+                ///not working for layer 2:
+                //gf16_quartic_poly_copy(btriC + idx * size_batch * N_QUARTIC_POLY(_ID), N_QUARTIC_POLY(_ID) * k,
+                //                       bA + size_batch * (i * Awidth + j) * N_QUARTIC_POLY(_ID),
+                //                       N_QUARTIC_POLY(_ID) * k);
             }
             //gf256v_add( btriC + idx*size_batch , bA + size_batch*(i*Awidth+j) , size_batch );
         }
         for (unsigned l = 0; l < size_batch * (Aheight - i) * 2; l++) {
-            gf16_quartic_poly_copy(runningC, N_QUARTIC_POLY(_ID) * l,
-                                   bA + size_batch * (i * Awidth + i) * N_QUARTIC_POLY(_ID),
-                                   l * N_QUARTIC_POLY(_ID));
+            gf16_lin_poly_copy(tmp_summand_A, runningC, N_QUARTIC_POLY(_ID) * l);
+            gf16_cubic_poly_copy(tmp_summand_B, 0, bA + size_batch * (i * Awidth + i) * N_QUARTIC_POLY(_ID),
+                                 l * N_QUARTIC_POLY(_ID));
+
+            polynomial_add(N_LINEAR_POLY(_ID), tmp_summand_A, _full_e_power2, N_CUBIC_POLY(_ID), tmp_summand_B,
+                           _full_e_power2, &final_o, tmp_sum, 0, final_e);
+
+            gf16_cubic_poly_copy(runningC, N_QUARTIC_POLY(_ID) * l, tmp_sum, 0);
+
+//            gf16_quartic_poly_copy(runningC, N_QUARTIC_POLY(_ID) * l,
+//                                   bA + size_batch * (i * Awidth + i) * N_QUARTIC_POLY(_ID),
+//                                   l * N_QUARTIC_POLY(_ID));
         }
         //gf256v_add(runningC, bA + size_batch * (i * Awidth + i), size_batch * (Aheight - i)); /// ATTENTION GF256
         runningC += size_batch * (Aheight - i) * N_QUARTIC_POLY(_ID);
