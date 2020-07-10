@@ -171,7 +171,7 @@ void quartic_extcpk_to_pk(mpk_t *pk, const ext_cpk_t *cpk) {
 
 static
 void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
-    //TODO: hey you, this could be done multi-threaded https://doi.org/10.1007/978-1-4419-5906-5
+    //TODO: hey you, this could be done multi-threaded https://doi.org/10.1007/978-1-4419-5906-5 -> Related Work
 /*
     Layer 1
     Computing :
@@ -304,7 +304,7 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
     quartic_batch_matTr_madd_gf16(tempQ, sk->t1, _V1, _V1_BYTE, _O1, cpk->l2_Q2, _O1,
                                   _O2_BYTE);        // t1_tr*(F1*T1 + F2)
     quartic_UpperTrianglize(cpk->l2_Q5, tempQ, _O1,
-                            _O2_BYTE);  //TODO: we need an POLY_ADD here                                   // UT( ... )   // Q5
+                            _O2_BYTE);                             // UT( ... )   // Q5
 
     ///CHECK Q5
     polynomial_print(15, cpk->l2_Q5, 0, _full_e_power2, "l2_Q5(0): ");
@@ -317,8 +317,6 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
     polynomial_print(15, cpk->l2_Q2, 0, _full_e_power2, "L2_Q2_1: ");
     polynomial_print(15, cpk->l2_Q2, 491520 - 15, _full_e_power2, "L2_Q2_2: "); //last position in Q2
     ///
-
-    //TODO: write polynomial_fill_checker?
 
 /*
     Computing:
@@ -371,7 +369,8 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
     polynomial_print(15, cpk->l2_Q6, 491520 - 15, _full_e_power2, "L2_Q6 end: ");
     ///
 
-    //TODO: checking, GF16-naming
+    //TODO: write polynomial_fill_checker?
+    //TODO: GF16-naming
     memset(tempQ, 0, size_tempQ + 32);
     free(tempQ);
 }

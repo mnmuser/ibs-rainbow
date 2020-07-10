@@ -140,6 +140,7 @@ obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2_polys, unsig
     }
 }
 
+//TODO: check this function
 static
 void quartic_obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2_polys, unsigned n_terms,
                                 const unsigned char *s1) {
