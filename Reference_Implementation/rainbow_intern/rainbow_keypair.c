@@ -146,7 +146,10 @@ void quartic_obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2
                                 const unsigned char *s1) {
     unsigned char temp[_O1_BYTE * N_QUARTIC_POLY(_ID) + 32];
     while (n_terms--) { //for-loop *for* runaways
-        quartic_gf16mat_prod_ref(temp, s1, _O1_BYTE, _O2, l2_polys); //(s1*l2 -> temp has grade4)
+        polynomial_print(2, s1, 0, _lin_e_power2, "s1:");
+        polynomial_print(15, l2_polys, 0, _full_e_power2, "l2:");
+        quartic_gf16mat_prod_ref(temp, s1, _O1_BYTE, _O2, l2_polys); //(s1*l2 -> temp has grade 2, 3 or 4)
+        polynomial_print(15, temp, 0, _full_e_power2, "temp:");
         unsigned e[25]; //e has to be long enough (?) for poly_add
         unsigned o = 0;
         unsigned char *tmp_l1_polys = malloc(N_QUARTIC_POLY((_ID) + 1) / 2);
@@ -157,6 +160,8 @@ void quartic_obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2
 //        polynomial_print(o, l1_polys, 0, e, "temp:");
         free(tmp_l1_polys);
         //gf256v_add( l1_polys , temp , _O1_BYTE ); //add u32 (temp) on whole length of l1_polys
+        polynomial_print(15, l1_polys, 0, _full_e_power2, "l1:");
+        polynomial_print(15, l2_polys, 0, _full_e_power2, "l2:");
         l1_polys += _O1_BYTE * N_QUARTIC_POLY(_ID);
         l2_polys += _O2_BYTE * N_QUARTIC_POLY(_ID);
     }
@@ -204,7 +209,9 @@ void generate_keypair(mpk_t *rpk, msk_t *sk, const unsigned char *sk_seed) {
     quartic_obsfucate_l1_polys(pk->l1_Q9, pk->l2_Q9, N_TRIANGLE_TERMS(_O2), sk->s1);
     // so far, the pk contains the full pk but in ext_cpk_t format.
 
-    quartic_extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to mpk_t.
+    //quartic_extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to mpk_t.
+
+    memcpy(rpk, pk, sizeof(mpk_t));
 
     free(pk);
 }

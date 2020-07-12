@@ -207,7 +207,8 @@ unsigned gf16mat_inv(uint8_t *inv_a, const uint8_t *a, unsigned H, uint8_t *buff
 unsigned gf256mat_inv(uint8_t *inv_a, const uint8_t *a, unsigned H, uint8_t *buffer);
 
 void
-quartic_gf16mat_prod_ref(uint8_t *c, const uint8_t *matA, unsigned n_A_vec_byte, unsigned n_A_width, const uint8_t *b);
+quartic_gf16mat_prod_ref(uint8_t *c, const uint8_t *matA, unsigned n_A_vec_byte, unsigned n_A_width, const uint8_t *b,
+                         unsigned b_grade);
 
 void
 quartic_linear_gf16mat_prod_ref(uint8_t *c, const uint8_t *matA, unsigned n_A_vec_byte, unsigned n_A_width,

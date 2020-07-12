@@ -499,7 +499,7 @@ void quartic_gf16v_madd(uint8_t *C, const uint8_t *A, unsigned A_pointer_index, 
 
     for (unsigned l = 0; l < size_batch * 2; l++) { // *2 for gf16 (size is in byte)
         //the inner loop of gf16vmadd
-        polynomial_mul(2, &A[(A_pointer_index) * _ID * size_batch], l, _lin_e_power2, 2,
+        polynomial_mul(2, &A[(A_pointer_index) * _ID * size_batch], l, _lin_e_power2, 2, //TODO: l*_ID ??????
                        &B[B_pointer_index * size_Bcolvec],
                        B_offset * _ID, // u.U l * _ID ????
                        _lin_e_power2, &tmp_o, tmp_product, 0, tmp_e);
@@ -579,9 +579,9 @@ void quartic_gf16v_madd2(uint8_t *C, const uint8_t *Av, unsigned A_pointer_index
     }
 }
 
-void quartic_gf16v_madd_to_grade4(uint8_t *C, const uint8_t *A, unsigned A_pointer_index, const unsigned char *B,
-                                  unsigned B_pointer_index, unsigned B_offset, unsigned size_batch,
-                                  unsigned size_Bcolvec) {
+void quartic_gf16v_madd_to_grade(uint8_t *C, const uint8_t *A, unsigned A_pointer_index, const unsigned char *B,
+                                 unsigned B_pointer_index, unsigned B_offset, unsigned B_grade, unsigned size_batch,
+                                 unsigned size_Bcolvec) {
 
     ///SHOULD BE DONE BETTER (WIP)--///
     unsigned char tmp_product[(N_QUARTIC_POLY(_ID) + 5) / 2]; // could be better calculated with i4.. in poly.c
@@ -593,21 +593,36 @@ void quartic_gf16v_madd_to_grade4(uint8_t *C, const uint8_t *A, unsigned A_point
     unsigned tmp_o = 0;
     unsigned final_o = 0;
 
+    unsigned o2;
+
+    if (B_grade == 3) {
+        o2 = N_CUBIC_POLY(_ID);
+    } else if (B_grade == 2) {
+        o2 = N_QUADRATIC_POLY(_ID);
+    } else if (B_grade == 1) {
+        o2 = N_LINEAR_POLY(_ID);
+    }
+
     ///--SHOULD BE DONE BETTER (WIP)///
 
     //A is grade 1, B is grade 3, C is empty
 
     for (unsigned l = 0; l < size_batch * 2; l++) { // *2 for gf16 (size is in byte)
         //the inner loop of gf16vmadd
-        polynomial_mul(2, &A[(A_pointer_index) * _ID * size_batch], l, _lin_e_power2, N_CUBIC_POLY(_ID),
+        polynomial_mul(_ID, &A[(A_pointer_index) * _ID * size_batch], l * _ID, _lin_e_power2, N_CUBIC_POLY(_ID),
                        &B[B_pointer_index * size_Bcolvec],
                        B_offset * N_CUBIC_POLY(_ID), // u.U l * _ID ????
                        _full_e_power2, &tmp_o, tmp_product, 0, tmp_e);
+
+//        polynomial_print(15,tmp_product,0,tmp_e,"Product:");
 
         gf16_lin_poly_copy(tmp_summand, C, (l * N_QUARTIC_POLY(_ID)));
 
         polynomial_add(tmp_o, tmp_product, tmp_e, _ID + 1, tmp_summand, _full_e_power2, &final_o,
                        C, (l * N_QUARTIC_POLY(_ID)), final_e);
+
+//        polynomial_print(15,C,(l * N_QUARTIC_POLY(_ID)),final_e,"Sum:");
+
 
         //Hint: Das hier funktioniert soweit gut für l1_Q2 (oft gedebuggt)
     }
