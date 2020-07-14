@@ -132,7 +132,7 @@ void quartic_calculate_t4(unsigned char *t2_to_t4, const unsigned char *t1, cons
         unsigned o = 0;
         unsigned char *tmp_t4 = malloc((N_QUADRATIC_POLY + 1) / 2);
         for (unsigned j = 0; i < _O1; i++) {
-            gf16_quadratic_poly_copy(tmp_t4, t4, j * _ID);
+            gf16_grade_n_poly_copy(tmp_t4, 0, t4, j * _ID, 2);
             polynomial_add(5, tmp_t4, _full_e_power2, 5, temp, _full_e_power2, &o, t4, 0, e);
         }
         free(tmp_t4);
@@ -170,7 +170,7 @@ void quartic_obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2
         unsigned o = 0;
         unsigned char *tmp_l1_polys = malloc((N_QUARTIC_POLY + 1) / 2);
         for (unsigned i = 0; i < _O1; i++) {
-            gf16_quartic_poly_copy(tmp_l1_polys, 0, l1_polys, i * N_QUARTIC_POLY);
+            gf16_grade_n_poly_copy(tmp_l1_polys, 0, l1_polys, i * N_QUARTIC_POLY, 4);
             polynomial_add(10, tmp_l1_polys, _full_e_power2, 15, temp, _full_e_power2, &o, l1_polys, 0, e);
         }
 //        polynomial_print(o, l1_polys, 0, e, "temp:");

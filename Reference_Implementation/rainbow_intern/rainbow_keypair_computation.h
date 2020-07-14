@@ -75,15 +75,10 @@ void write_gf16_to_quartic(unsigned char *q, const unsigned char *f, unsigned lo
 
 void set_quartic_zero(unsigned char *q, unsigned length);
 
-void gf16_lin_poly_copy(unsigned char *dest, const unsigned char *src, unsigned gf16_offset_src);
+void gf16_grade_n_poly_copy(unsigned char *dest, unsigned gf16_offset_dest, const unsigned char *src,
+                            unsigned gf16_offset_src, unsigned grade_n);
 
-void gf16_quadratic_poly_copy(unsigned char *dest, const unsigned char *src, unsigned gf16_offset_src);
-
-void gf16_cubic_poly_copy(unsigned char *dest, unsigned gf16_offset_dest, const unsigned char *src,
-                          unsigned gf16_offset_src);
-
-void gf16_quartic_poly_copy(unsigned char *dest, unsigned gf16_offset_dest, const unsigned char *src,
-                            unsigned gf16_offset_src);
+void gf16_lin_poly_copy_non_constant(unsigned char *dest, const unsigned char *src, unsigned gf16_offset_src);
 
 #ifdef  __cplusplus
 }

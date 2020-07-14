@@ -53,16 +53,16 @@ void quartic_UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsi
             unsigned idx = idx_of_trimat(j, i, Aheight);
             for (unsigned k = 0; k < size_batch * 2; k++) { //*2 because GF16
 
-                gf16_lin_poly_copy(tmp_summand_A, btriC + idx * size_batch * N_QUARTIC_POLY,
-                                   N_QUARTIC_POLY * k);
-                gf16_cubic_poly_copy(tmp_summand_B, 0, bA + size_batch * (i * Awidth + j) * N_QUARTIC_POLY,
-                                     N_QUARTIC_POLY * k);
+                gf16_lin_poly_copy_non_constant(tmp_summand_A, btriC + idx * size_batch * N_QUARTIC_POLY,
+                                                N_QUARTIC_POLY * k);
+                gf16_grade_n_poly_copy(tmp_summand_B, 0, bA + size_batch * (i * Awidth + j) * N_QUARTIC_POLY,
+                                       N_QUARTIC_POLY * k, 3);
 
                 polynomial_add(N_LINEAR_POLY, tmp_summand_A, _full_e_power2, N_CUBIC_POLY, tmp_summand_B,
                                _full_e_power2, &final_o, tmp_sum, 0, final_e);
 
-                gf16_cubic_poly_copy(btriC + idx * size_batch * N_QUARTIC_POLY, N_QUARTIC_POLY * k, tmp_sum,
-                                     0);
+                gf16_grade_n_poly_copy(btriC + idx * size_batch * N_QUARTIC_POLY, N_QUARTIC_POLY * k, tmp_sum,
+                                       0, 3);
 
                 ///not working for layer 2:
                 //gf16_quartic_poly_copy(btriC + idx * size_batch * N_QUARTIC_POLY(_ID), N_QUARTIC_POLY(_ID) * k,
@@ -72,14 +72,14 @@ void quartic_UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsi
             //gf256v_add( btriC + idx*size_batch , bA + size_batch*(i*Awidth+j) , size_batch );
         }
         for (unsigned l = 0; l < size_batch * (Aheight - i) * 2; l++) {
-            gf16_lin_poly_copy(tmp_summand_A, runningC, N_QUARTIC_POLY * l);
-            gf16_cubic_poly_copy(tmp_summand_B, 0, bA + size_batch * (i * Awidth + i) * N_QUARTIC_POLY,
-                                 l * N_QUARTIC_POLY);
+            gf16_lin_poly_copy_non_constant(tmp_summand_A, runningC, N_QUARTIC_POLY * l);
+            gf16_grade_n_poly_copy(tmp_summand_B, 0, bA + size_batch * (i * Awidth + i) * N_QUARTIC_POLY,
+                                   l * N_QUARTIC_POLY, 3);
 
             polynomial_add(N_LINEAR_POLY, tmp_summand_A, _full_e_power2, N_CUBIC_POLY, tmp_summand_B,
                            _full_e_power2, &final_o, tmp_sum, 0, final_e);
 
-            gf16_cubic_poly_copy(runningC, N_QUARTIC_POLY * l, tmp_sum, 0);
+            gf16_grade_n_poly_copy(runningC, N_QUARTIC_POLY * l, tmp_sum, 0, 3);
 
 //            gf16_quartic_poly_copy(runningC, N_QUARTIC_POLY(_ID) * l,
 //                                   bA + size_batch * (i * Awidth + i) * N_QUARTIC_POLY(_ID),
@@ -504,7 +504,7 @@ void quartic_gf16v_madd(uint8_t *C, const uint8_t *A, unsigned A_pointer_index, 
                        B_offset * _ID, // u.U l * _ID ????
                        _lin_e_power2, &tmp_o, tmp_product, 0, tmp_e);
 
-        gf16_lin_poly_copy(tmp_summand, C, (l * N_QUARTIC_POLY));
+        gf16_lin_poly_copy_non_constant(tmp_summand, C, (l * N_QUARTIC_POLY));
 
         polynomial_add(tmp_o, tmp_product, tmp_e, _ID + 1, tmp_summand, _full_e_power2, &final_o,
                        C, (l * N_QUARTIC_POLY), final_e);
@@ -564,15 +564,15 @@ void quartic_gf16v_madd2(uint8_t *C, const uint8_t *Av, unsigned A_pointer_index
 
 //        polynomial_print(tmp_o, tmp_product, 0, tmp_e, "Produkt:");
 
-        gf16_cubic_poly_copy(tmp_summand, 0, C, (l * N_QUARTIC_POLY)); //TODO: not working with tempQ
+        gf16_grade_n_poly_copy(tmp_summand, 0, C, (l * N_QUARTIC_POLY), 3); //TODO: not working with tempQ
 
 //        polynomial_print(10,tmp_summand,(l * N_QUARTIC_POLY(_ID)),_full_e_power2,"tmp_sum");
 
         polynomial_add(tmp_o, tmp_product, tmp_e, o2, tmp_summand, _full_e_power2, &final_o,
                        tmp_C, 0, final_e);
 
-        gf16_cubic_poly_copy(C, (l * N_QUARTIC_POLY), tmp_C,
-                             0); /// THE solution, because poly_add will write too far into C
+        gf16_grade_n_poly_copy(C, (l * N_QUARTIC_POLY), tmp_C,
+                               0, 3); /// THE solution, because poly_add will write too far into C
 
 
 //        polynomial_print(15,C,(l * N_QUARTIC_POLY(_ID)),_full_e_power2,"Written:");
@@ -585,8 +585,9 @@ void quartic_gf16v_madd_to_grade(uint8_t *C, const uint8_t *A, unsigned A_pointe
                                  unsigned size_Bcolvec) {
 
     ///SHOULD BE DONE BETTER (WIP)--///
-    unsigned char tmp_product[(N_QUARTIC_POLY + 5) / 2]; // could be better calculated with i4.. in poly.c
+    unsigned char tmp_product[(N_QUARTIC_POLY + 5) / 2];
     unsigned char tmp_summand[(_ID + 2) / 2]; //GF16, round up, one extra field for constant
+    unsigned char tmp_sum[(N_QUARTIC_POLY + 5) / 2]; //don't ask why 5; it works
 
     unsigned tmp_e[N_QUARTIC_POLY + 5]; //size is too big..
     unsigned final_e[N_QUARTIC_POLY + 3];
@@ -609,16 +610,15 @@ void quartic_gf16v_madd_to_grade(uint8_t *C, const uint8_t *A, unsigned A_pointe
 
 //        polynomial_print(15,tmp_product,0,tmp_e,"Product:");
 
-        gf16_lin_poly_copy(tmp_summand, C, (l * N_QUARTIC_POLY));
+        gf16_lin_poly_copy_non_constant(tmp_summand, C, (l * N_QUARTIC_POLY));
 
         polynomial_add(tmp_o, tmp_product, tmp_e, _ID + 1, tmp_summand, _full_e_power2, &final_o,
-                       C, (l * N_QUARTIC_POLY), final_e);
+                       tmp_sum, 0, final_e);
 
 //        polynomial_print(15, C, (l * N_QUARTIC_POLY), final_e, "Sum:");
 
         //TODO: Add grade-specific copy-function here
-
-        //Hint: Das hier funktioniert soweit gut für l1_Q2 (oft gedebuggt)
+        gf16_grade_n_poly_copy(C, l * N_QUARTIC_POLY, tmp_sum, 0, B_grade + 1);
     }
 }
 
@@ -659,7 +659,7 @@ void quartic_linear_gf16v_madd(uint8_t *C, const uint8_t *A, unsigned A_pointer_
                        B_offset * _ID, // u.U l * _ID ????
                        e_linear, &tmp_o, tmp_product, 0, tmp_e);
 
-        gf16_lin_poly_copy(tmp_summand, C, (l * _ID));
+        gf16_lin_poly_copy_non_constant(tmp_summand, C, (l * _ID));
 
         polynomial_add(tmp_o, tmp_product, tmp_e, _ID, tmp_summand, e_linear, &final_o,
                        C, (l * _ID), final_e);

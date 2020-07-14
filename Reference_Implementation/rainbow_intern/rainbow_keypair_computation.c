@@ -410,33 +410,15 @@ void set_quartic_zero(unsigned char *q, const unsigned length) {
     memset(q, 0, length * N_QUARTIC_POLY);
 }
 
-void gf16_lin_poly_copy(unsigned char *dest, const unsigned char *src, unsigned gf16_offset_src) {
+void gf16_grade_n_poly_copy(unsigned char *dest, unsigned gf16_offset_dest, const unsigned char *src,
+                            unsigned gf16_offset_src, unsigned grade_n) {
+    for (unsigned i = 0; i < _grade_n_poly_terms(grade_n); i++) {
+        gf16v_set_ele(dest, i + gf16_offset_dest, gf16v_get_ele(src, gf16_offset_src + i));
+    }
+}
+
+void gf16_lin_poly_copy_non_constant(unsigned char *dest, const unsigned char *src, unsigned gf16_offset_src) {
     for (unsigned i = 0; i < _ID + 1; i++) { // +1 because of the constant factor in the polynom
         gf16v_set_ele(dest, i, gf16v_get_ele(src, gf16_offset_src + i));
     }
-}
-
-void gf16_quadratic_poly_copy(unsigned char *dest, const unsigned char *src, unsigned gf16_offset_src) {
-    for (unsigned i = 0; i < N_QUADRATIC_POLY; i++) {
-        gf16v_set_ele(dest, i, gf16v_get_ele(src, gf16_offset_src + i));
-    }
-}
-
-void gf16_cubic_poly_copy(unsigned char *dest, unsigned gf16_offset_dest, const unsigned char *src,
-                          unsigned gf16_offset_src) {
-    for (unsigned i = 0; i < N_CUBIC_POLY; i++) {
-        gf16v_set_ele(dest, gf16_offset_dest + i, gf16v_get_ele(src, gf16_offset_src + i));
-    }
-}
-
-void gf16_quartic_poly_copy(unsigned char *dest, unsigned gf16_offset_dest, const unsigned char *src,
-                            unsigned gf16_offset_src) {
-    for (unsigned i = 0; i < N_QUARTIC_POLY; i++) {
-        gf16v_set_ele(dest, gf16_offset_dest + i, gf16v_get_ele(src, gf16_offset_src + i));
-    }
-}
-
-void gf16_grade_n_poly_copy(unsigned char *dest, unsigned gf16_offset_dest, const unsigned char *src,
-                            unsigned gf16_offset_src, unsigned grade_n) {
-
 }
