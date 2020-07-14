@@ -14,22 +14,26 @@
 #define N_TRIANGLE_TERMS(n_var) (n_var*(n_var+1)/2)
 
 /// number of coefficients needed in public key (Quartic polynomial) -> Ding p.1143
-#define N_QUARTIC_POLY(id_var) ((id_var+1)*(id_var+2)*(id_var+3)*(id_var+4)/24)
+#define N_QUARTIC_POLY ((_ID+1)*(_ID+2)*(_ID+3)*(_ID+4)/24)
 /// number of terms in quadratic polynom
-#define N_QUADRATIC_POLY(id_var) ((id_var+1)*(id_var+2)/2)
+#define N_QUADRATIC_POLY ((_ID+1)*(_ID+2)/2)
 
-#define N_CUBIC_POLY(id_var) ((id_var+1)*(id_var+2)*(id_var+3)/6)
+#define N_CUBIC_POLY ((_ID+1)*(_ID+2)*(_ID+3)/6)
 
-#define N_LINEAR_POLY(id_var) ((id_var+1))
+#define N_LINEAR_POLY ((_ID+1))
 
 #ifdef  __cplusplus
 extern  "C" {
 #endif
 
 /// standard e TODO: only for ID2
-extern const unsigned _full_e_power2[N_QUARTIC_POLY(_ID)];
+
+
+extern const unsigned _full_e_power2[N_QUARTIC_POLY];
 
 extern const unsigned _lin_e_power2[_ID];
+
+unsigned _grade_n_poly_terms(unsigned grade); //TODO: extern, static, global namespace...
 
 /// @brief master public key for classic rainbow
 ///
@@ -37,7 +41,7 @@ extern const unsigned _lin_e_power2[_ID];
 ///
 typedef
 struct rainbow_master_publickey {
-    unsigned char pk[(_PUB_M_BYTE) * N_TRIANGLE_TERMS(_PUB_N) * N_QUARTIC_POLY(_ID)]; // -> seems legit
+    unsigned char pk[(_PUB_M_BYTE) * N_TRIANGLE_TERMS(_PUB_N) * N_QUARTIC_POLY]; // -> seems legit
     /// _Pub_M_Byte = (O1+O2)/2 = 32 -> Anzahl der Gleichungen (O1+O2) durch 2 wg GF16
     /// _ PUB_N = V1+O1+O2 = 32+32+32= 96 ->
     /// ((O1+O2)/2) * ((V1+O1+O2)*(V1+O1+O2+1)/2)

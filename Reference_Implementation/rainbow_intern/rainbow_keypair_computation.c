@@ -95,11 +95,11 @@ void quartic_extcpk_to_pk(mpk_t *pk, const ext_cpk_t *cpk) {
     for (unsigned i = 0; i < _V1; i++) {
         for (unsigned j = i; j < _V1; j++) {
             unsigned pub_idx = idx_of_trimat(i, j, _PUB_N);
-            memcpy(&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY(_ID)], idx_l1, _O1_BYTE * N_QUARTIC_POLY(_ID));
-            memcpy((&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY(_ID)]) + _O1_BYTE, idx_l2,
-                   _O2_BYTE * N_QUARTIC_POLY(_ID));
-            idx_l1 += _O1_BYTE * N_QUARTIC_POLY(_ID); //TODO: maybe not
-            idx_l2 += _O2_BYTE * N_QUARTIC_POLY(_ID);
+            memcpy(&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY], idx_l1, _O1_BYTE * N_QUARTIC_POLY);
+            memcpy((&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY]) + _O1_BYTE, idx_l2,
+                   _O2_BYTE * N_QUARTIC_POLY);
+            idx_l1 += _O1_BYTE * N_QUARTIC_POLY; //TODO: maybe not
+            idx_l2 += _O2_BYTE * N_QUARTIC_POLY;
         }
     }
     idx_l1 = cpk->l1_Q2;
@@ -107,11 +107,11 @@ void quartic_extcpk_to_pk(mpk_t *pk, const ext_cpk_t *cpk) {
     for (unsigned i = 0; i < _V1; i++) {
         for (unsigned j = _V1; j < _V1 + _O1; j++) {
             unsigned pub_idx = idx_of_trimat(i, j, _PUB_N);
-            memcpy(&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY(_ID)], idx_l1, _O1_BYTE * N_QUARTIC_POLY(_ID));
-            memcpy((&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY(_ID)]) + _O1_BYTE, idx_l2,
-                   _O2_BYTE * N_QUARTIC_POLY(_ID));
-            idx_l1 += _O1_BYTE * N_QUARTIC_POLY(_ID);
-            idx_l2 += _O2_BYTE * N_QUARTIC_POLY(_ID);
+            memcpy(&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY], idx_l1, _O1_BYTE * N_QUARTIC_POLY);
+            memcpy((&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY]) + _O1_BYTE, idx_l2,
+                   _O2_BYTE * N_QUARTIC_POLY);
+            idx_l1 += _O1_BYTE * N_QUARTIC_POLY;
+            idx_l2 += _O2_BYTE * N_QUARTIC_POLY;
         }
     }
     idx_l1 = cpk->l1_Q3;
@@ -119,11 +119,11 @@ void quartic_extcpk_to_pk(mpk_t *pk, const ext_cpk_t *cpk) {
     for (unsigned i = 0; i < _V1; i++) {
         for (unsigned j = _V1 + _O1; j < _PUB_N; j++) {
             unsigned pub_idx = idx_of_trimat(i, j, _PUB_N);
-            memcpy(&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY(_ID)], idx_l1, _O1_BYTE * N_QUARTIC_POLY(_ID));
-            memcpy((&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY(_ID)]) + _O1_BYTE, idx_l2,
-                   _O2_BYTE * N_QUARTIC_POLY(_ID));
-            idx_l1 += _O1_BYTE * N_QUARTIC_POLY(_ID);
-            idx_l2 += _O2_BYTE * N_QUARTIC_POLY(_ID);
+            memcpy(&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY], idx_l1, _O1_BYTE * N_QUARTIC_POLY);
+            memcpy((&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY]) + _O1_BYTE, idx_l2,
+                   _O2_BYTE * N_QUARTIC_POLY);
+            idx_l1 += _O1_BYTE * N_QUARTIC_POLY;
+            idx_l2 += _O2_BYTE * N_QUARTIC_POLY;
         }
     }
     idx_l1 = cpk->l1_Q5;
@@ -131,11 +131,11 @@ void quartic_extcpk_to_pk(mpk_t *pk, const ext_cpk_t *cpk) {
     for (unsigned i = _V1; i < _V1 + _O1; i++) {
         for (unsigned j = i; j < _V1 + _O1; j++) {
             unsigned pub_idx = idx_of_trimat(i, j, _PUB_N);
-            memcpy(&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY(_ID)], idx_l1, _O1_BYTE * N_QUARTIC_POLY(_ID));
-            memcpy((&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY(_ID)]) + _O1_BYTE, idx_l2,
-                   _O2_BYTE * N_QUARTIC_POLY(_ID));
-            idx_l1 += _O1_BYTE * N_QUARTIC_POLY(_ID);
-            idx_l2 += _O2_BYTE * N_QUARTIC_POLY(_ID);
+            memcpy(&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY], idx_l1, _O1_BYTE * N_QUARTIC_POLY);
+            memcpy((&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY]) + _O1_BYTE, idx_l2,
+                   _O2_BYTE * N_QUARTIC_POLY);
+            idx_l1 += _O1_BYTE * N_QUARTIC_POLY;
+            idx_l2 += _O2_BYTE * N_QUARTIC_POLY;
         }
     }
     idx_l1 = cpk->l1_Q6;
@@ -143,11 +143,11 @@ void quartic_extcpk_to_pk(mpk_t *pk, const ext_cpk_t *cpk) {
     for (unsigned i = _V1; i < _V1 + _O1; i++) {
         for (unsigned j = _V1 + _O1; j < _PUB_N; j++) {
             unsigned pub_idx = idx_of_trimat(i, j, _PUB_N);
-            memcpy(&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY(_ID)], idx_l1, _O1_BYTE * N_QUARTIC_POLY(_ID));
-            memcpy((&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY(_ID)]) + _O1_BYTE, idx_l2,
-                   _O2_BYTE * N_QUARTIC_POLY(_ID));
-            idx_l1 += _O1_BYTE * N_QUARTIC_POLY(_ID);
-            idx_l2 += _O2_BYTE * N_QUARTIC_POLY(_ID);
+            memcpy(&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY], idx_l1, _O1_BYTE * N_QUARTIC_POLY);
+            memcpy((&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY]) + _O1_BYTE, idx_l2,
+                   _O2_BYTE * N_QUARTIC_POLY);
+            idx_l1 += _O1_BYTE * N_QUARTIC_POLY;
+            idx_l2 += _O2_BYTE * N_QUARTIC_POLY;
         }
     }
     idx_l1 = cpk->l1_Q9;
@@ -155,11 +155,11 @@ void quartic_extcpk_to_pk(mpk_t *pk, const ext_cpk_t *cpk) {
     for (unsigned i = _V1 + _O1; i < _PUB_N; i++) {
         for (unsigned j = i; j < _PUB_N; j++) {
             unsigned pub_idx = idx_of_trimat(i, j, _PUB_N);
-            memcpy(&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY(_ID)], idx_l1, _O1_BYTE * N_QUARTIC_POLY(_ID));
-            memcpy((&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY(_ID)]) + _O1_BYTE, idx_l2,
-                   _O2_BYTE * N_QUARTIC_POLY(_ID));
-            idx_l1 += _O1_BYTE * N_QUARTIC_POLY(_ID);
-            idx_l2 += _O2_BYTE * N_QUARTIC_POLY(_ID);
+            memcpy(&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY], idx_l1, _O1_BYTE * N_QUARTIC_POLY);
+            memcpy((&pk->pk[_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY]) + _O1_BYTE, idx_l2,
+                   _O2_BYTE * N_QUARTIC_POLY);
+            idx_l1 += _O1_BYTE * N_QUARTIC_POLY;
+            idx_l2 += _O2_BYTE * N_QUARTIC_POLY;
         } //TODO: checkup, cause pk is not full!
     }
 }
@@ -201,13 +201,13 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
     // l1_Q9 : _O1_BYTE * _O2 * _O2
     // l2_Q5 : _O2_BYTE * _V1 * _O1
     // l2_Q9 : _O2_BYTE * _V1 * _O2
-    unsigned size_tempQ = _O1_BYTE * _O1 * _O1 * N_QUARTIC_POLY(_ID);
-    if (_O1_BYTE * _O2 * _O2 * N_QUARTIC_POLY(_ID) > size_tempQ)
-        size_tempQ = _O1_BYTE * _O2 * _O2 * N_QUARTIC_POLY(_ID);
-    if (_O2_BYTE * _O1 * _O1 * N_QUARTIC_POLY(_ID) > size_tempQ)
-        size_tempQ = _O2_BYTE * _O1 * _O1 * N_QUARTIC_POLY(_ID);
-    if (_O2_BYTE * _O2 * _O2 * N_QUARTIC_POLY(_ID) > size_tempQ)
-        size_tempQ = _O2_BYTE * _O2 * _O2 * N_QUARTIC_POLY(_ID);
+    unsigned size_tempQ = _O1_BYTE * _O1 * _O1 * N_QUARTIC_POLY;
+    if (_O1_BYTE * _O2 * _O2 * N_QUARTIC_POLY > size_tempQ)
+        size_tempQ = _O1_BYTE * _O2 * _O2 * N_QUARTIC_POLY;
+    if (_O2_BYTE * _O1 * _O1 * N_QUARTIC_POLY > size_tempQ)
+        size_tempQ = _O2_BYTE * _O1 * _O1 * N_QUARTIC_POLY;
+    if (_O2_BYTE * _O2 * _O2 * N_QUARTIC_POLY > size_tempQ)
+        size_tempQ = _O2_BYTE * _O2 * _O2 * N_QUARTIC_POLY;
     unsigned char *tempQ = (unsigned char *) aligned_alloc(32, size_tempQ + 32);
 
     memset(tempQ, 0, size_tempQ);  // l1_Q5
@@ -396,7 +396,7 @@ void calculate_Q_from_F(ext_cpk_t *Qs, const msk_t *Fs) {
 
 void write_gf16_to_quartic(unsigned char *q, const unsigned char *f, unsigned long length_f) {
     set_quartic_zero(q, length_f); // to have a clean polynom
-    unsigned quartic_length = N_QUARTIC_POLY(_ID);
+    unsigned quartic_length = N_QUARTIC_POLY;
     for (unsigned x = 0; x < length_f * 2; x++) {
         for (unsigned i = 0; i < _ID; i++) {
             unsigned char gf16_x = gf16v_get_ele(f, i + x * _ID);
@@ -407,7 +407,7 @@ void write_gf16_to_quartic(unsigned char *q, const unsigned char *f, unsigned lo
 }
 
 void set_quartic_zero(unsigned char *q, const unsigned length) {
-    memset(q, 0, length * N_QUARTIC_POLY(_ID));
+    memset(q, 0, length * N_QUARTIC_POLY);
 }
 
 void gf16_lin_poly_copy(unsigned char *dest, const unsigned char *src, unsigned gf16_offset_src) {
@@ -417,21 +417,26 @@ void gf16_lin_poly_copy(unsigned char *dest, const unsigned char *src, unsigned 
 }
 
 void gf16_quadratic_poly_copy(unsigned char *dest, const unsigned char *src, unsigned gf16_offset_src) {
-    for (unsigned i = 0; i < N_QUADRATIC_POLY(_ID); i++) {
+    for (unsigned i = 0; i < N_QUADRATIC_POLY; i++) {
         gf16v_set_ele(dest, i, gf16v_get_ele(src, gf16_offset_src + i));
     }
 }
 
 void gf16_cubic_poly_copy(unsigned char *dest, unsigned gf16_offset_dest, const unsigned char *src,
                           unsigned gf16_offset_src) {
-    for (unsigned i = 0; i < N_CUBIC_POLY(_ID); i++) {
+    for (unsigned i = 0; i < N_CUBIC_POLY; i++) {
         gf16v_set_ele(dest, gf16_offset_dest + i, gf16v_get_ele(src, gf16_offset_src + i));
     }
 }
 
 void gf16_quartic_poly_copy(unsigned char *dest, unsigned gf16_offset_dest, const unsigned char *src,
                             unsigned gf16_offset_src) {
-    for (unsigned i = 0; i < N_QUARTIC_POLY(_ID); i++) {
+    for (unsigned i = 0; i < N_QUARTIC_POLY; i++) {
         gf16v_set_ele(dest, gf16_offset_dest + i, gf16v_get_ele(src, gf16_offset_src + i));
     }
+}
+
+void gf16_grade_n_poly_copy(unsigned char *dest, unsigned gf16_offset_dest, const unsigned char *src,
+                            unsigned gf16_offset_src, unsigned grade_n) {
+
 }

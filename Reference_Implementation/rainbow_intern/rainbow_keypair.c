@@ -19,8 +19,23 @@
 #include "polynomial.h"
 
 
-const unsigned _full_e_power2[N_QUARTIC_POLY(_ID)] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+const unsigned _full_e_power2[N_QUARTIC_POLY] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 const unsigned _lin_e_power2[_ID] = {2, 3};
+
+unsigned _grade_n_poly_terms(unsigned grade) {
+    switch (grade) {
+        case 1:
+            return N_LINEAR_POLY;
+        case 2:
+            return N_QUADRATIC_POLY;
+        case 3:
+            return N_CUBIC_POLY;
+        case 4:
+            return N_QUARTIC_POLY;
+        default:
+            return 0;
+    }
+}
 
 
 /////////////////////////////////////////////////////////////////
@@ -107,7 +122,7 @@ void calculate_t4( unsigned char * t2_to_t4 , const unsigned char *t1 , const un
 static
 void quartic_calculate_t4(unsigned char *t2_to_t4, const unsigned char *t1, const unsigned char *t3) {
     //  t4 = T_sk.t1 * T_sk.t3 - T_sk.t2
-    unsigned char temp[(_O1_BYTE + 32) * N_QUADRATIC_POLY(_ID)];
+    unsigned char temp[(_O1_BYTE + 32) * N_QUADRATIC_POLY];
     unsigned char *t4 = t2_to_t4;
     for (unsigned i = 0; i < _O2; i++) {  /// t3 width
         quartic_linear_gf16mat_prod_ref(temp, t1, _V1_BYTE, _O1, t3);
@@ -115,14 +130,14 @@ void quartic_calculate_t4(unsigned char *t2_to_t4, const unsigned char *t1, cons
 
         unsigned e[25]; //e has to be long enough (?) for poly_add
         unsigned o = 0;
-        unsigned char *tmp_t4 = malloc((N_QUADRATIC_POLY(_ID) + 1) / 2);
+        unsigned char *tmp_t4 = malloc((N_QUADRATIC_POLY + 1) / 2);
         for (unsigned j = 0; i < _O1; i++) {
             gf16_quadratic_poly_copy(tmp_t4, t4, j * _ID);
             polynomial_add(5, tmp_t4, _full_e_power2, 5, temp, _full_e_power2, &o, t4, 0, e);
         }
         free(tmp_t4);
 
-        t4 += _V1_BYTE * N_QUADRATIC_POLY(_ID);
+        t4 += _V1_BYTE * N_QUADRATIC_POLY;
         t3 += _O1_BYTE * _ID;
     }
 }
@@ -142,19 +157,20 @@ obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2_polys, unsig
 
 //TODO: check this function
 static
-void quartic_obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2_polys, unsigned n_terms,
+void quartic_obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2_polys, unsigned poly_grade,
+                                unsigned n_terms,
                                 const unsigned char *s1) {
-    unsigned char temp[_O1_BYTE * N_QUARTIC_POLY(_ID) + 32];
+    unsigned char temp[_O1_BYTE * N_QUARTIC_POLY + 32];
     while (n_terms--) { //for-loop *for* runaways
         polynomial_print(2, s1, 0, _lin_e_power2, "s1:");
         polynomial_print(15, l2_polys, 0, _full_e_power2, "l2:");
-        quartic_gf16mat_prod_ref(temp, s1, _O1_BYTE, _O2, l2_polys); //(s1*l2 -> temp has grade 2, 3 or 4)
+        quartic_gf16mat_prod_ref(temp, s1, _O1_BYTE, _O2, l2_polys, poly_grade); //(s1*l2 -> temp has grade 2, 3 or 4)
         polynomial_print(15, temp, 0, _full_e_power2, "temp:");
         unsigned e[25]; //e has to be long enough (?) for poly_add
         unsigned o = 0;
-        unsigned char *tmp_l1_polys = malloc(N_QUARTIC_POLY((_ID) + 1) / 2);
+        unsigned char *tmp_l1_polys = malloc((N_QUARTIC_POLY + 1) / 2);
         for (unsigned i = 0; i < _O1; i++) {
-            gf16_quartic_poly_copy(tmp_l1_polys, 0, l1_polys, i * N_QUARTIC_POLY(_ID));
+            gf16_quartic_poly_copy(tmp_l1_polys, 0, l1_polys, i * N_QUARTIC_POLY);
             polynomial_add(10, tmp_l1_polys, _full_e_power2, 15, temp, _full_e_power2, &o, l1_polys, 0, e);
         }
 //        polynomial_print(o, l1_polys, 0, e, "temp:");
@@ -162,8 +178,8 @@ void quartic_obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2
         //gf256v_add( l1_polys , temp , _O1_BYTE ); //add u32 (temp) on whole length of l1_polys
         polynomial_print(15, l1_polys, 0, _full_e_power2, "l1:");
         polynomial_print(15, l2_polys, 0, _full_e_power2, "l2:");
-        l1_polys += _O1_BYTE * N_QUARTIC_POLY(_ID);
-        l2_polys += _O2_BYTE * N_QUARTIC_POLY(_ID);
+        l1_polys += _O1_BYTE * N_QUARTIC_POLY;
+        l2_polys += _O2_BYTE * N_QUARTIC_POLY;
     }
 }
 
@@ -201,12 +217,12 @@ void generate_keypair(mpk_t *rpk, msk_t *sk, const unsigned char *sk_seed) {
     ///try to move this into usk-calculation, cause I would need grade 4 for t4
     //quartic_calculate_t4(sk->t2, sk->t1, sk->t3); // t2 = t2 + t1*t3
 
-    quartic_obsfucate_l1_polys(pk->l1_Q1, pk->l2_Q1, N_TRIANGLE_TERMS(_V1), sk->s1); // -> integrate S :)
-    quartic_obsfucate_l1_polys(pk->l1_Q2, pk->l2_Q2, _V1 * _O1, sk->s1);
-    quartic_obsfucate_l1_polys(pk->l1_Q3, pk->l2_Q3, _V1 * _O2, sk->s1);
-    quartic_obsfucate_l1_polys(pk->l1_Q5, pk->l2_Q5, N_TRIANGLE_TERMS(_O1), sk->s1);
-    quartic_obsfucate_l1_polys(pk->l1_Q6, pk->l2_Q6, _O1 * _O2, sk->s1);
-    quartic_obsfucate_l1_polys(pk->l1_Q9, pk->l2_Q9, N_TRIANGLE_TERMS(_O2), sk->s1);
+    quartic_obsfucate_l1_polys(pk->l1_Q1, pk->l2_Q1, 1, N_TRIANGLE_TERMS(_V1), sk->s1); // -> integrate S :)
+    quartic_obsfucate_l1_polys(pk->l1_Q2, pk->l2_Q2, 2, _V1 * _O1, sk->s1);
+    quartic_obsfucate_l1_polys(pk->l1_Q3, pk->l2_Q3, 2, _V1 * _O2, sk->s1);
+    quartic_obsfucate_l1_polys(pk->l1_Q5, pk->l2_Q5, 3, N_TRIANGLE_TERMS(_O1), sk->s1);
+    quartic_obsfucate_l1_polys(pk->l1_Q6, pk->l2_Q6, 3, _O1 * _O2, sk->s1);
+    quartic_obsfucate_l1_polys(pk->l1_Q9, pk->l2_Q9, 3, N_TRIANGLE_TERMS(_O2), sk->s1);
     // so far, the pk contains the full pk but in ext_cpk_t format.
 
     //quartic_extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to mpk_t.
