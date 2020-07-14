@@ -614,14 +614,16 @@ void quartic_gf16v_madd_to_grade(uint8_t *C, const uint8_t *A, unsigned A_pointe
         polynomial_add(tmp_o, tmp_product, tmp_e, _ID + 1, tmp_summand, _full_e_power2, &final_o,
                        C, (l * N_QUARTIC_POLY), final_e);
 
-        polynomial_print(15, C, (l * N_QUARTIC_POLY), final_e, "Sum:");
+//        polynomial_print(15, C, (l * N_QUARTIC_POLY), final_e, "Sum:");
 
+        //TODO: Add grade-specific copy-function here
 
         //Hint: Das hier funktioniert soweit gut für l1_Q2 (oft gedebuggt)
     }
 }
 
 //TODO: ONE gf16v_madd and you can choose grade of all inputs
+//LESSONS LEARNED: don't try to unify to early
 
 ///
 /// \param C
