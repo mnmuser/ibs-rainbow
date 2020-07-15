@@ -162,20 +162,25 @@ void quartic_obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2
                                 const unsigned char *s1) {
     unsigned char temp[_O1_BYTE * N_QUARTIC_POLY + 32];
     while (n_terms--) { //for-loop *for* runaways
-        polynomial_print(2, s1, 0, _lin_e_power2, "s1:");
-        polynomial_print(15, l2_polys, 0, _full_e_power2, "l2:");
-        quartic_gf16mat_prod_ref(temp, s1, _O1_BYTE, _O2, l2_polys, poly_grade); //(s1*l2 -> temp has grade 2, 3 or 4)
-        polynomial_print(15, temp, 0, _full_e_power2, "temp:");
+//        polynomial_print(2, s1, 0, _lin_e_power2, "s1:");
+//        polynomial_print(15, l2_polys, 0, _full_e_power2, "l2:");
+
+        quartic_gf16mat_prod_ref(temp, s1, _O1_BYTE, _O2, l2_polys, poly_grade);
+
+//        polynomial_print(15, temp, 0, _full_e_power2, "temp:");
+
         unsigned e[25]; //e has to be long enough (?) for poly_add
         unsigned o = 0;
-        unsigned char *tmp_l1_polys = malloc((N_QUARTIC_POLY + 1) / 2);
+        unsigned char tmp_l1_polys[(N_QUARTIC_POLY + 1) / 2];
+
         for (unsigned i = 0; i < _O1; i++) {
             gf16_grade_n_poly_copy(tmp_l1_polys, 0, l1_polys, i * N_QUARTIC_POLY, 4);
             polynomial_add(10, tmp_l1_polys, _full_e_power2, 15, temp, _full_e_power2, &o, l1_polys, 0, e);
         }
 //        polynomial_print(o, l1_polys, 0, e, "temp:");
-        free(tmp_l1_polys);
+
         //gf256v_add( l1_polys , temp , _O1_BYTE ); //add u32 (temp) on whole length of l1_polys
+
         polynomial_print(15, l1_polys, 0, _full_e_power2, "l1:");
         polynomial_print(15, l2_polys, 0, _full_e_power2, "l2:");
         l1_polys += _O1_BYTE * N_QUARTIC_POLY;
@@ -214,20 +219,57 @@ void generate_keypair(mpk_t *rpk, msk_t *sk, const unsigned char *sk_seed) {
 
     /// at this point P = F o T ; S is still missing and P/Q is cubic on ID
 
-    ///try to move this into usk-calculation, cause I would need grade 4 for t4
+    ///TODO: try to move this into usk-calculation, cause I would need grade 4 for t4
     //quartic_calculate_t4(sk->t2, sk->t1, sk->t3); // t2 = t2 + t1*t3
 
     quartic_obsfucate_l1_polys(pk->l1_Q1, pk->l2_Q1, 1, N_TRIANGLE_TERMS(_V1), sk->s1); // -> integrate S :)
+
+    ///CHECK Q1
+    polynomial_print(15, pk->l1_Q1, 0, _full_e_power2, "obsfucated L1_Q1 ");
+    polynomial_print(15, pk->l1_Q1, 126720 * 2 - 15, _full_e_power2, "obsfucated L1_Q1 end");
+    ///
+
     quartic_obsfucate_l1_polys(pk->l1_Q2, pk->l2_Q2, 2, _V1 * _O1, sk->s1);
+
+    ///CHECK Q2
+    polynomial_print(15, pk->l1_Q2, 0, _full_e_power2, "obsfucated L1_Q2: ");
+    polynomial_print(15, pk->l1_Q2, 491520 - 15, _full_e_power2, "obsfucated L1_Q2 end: "); //last position in Q2
+    ///
+
     quartic_obsfucate_l1_polys(pk->l1_Q3, pk->l2_Q3, 2, _V1 * _O2, sk->s1);
+
+    ///CHECK Q3
+    polynomial_print(15, pk->l1_Q3, 0, _full_e_power2, "obsfucated Q3:");
+    polynomial_print(15, pk->l1_Q3, 491520 - 15, _full_e_power2, "obsfucated L1_Q3 end: ");
+    ///
+
     quartic_obsfucate_l1_polys(pk->l1_Q5, pk->l2_Q5, 3, N_TRIANGLE_TERMS(_O1), sk->s1);
+
+    ///CHECK Q5
+    polynomial_print(15, pk->l1_Q5, 0, _full_e_power2, "obsfucated l1_Q5(0): ");
+    polynomial_print(15, pk->l1_Q5, 126720 * 2 - 15, _full_e_power2, "obsfucated L1_Q5 end");
+    ///
+
     quartic_obsfucate_l1_polys(pk->l1_Q6, pk->l2_Q6, 3, _O1 * _O2, sk->s1);
+
+    ///CHECK Q6
+    polynomial_print(15, pk->l1_Q6, 0, _full_e_power2, "obsfucated Q6:");
+    polynomial_print(15, pk->l1_Q6, 491520 - 15, _full_e_power2, "obsfucated L1_Q6 end: ");
+    ///
+
     quartic_obsfucate_l1_polys(pk->l1_Q9, pk->l2_Q9, 3, N_TRIANGLE_TERMS(_O2), sk->s1);
+
+    ///CHECK Q9
+    polynomial_print(15, pk->l1_Q9, 0, _full_e_power2, "obsfucated l1_Q9(0): ");
+    polynomial_print(15, pk->l1_Q9, 126720 * 2 - 15, _full_e_power2, "obsfucated L1_Q9 end");
+    ///
+    //TODO: loops are too short
+
     // so far, the pk contains the full pk but in ext_cpk_t format.
 
     //quartic_extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to mpk_t.
 
-    memcpy(rpk, pk, sizeof(mpk_t));
+    memcpy(rpk, pk, sizeof(mpk_t)); //TODO: remove this statement!
 
     free(pk);
 }
