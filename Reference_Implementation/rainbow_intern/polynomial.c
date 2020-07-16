@@ -1412,6 +1412,26 @@ void polynomial_compress(unsigned o1, unsigned char c1[], unsigned c1_offset, un
     }
 
     *o2 = put;
+///*
+//  Clear out zeros and tiny coefficients.
+//*/
+//  get = 0;
+//  put = 0;
+//
+//  while ( get < *o2 )
+//  {
+//    if ( 1 )
+//    {
+//      gf16v_set_ele(c2,put,gf16v_get_ele(c2,get));
+//      e2[put] = e2[get];
+//      put = put + 1;
+//    }
+//    get = get + 1;
+//  }
+//
+//  *o2 = put;
+
+    //TODO: do I need it or not? (Favor: not)
 }
 
 /******************************************************************************/

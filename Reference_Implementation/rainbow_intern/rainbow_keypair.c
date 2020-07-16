@@ -19,7 +19,7 @@
 #include "polynomial.h"
 
 
-const unsigned _full_e_power2[N_QUARTIC_POLY] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+const unsigned _full_e_power2[N_QUARTIC_POLY + 3] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18};
 const unsigned _lin_e_power2[_ID] = {2, 3};
 
 unsigned _grade_n_poly_terms(unsigned grade) {
@@ -148,7 +148,7 @@ void
 obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2_polys, unsigned n_terms, const unsigned char *s1) {
     unsigned char temp[_O1_BYTE + 32];
     while (n_terms--) {
-        gfmat_prod(temp, s1, _O1_BYTE, _O2, l2_polys);
+        gfmat_prod(temp, s1, _O1_BYTE, _O2, l2_polys); //looped gf16v_madd
         gf256v_add(l1_polys, temp, _O1_BYTE);
         l1_polys += _O1_BYTE;
         l2_polys += _O2_BYTE;
@@ -161,6 +161,7 @@ void quartic_obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2
                                 unsigned n_terms,
                                 const unsigned char *s1) {
     unsigned char temp[_O1_BYTE * N_QUARTIC_POLY + 32];
+
     while (n_terms--) { //for-loop *for* runaways
 //        polynomial_print(2, s1, 0, _lin_e_power2, "s1:");
 //        polynomial_print(15, l2_polys, 0, _full_e_power2, "l2:");
@@ -169,20 +170,41 @@ void quartic_obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2
 
 //        polynomial_print(15, temp, 0, _full_e_power2, "temp:");
 
-        unsigned e[25]; //e has to be long enough (?) for poly_add
+        unsigned e[27]; //e has to be long enough (?) for poly_add
         unsigned o = 0;
-        unsigned char tmp_l1_polys[(N_QUARTIC_POLY + 1) / 2];
+        unsigned char tmp_l1_polys[(N_QUARTIC_POLY + 5) / 2];
+        unsigned char tmp_sum[(N_QUARTIC_POLY * 2) / 2];
 
-        for (unsigned i = 0; i < _O1; i++) {
-            gf16_grade_n_poly_copy(tmp_l1_polys, 0, l1_polys, i * N_QUARTIC_POLY, 4);
-            polynomial_add(10, tmp_l1_polys, _full_e_power2, 15, temp, _full_e_power2, &o, l1_polys, 0, e);
+        memset(tmp_l1_polys, 0, (N_QUARTIC_POLY + 5) / 2);
+
+
+        for (unsigned i = 0; i < _O1_BYTE * 2; i++) {
+
+            gf16_grade_n_poly_copy(temp, 0, temp, i * N_QUARTIC_POLY, poly_grade + 1);
+
+//            polynomial_print(15,temp,0,_full_e_power2,"temp:");
+
+            gf16_grade_n_poly_copy(tmp_l1_polys, 0, l1_polys, i * N_QUARTIC_POLY, poly_grade);
+
+//            polynomial_print(15,tmp_l1_polys,0,_full_e_power2,"temp_l1:");
+
+            polynomial_add(15, temp, _full_e_power2, 10, tmp_l1_polys, _full_e_power2, &o, tmp_sum, 0, e);
+
+//            polynomial_print(o,tmp_sum,0,e,"temp_sum(e):");
+
+//            polynomial_print(o,tmp_sum,0,_full_e_power2,"temp_sum:");
+
+            gf16_grade_n_poly_copy(l1_polys, i * N_QUARTIC_POLY, tmp_sum, 0, poly_grade + 1);
+
+//            polynomial_print(15,l1_polys,i * N_QUARTIC_POLY,_full_e_power2,"l1:");
         }
 //        polynomial_print(o, l1_polys, 0, e, "temp:");
 
         //gf256v_add( l1_polys , temp , _O1_BYTE ); //add u32 (temp) on whole length of l1_polys
 
-        polynomial_print(15, l1_polys, 0, _full_e_power2, "l1:");
-        polynomial_print(15, l2_polys, 0, _full_e_power2, "l2:");
+//        polynomial_print(15, l1_polys, 0, _full_e_power2, "l1:");
+//        polynomial_print(15, l2_polys, 0, _full_e_power2, "l2:");
+
         l1_polys += _O1_BYTE * N_QUARTIC_POLY;
         l2_polys += _O2_BYTE * N_QUARTIC_POLY;
     }
@@ -263,7 +285,6 @@ void generate_keypair(mpk_t *rpk, msk_t *sk, const unsigned char *sk_seed) {
     polynomial_print(15, pk->l1_Q9, 0, _full_e_power2, "obsfucated l1_Q9(0): ");
     polynomial_print(15, pk->l1_Q9, 126720 * 2 - 15, _full_e_power2, "obsfucated L1_Q9 end");
     ///
-    //TODO: loops are too short
 
     // so far, the pk contains the full pk but in ext_cpk_t format.
 

@@ -396,11 +396,10 @@ void calculate_Q_from_F(ext_cpk_t *Qs, const msk_t *Fs) {
 
 void write_gf16_to_quartic(unsigned char *q, const unsigned char *f, unsigned long length_f) {
     set_quartic_zero(q, length_f); // to have a clean polynom
-    unsigned quartic_length = N_QUARTIC_POLY;
     for (unsigned x = 0; x < length_f * 2; x++) {
         for (unsigned i = 0; i < _ID; i++) {
-            unsigned char gf16_x = gf16v_get_ele(f, i + x * _ID);
-            gf16v_set_ele(q, i + (quartic_length * x) + 1, gf16_x); // plus one, to write after the constant field
+            gf16v_set_ele(q, i + (N_QUARTIC_POLY * x) + 1,
+                          gf16v_get_ele(f, i + x * _ID)); // plus one, to write after the constant field
         }
     }
 

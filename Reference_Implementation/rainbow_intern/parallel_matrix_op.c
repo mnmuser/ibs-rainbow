@@ -519,8 +519,8 @@ void quartic_gf16v_madd2(uint8_t *C, const uint8_t *Av, unsigned A_pointer_index
                          unsigned size_Bcolvec) {
 
     ///SHOULD BE DONE BETTER (WIP)--///
-    unsigned char tmp_product[(N_CUBIC_POLY + 2) / 2]; // could be better calculated with i4.. in poly.c
-    unsigned char tmp_summand[(N_CUBIC_POLY + 2) / 2]; //GF16, round up, one extra field for constant
+    unsigned char tmp_product[(N_QUARTIC_POLY + 5) / 2]; // could be better calculated with i4.. in poly.c
+    unsigned char tmp_summand[(N_QUARTIC_POLY + 5) / 2]; //GF16, round up, one extra field for constant
 
     unsigned tmp_e[N_CUBIC_POLY + 2]; //size is too big..
     unsigned final_e[25];
