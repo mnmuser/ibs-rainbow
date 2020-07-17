@@ -1382,7 +1382,9 @@ void polynomial_compress(unsigned o1, unsigned char c1[], unsigned c1_offset, un
     the polynomial.
 */
 {
-    unsigned char tmp;
+    unsigned char tmpA = 0;
+    unsigned char tmpB = 0;
+    unsigned char tmpSum = 0;
     unsigned get;
     unsigned put;
 /*
@@ -1400,9 +1402,11 @@ void polynomial_compress(unsigned o1, unsigned char c1[], unsigned c1_offset, un
             e2[put - 1] = e1[get - 1];
         } else {
             if (e2[put - 1] == e1[get - 1]) {
-                tmp = gf16v_get_ele(c2, put - 1 + c2_offset) + gf16v_get_ele(c1, get - 1 + c1_offset);
-                tmp %= 16; //TODO: check
-                gf16v_set_ele(c2, put - 1, tmp);
+                tmpA = gf16v_get_ele(c2, put - 1 + c2_offset);
+                tmpB = gf16v_get_ele(c1, get - 1 + c1_offset);
+                tmpSum = tmpA ^ tmpB;
+                //TODO: check
+                gf16v_set_ele(c2, put - 1, tmpSum);
             } else {
                 put = put + 1;
                 gf16v_set_ele(c2, put - 1 + c2_offset, gf16v_get_ele(c1, get - 1 + c1_offset));

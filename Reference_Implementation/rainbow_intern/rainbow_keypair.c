@@ -288,9 +288,9 @@ void generate_keypair(mpk_t *rpk, msk_t *sk, const unsigned char *sk_seed) {
 
     // so far, the pk contains the full pk but in ext_cpk_t format.
 
-    //quartic_extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to mpk_t.
+    quartic_extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to mpk_t.
 
-    memcpy(rpk, pk, sizeof(mpk_t)); //TODO: remove this statement!
+//    memcpy(rpk, pk, sizeof(mpk_t)); //TODO: remove this statement!
 
     free(pk);
 }
