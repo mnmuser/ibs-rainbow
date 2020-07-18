@@ -19,7 +19,7 @@
 
 /******************************************************************************/
 
-unsigned i4_choose(int n, int k)
+unsigned i4_choose(unsigned n, unsigned k)
 
 /******************************************************************************/
 /*
@@ -82,76 +82,6 @@ unsigned i4_choose(int n, int k)
         for (i = 2; i <= mn; i++) {
             value = (value * (mx + i)) / i;
         }
-    }
-
-    return value;
-}
-
-/******************************************************************************/
-
-unsigned i4_fall(unsigned x, unsigned n)
-
-/******************************************************************************/
-/*
-  Purpose:
-
-    I4_FALL computes the falling factorial function [X]_N.
-
-  Discussion:
-
-    Note that the number of "injections" or 1-to-1 mappings from
-    a set of N elements to a set of M elements is [M]_N.
-
-    The number of permutations of N objects out of M is [M]_N.
-
-    Moreover, the Stirling numbers of the first kind can be used
-    to convert a falling factorial into a polynomial, as follows:
-
-      [X]_N = S^0_N + S^1_N * X + S^2_N * X^2 + ... + S^N_N X^N.
-
-  Formula:
-
-    [X]_N = X * ( X - 1 ) * ( X - 2 ) * ... * ( X - N + 1 ).
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license. 
-
-  Modified:
-
-    08 May 2003
-
-  Author:
-
-    John Burkardt
-
-  Parameters:
-
-    Input, unsigned X, the argument of the falling factorial function.
-
-    Input, unsigned N, the order of the falling factorial function.
-    If N = 0, FALL = 1, if N = 1, FALL = X.  Note that if N is
-    negative, a "rising" factorial will be computed.
-
-    Output, unsigned I4_FALL, the value of the falling factorial function.
-*/
-{
-    unsigned i;
-    unsigned value;
-
-    value = 1;
-
-    if (0 < n) {
-        for (i = 1; i <= n; i++) {
-            value = value * x;
-            x = x - 1;
-        }
-    } else if (n < 0) {
-        for (i = -1; n <= i; i--) {
-            value = value * x;
-            x = x + 1;
-        }
-
     }
 
     return value;
@@ -377,7 +307,7 @@ void i4vec_permute(unsigned n1, unsigned p1[], unsigned a[])
                 iput = iget;
                 iget = p[iget - 1];
 
-                p[iput - 1] = -p[iput - 1]; //TODO: hier geht was schief
+                p[iput - 1] = -p[iput - 1]; //TODO: hier geht was schief (?)
 
                 if (iget < 1 || n < iget) {
                     fprintf(stderr, "\n");
@@ -703,8 +633,6 @@ void mono_next_grlex(unsigned m, unsigned x[])
     x[i - 1] = 0;
     x[im1 - 1] = x[im1 - 1] + 1;
     x[m - 1] = x[m - 1] + t - 1;
-
-    return;
 }
 
 /******************************************************************************/
@@ -849,89 +777,6 @@ unsigned mono_rank_grlex(unsigned m, unsigned x[])
 
 /******************************************************************************/
 
-void mono_total_next_grlex(unsigned m, unsigned n, unsigned x[])
-
-/******************************************************************************/
-/*
-  Purpose:
-
-    MONO_TOTAL_NEXT_GRLEX: grlex next monomial with total degree equal to N.
-
-  Discussion:
-
-    We consider all monomials in an M-dimensional space, with total degree N.
-
-    For example:
-
-    M = 3
-    N = 3
-
-    #  X(1)  X(2)  X(3)  Degree
-      +------------------------
-    1 |  0     0     3        3
-    2 |  0     1     2        3
-    3 |  0     2     1        3
-    4 |  0     3     0        3
-    5 |  1     0     2        3
-    6 |  1     1     1        3
-    7 |  1     2     0        3
-    8 |  2     0     1        3
-    9 |  2     1     0        3
-   10 |  3     0     0        3
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    04 December 2013
-
-  Author:
-
-    John Burkardt
-
-  Parameters:
-
-    Input, unsigned M, the spatial dimension.
-
-    Input, unsigned N, the degree.
-    0 <= N.
-
-    Input/output, unsigned X[M], the current monomial.
-    To start the sequence, set X = [ 0, 0, ..., 0, N ].
-    The last value in the sequence is X = [ N, 0, ..., 0, 0 ].
-*/
-{
-    if (n < 0) {
-        fprintf(stderr, "\n");
-        fprintf(stderr, "MONO_TOTAL_NEXT_GRLEX - Fatal error!\n");
-        fprintf(stderr, "  N < 0.\n");
-        exit(1);
-    }
-
-    if (i4vec_sum(m, x) != n) {
-        fprintf(stderr, "\n");
-        fprintf(stderr, "MONO_TOTAL_NEXT_GRLEX - Fatal error!\n");
-        fprintf(stderr, "  Input X does not sum to N.\n");
-        exit(1);
-    }
-
-    if (n == 0) {
-        return;
-    }
-    if (x[0] == n) {
-        x[0] = 0;
-        x[m - 1] = n;
-    } else {
-        mono_next_grlex(m, x);
-    }
-
-    return;
-}
-
-/******************************************************************************/
-
 unsigned *mono_unrank_grlex(unsigned m, unsigned rank)
 
 /******************************************************************************/
@@ -1061,62 +906,6 @@ unsigned *mono_unrank_grlex(unsigned m, unsigned rank)
 
 /******************************************************************************/
 
-unsigned mono_upto_enum(unsigned m, unsigned n)
-
-/******************************************************************************/
-/*
-  Purpose:
-
-    MONO_UPTO_ENUM enumerates monomials in M dimensions of degree up to N.
-
-  Discussion:
-
-    For M = 2, we have the following values:
-
-    N  VALUE
-
-    0    1
-    1    3
-    2    6
-    3   10
-    4   15
-    5   21
-
-    In particular, VALUE(2,3) = 10 because we have the 10 monomials:
-
-      1, x, y, x^2, xy, y^2, x^3, x^2y, xy^2, y^3.
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    18 November 2013
-
-  Author:
-
-    John Burkardt
-
-  Parameters:
-
-    Input, unsigned M, the spatial dimension.
-
-    Input, unsigned N, the maximum degree.
-
-    Output, unsigned MONO_UPTO_ENUM, the number of monomials in
-    M variables, of total degree N or less.
-*/
-{
-    unsigned value;
-
-    value = i4_choose(n + m, n);
-
-    return value;
-}
-
-/******************************************************************************/
-
 unsigned char mono_value(unsigned f[], unsigned char x[])
 
 /******************************************************************************/
@@ -1223,64 +1012,6 @@ void perm_check0(unsigned n, unsigned p[])
 
 /******************************************************************************/
 
-void perm_check1(unsigned n, unsigned p[])
-
-/******************************************************************************/
-/*
-  Purpose:
-
-    PERM_CHECK1 checks a 1-based permutation.
-
-  Discussion:
-
-    The routine verifies that each of the ints from 1 to
-    to N occurs among the N entries of the permutation.
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    24 October 2014
-
-  Author:
-
-    John Burkardt
-
-  Parameters:
-
-    Input, unsigned N, the number of entries.
-
-    Input, unsigned P[N], the array to check.
-*/
-{
-    unsigned ierror;
-    unsigned location;
-    unsigned value;
-
-    for (value = 1; value <= n; value++) {
-        ierror = 1;
-
-        for (location = 0; location < n; location++) {
-            if (p[location] == value) {
-                ierror = 0;
-                break;
-            }
-        }
-
-        if (ierror != 0) {
-            fprintf(stderr, "\n");
-            fprintf(stderr, "PERM_CHECK1 - Fatal error!\n");
-            fprintf(stderr, "  Permutation is missing value %d\n", value);
-            exit(1);
-        }
-
-    }
-}
-
-/******************************************************************************/
-
 void polynomial_add(unsigned o1, const unsigned char c1[], const unsigned e1[], unsigned o2, const unsigned char c2[],
                     const unsigned e2[], unsigned *o, unsigned char c[], unsigned offset, unsigned e[])
 
@@ -1327,6 +1058,8 @@ void polynomial_add(unsigned o1, const unsigned char c1[], const unsigned e1[], 
     the polynomial sum.
 */
 {
+
+
     *o = o1 + o2;
     r8vec_concatenate(o1, c1, o2, c2, c, offset);
     i4vec_concatenate(o1, e1, o2, e2, e);
@@ -1382,9 +1115,9 @@ void polynomial_compress(unsigned o1, unsigned char c1[], unsigned c1_offset, un
     the polynomial.
 */
 {
-    unsigned char tmpA = 0;
-    unsigned char tmpB = 0;
-    unsigned char tmpSum = 0;
+    unsigned char tmpA;
+    unsigned char tmpB;
+    unsigned char tmpSum;
     unsigned get;
     unsigned put;
 /*
@@ -1416,26 +1149,6 @@ void polynomial_compress(unsigned o1, unsigned char c1[], unsigned c1_offset, un
     }
 
     *o2 = put;
-///*
-//  Clear out zeros and tiny coefficients.
-//*/
-//  get = 0;
-//  put = 0;
-//
-//  while ( get < *o2 )
-//  {
-//    if ( 1 )
-//    {
-//      gf16v_set_ele(c2,put,gf16v_get_ele(c2,get));
-//      e2[put] = e2[get];
-//      put = put + 1;
-//    }
-//    get = get + 1;
-//  }
-//
-//  *o2 = put;
-
-    //TODO: do I need it or not? (Favor: not)
 }
 
 /******************************************************************************/
@@ -1716,7 +1429,8 @@ unsigned char polynomial_value(unsigned o, const unsigned char *c, unsigned offs
 /******************************************************************************/
 
 void
-r8vec_concatenate(unsigned n1, unsigned char a[], unsigned n2, unsigned char b[], unsigned char c[], unsigned offset)
+r8vec_concatenate(unsigned n1, const unsigned char a[], unsigned n2, const unsigned char b[], unsigned char c[],
+                  unsigned offset)
 
 /******************************************************************************/
 /*
