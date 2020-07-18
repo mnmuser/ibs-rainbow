@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
 
     uint8_t *_mpk = malloc(CRYPTO_MASTER_PUBLIC_KEY_BYTES);
     FILE *fp;
-    int r = 0; // TODO: better unsigned?
+    unsigned r;
 
     fp = fopen( argv[1] , "r");
     if( NULL == fp ) {
@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
     unsigned char * _identity = malloc((_ID+1)/2);
     r = 0;
 
-    generate_identity_hash(_identity,argv[2],strlen(argv[2]));
+    generate_identity_hash(_identity, (unsigned char *) argv[2], strlen(argv[2]));
     if( NULL == _identity ) {
         printf("fail to create identity hash.\n");
         return -1;
@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
 
     //calculate usk with mpk and ID
 
-    int re = calculate_upk(_upk,_mpk,_identity);
+    int re = calculate_upk((upk_t *) _upk, (mpk_t *) _mpk, _identity);
     if (0 != re) {
         printf("%s generate user-public-key fails.\n", CRYPTO_ALGNAME);
         return -1;

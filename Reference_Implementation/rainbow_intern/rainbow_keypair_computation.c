@@ -178,9 +178,8 @@ void quartic_extcpk_to_pk(mpk_t *pk, const ext_cpk_t *cpk) {
             printf("pk-pointer-l1: %u\n", (_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY));
             printf("L1 pub_idx: %u\n", pub_idx);
             printf("L2 pub_idx: %u\n", pub_idx + _O1_BYTE);
-        } //TODO: checkup, cause pk is not full!
+        }
     }
-    int f = 6;
 }
 
 

@@ -96,5 +96,8 @@ rainbow-verify: $(OBJ) rainbow-verify.o
 %.o: $(PROJ_DIR)/%.c
 	$(CC) $(CFLAGS) $(INCPATH) -c $<
 
+clean_without_keys:
+	rm *.o  rainbow-gen-masterkey rainbow-gen-usersk rainbow-gen-userpk rainbow-sign rainbow-verify signature.txt || true;
+
 clean:
 	rm *.o  rainbow-gen-masterkey rainbow-gen-usersk rainbow-gen-userpk rainbow-sign rainbow-verify mpk.txt msk.txt usk.txt upk.txt signature.txt || true;

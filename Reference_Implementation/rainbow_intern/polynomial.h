@@ -1,4 +1,4 @@
-unsigned i4_choose(unsigned n, unsigned k);
+unsigned i4_choose(int n, int k);
 
 unsigned i4_fall(unsigned x, unsigned n);
 

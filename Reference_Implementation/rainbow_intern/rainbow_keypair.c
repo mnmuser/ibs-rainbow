@@ -119,29 +119,6 @@ void calculate_t4( unsigned char * t2_to_t4 , const unsigned char *t1 , const un
     }
 }
 
-static
-void quartic_calculate_t4(unsigned char *t2_to_t4, const unsigned char *t1, const unsigned char *t3) {
-    //  t4 = T_sk.t1 * T_sk.t3 - T_sk.t2
-    unsigned char temp[(_O1_BYTE + 32) * N_QUADRATIC_POLY];
-    unsigned char *t4 = t2_to_t4;
-    for (unsigned i = 0; i < _O2; i++) {  /// t3 width
-        quartic_linear_gf16mat_prod_ref(temp, t1, _V1_BYTE, _O1, t3);
-        //gf256v_add( t4 , temp , _V1_BYTE );
-
-        unsigned e[25]; //e has to be long enough (?) for poly_add
-        unsigned o = 0;
-        unsigned char *tmp_t4 = malloc((N_QUADRATIC_POLY + 1) / 2);
-        for (unsigned j = 0; i < _O1; i++) {
-            gf16_grade_n_poly_copy(tmp_t4, 0, t4, j * _ID, 2);
-            polynomial_add(5, tmp_t4, _full_e_power2, 5, temp, _full_e_power2, &o, t4, 0, e);
-        }
-        free(tmp_t4);
-
-        t4 += _V1_BYTE * N_QUADRATIC_POLY;
-        t3 += _O1_BYTE * _ID;
-    }
-}
-
 
 static
 void
@@ -298,7 +275,7 @@ void generate_keypair(mpk_t *rpk, msk_t *sk, const unsigned char *sk_seed) {
 
 int calculate_usk(usk_t *usk, msk_t *msk, unsigned char *id) {
 
-    calculate_values_secret_key(usk, msk, id);
+    calculate_values_secret_key((unsigned char *) usk, (unsigned char *) msk, id);
 
     //last but not least: (so I don't need to make t4 quartic)
     calculate_t4(usk->t4, usk->t1, usk->t3);
@@ -308,13 +285,13 @@ int calculate_usk(usk_t *usk, msk_t *msk, unsigned char *id) {
 
 int calculate_upk(upk_t *upk, mpk_t *mpk, unsigned char *id) {
     //TODO:
-    calculate_values_public_key(upk,mpk,id);
+    calculate_values_public_key((unsigned char *) upk, (unsigned char *) mpk, id);
 
     return 0;
 }
 
-void generate_identity_hash(unsigned char *digest, const unsigned char *id, unsigned id_length) {
-    unsigned hash_length = (_ID+1)/2;
+void generate_identity_hash(unsigned char *digest, unsigned char *id, unsigned id_length) {
+    unsigned hash_length = (_ID + 1) / 2;
     hash_msg(digest, hash_length, id, id_length); // for simplicity I use the hash-function for messages
 }
 
