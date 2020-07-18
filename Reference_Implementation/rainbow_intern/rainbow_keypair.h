@@ -102,7 +102,7 @@ struct rainbow_user_secretkey {
     /// seed for generating secret key.
     /// Generating S, T, and F for classic rainbow.
     /// Generating S and T only for cyclic rainbow.
-    unsigned char sk_seed[LEN_SKSEED]; //TODO: needed?
+    unsigned char sk_seed[LEN_SKSEED]; //TODO: hust?
 
     unsigned char s1[_O1_BYTE * _O2];   ///< part of S map
     unsigned char t1[_V1_BYTE * _O1];   ///< part of T map
@@ -148,7 +148,7 @@ void generate_secretkey(msk_t *sk, const unsigned char *sk_seed);
 
 ////////////////////////////////////
 
-int calculate_usk(usk_t *usk, msk_t *msk, unsigned *id);
+int calculate_usk(usk_t *usk, msk_t *msk, unsigned char *id);
 
 int calculate_upk(upk_t *upk, mpk_t *mpk, unsigned char *id);
 

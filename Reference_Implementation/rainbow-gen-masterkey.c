@@ -17,8 +17,8 @@ int main( int argc , char ** argv )
 {
     printf("%s\n", CRYPTO_ALGNAME);
 
-    printf("msk size: %lu\n", CRYPTO_SECRETKEYBYTES);
-    printf("mpk size: %lu\n", CRYPTO_PUBLICKEYBYTES);
+    printf("msk size: %lu\n", CRYPTO_MASTER_SECRET_KEY_BYTES);
+    printf("mpk size: %lu\n", CRYPTO_MASTER_PUBLIC_KEY_BYTES);
     printf("hash size: %d\n", _HASH_LEN);
     printf("signature size: %d\n\n", CRYPTO_BYTES);
 
@@ -35,8 +35,8 @@ int main( int argc , char ** argv )
     randombytes_init(rnd_seed, NULL, 256);
 
 
-    uint8_t *_sk = (uint8_t *) malloc(CRYPTO_SECRETKEYBYTES);
-    uint8_t *_pk = (uint8_t *) malloc(CRYPTO_PUBLICKEYBYTES);
+    uint8_t *_sk = (uint8_t *) malloc(CRYPTO_MASTER_SECRET_KEY_BYTES);
+    uint8_t *_pk = (uint8_t *) malloc(CRYPTO_MASTER_PUBLIC_KEY_BYTES);
     FILE *fp;
 
     int r = crypto_sign_keypair(_pk, _sk); //keys erstellen
@@ -50,7 +50,7 @@ int main( int argc , char ** argv )
         printf("fail to open public key file.\n");
         return -1;
     }
-    byte_fdump(fp, CRYPTO_ALGNAME " public key", _pk, CRYPTO_PUBLICKEYBYTES); //pk speichern und beschriften
+    byte_fdump(fp, CRYPTO_ALGNAME " public key", _pk, CRYPTO_MASTER_PUBLIC_KEY_BYTES); //pk speichern und beschriften
     fclose(fp);
 
     fp = fopen(argv[2], "w+");
@@ -60,7 +60,7 @@ int main( int argc , char ** argv )
     }
     //ptr = (unsigned char *)&sk;
     //printf(msg,"%s secret key", name);
-    byte_fdump(fp, CRYPTO_ALGNAME " secret key", _sk, CRYPTO_SECRETKEYBYTES); // sk speichern und beschriften
+    byte_fdump(fp, CRYPTO_ALGNAME " secret key", _sk, CRYPTO_MASTER_SECRET_KEY_BYTES); // sk speichern und beschriften
     fclose(fp);
 
     printf("generate %s mpk/msk success.\n", CRYPTO_ALGNAME);

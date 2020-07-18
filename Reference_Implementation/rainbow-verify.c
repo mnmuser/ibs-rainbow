@@ -14,41 +14,41 @@
 
 int main( int argc , char ** argv )
 {
-	printf( "%s\n", CRYPTO_ALGNAME );
+    printf("%s\n", CRYPTO_ALGNAME);
 
-        printf("sk size: %lu\n", CRYPTO_SECRETKEYBYTES );
-        printf("pk size: %lu\n",  CRYPTO_PUBLICKEYBYTES );
-        printf("hash size: %d\n", _HASH_LEN );
-        printf("signature size: %d\n\n", CRYPTO_BYTES );
+    printf("sk size: %lu\n", CRYPTO_USER_SECRET_KEY_BYTES);
+    printf("pk size: %lu\n", CRYPTO_USER_PUBLIC_KEY_BYTES);
+    printf("hash size: %d\n", _HASH_LEN);
+    printf("signature size: %d\n\n", CRYPTO_BYTES);
 
-	if( 4 != argc ) {
-                printf("Usage:\n\n\trainbow-verify pk_file_name signature_file_name message_file_name\n\n");
-                return -1;
-        }
+    if (4 != argc) {
+        printf("Usage:\n\n\trainbow-verify pk_file_name signature_file_name message_file_name\n\n");
+        return -1;
+    }
 
-	uint8_t * pk = (uint8_t *) malloc( CRYPTO_PUBLICKEYBYTES );
+    uint8_t *pk = (uint8_t *) malloc(CRYPTO_USER_PUBLIC_KEY_BYTES);
 
-	FILE * fp;
-	int r;
+    FILE *fp;
+    int r;
 
-	fp = fopen( argv[1] , "r");
-	if( NULL == fp ) {
-		printf("fail to open public key file.\n");
-		return -1;
-	}
-	r = byte_fget( fp ,  pk , CRYPTO_PUBLICKEYBYTES );
-	fclose( fp );
-	if( CRYPTO_PUBLICKEYBYTES != r ) {
-		printf("fail to load key file.\n");
-		return -1;
-	}
+    fp = fopen(argv[1], "r");
+    if (NULL == fp) {
+        printf("fail to open public key file.\n");
+        return -1;
+    }
+    r = byte_fget(fp, pk, CRYPTO_USER_PUBLIC_KEY_BYTES);
+    fclose(fp);
+    if (CRYPTO_USER_PUBLIC_KEY_BYTES != r) {
+        printf("fail to load key file.\n");
+        return -1;
+    }
 
-	unsigned char * msg = NULL;
-	unsigned long long mlen = 0;
-	r = byte_read_file( &msg , &mlen , argv[3] );
-	if( 0 != r ) {
-		printf("fail to read message file.\n");
-		return -1;
+    unsigned char *msg = NULL;
+    unsigned long long mlen = 0;
+    r = byte_read_file(&msg, &mlen, argv[3]);
+    if (0 != r) {
+        printf("fail to read message file.\n");
+        return -1;
 	}
 
 	unsigned char * signature = malloc( mlen + CRYPTO_BYTES );

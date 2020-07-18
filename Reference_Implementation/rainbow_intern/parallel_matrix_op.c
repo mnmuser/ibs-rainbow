@@ -5,6 +5,7 @@
 ///
 
 
+#include <stdio.h>
 #include "blas_comm.h"
 #include "blas.h"
 
@@ -669,14 +670,20 @@ void quartic_linear_gf16v_madd(uint8_t *C, const uint8_t *A, unsigned A_pointer_
 }
 
 void calculate_values_public_key(unsigned char *upk, unsigned char *mpk, unsigned char *id) {
+    unsigned char value_i;
     for (unsigned i = 0; i < sizeof(upk_t) * 2; i++) {
-        gf16v_set_ele(upk, i, polynomial_value(N_QUARTIC_POLY, mpk, i, _full_e_power2, id));
+        value_i = polynomial_value(N_QUARTIC_POLY, mpk, i * N_QUARTIC_POLY, _full_e_power2, id);
+        gf16v_set_ele(upk, i, value_i);
     }
 }
 
 void calculate_values_secret_key(unsigned char *usk, unsigned char *msk, unsigned char *id) {
-    for (unsigned i = 0; i < sizeof(upk_t) * 2; i++) {
-        gf16v_set_ele(usk, i, polynomial_value(_ID, msk, i, _lin_e_power2, id));
+    memcpy(usk, msk, LEN_SKSEED); //TODO: SEC: we don't want the random seed in the user-key
+    usk += LEN_SKSEED;
+    msk += LEN_SKSEED;
+
+    for (unsigned i = 0; i < (sizeof(usk_t) - LEN_SKSEED) * 2; i++) {
+        gf16v_set_ele(usk, i, polynomial_value(_ID, msk, i * _ID, _lin_e_power2, id));
     }
 }
 

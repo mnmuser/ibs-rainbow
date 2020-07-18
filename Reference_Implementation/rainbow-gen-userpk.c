@@ -13,8 +13,8 @@ int main(int argc, char **argv) {
 
     printf("%s\n", CRYPTO_ALGNAME);
 
-    printf("msk size: %lu\n", CRYPTO_SECRETKEYBYTES);
-    printf("mpk size: %lu\n", CRYPTO_PUBLICKEYBYTES);
+    printf("msk size: %lu\n", CRYPTO_MASTER_SECRET_KEY_BYTES);
+    printf("mpk size: %lu\n", CRYPTO_MASTER_PUBLIC_KEY_BYTES);
     printf("hash size: %d\n", _HASH_LEN);
     printf("signature size: %d\n\n", CRYPTO_BYTES);
 
@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
 
     //malloc upk
 
-    uint8_t *_mpk = malloc(CRYPTO_PUBLICKEYBYTES);
+    uint8_t *_mpk = malloc(CRYPTO_MASTER_PUBLIC_KEY_BYTES);
     FILE *fp;
     int r = 0; // TODO: better unsigned?
 
@@ -35,9 +35,9 @@ int main(int argc, char **argv) {
         printf("fail to open master key file.\n");
         return -1;
     }
-    r = byte_fget( fp ,  _mpk , CRYPTO_PUBLICKEYBYTES );
-    fclose( fp );
-    if( CRYPTO_PUBLICKEYBYTES != r ) {
+    r = byte_fget(fp, _mpk, CRYPTO_MASTER_PUBLIC_KEY_BYTES);
+    fclose(fp);
+    if (CRYPTO_MASTER_PUBLIC_KEY_BYTES != r) {
         printf("fail to load key file.\n");
         return -1;
     }

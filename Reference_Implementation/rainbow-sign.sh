@@ -1,1 +1,1 @@
-./rainbow-sign sk.txt message.txt | tee signature.txt
+./rainbow-sign usk.txt message.txt | tee signature.txt

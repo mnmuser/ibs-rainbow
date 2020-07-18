@@ -290,18 +290,20 @@ void generate_keypair(mpk_t *rpk, msk_t *sk, const unsigned char *sk_seed) {
 
     quartic_extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to mpk_t.
 
-//    memcpy(rpk, pk, sizeof(mpk_t)); //TODO: remove this statement!
-
     free(pk);
 }
 
 
 ////////////////////// IDENTITY ///////////////////////////
 
-int calculate_usk(usk_t *usk, msk_t *msk, unsigned *id) {
+int calculate_usk(usk_t *usk, msk_t *msk, unsigned char *id) {
 
-    //last but not least:
+    calculate_values_secret_key(usk, msk, id);
+
+    //last but not least: (so I don't need to make t4 quartic)
     calculate_t4(usk->t4, usk->t1, usk->t3);
+
+    return 0;
 }
 
 int calculate_upk(upk_t *upk, mpk_t *mpk, unsigned char *id) {
@@ -325,7 +327,7 @@ void multiply_identity_GF16(uint8_t *usk, uint8_t *upk, const unsigned char *id_
     multiply_ID_over_key(usk, msk, sk_size, id_hash);
 
     //Loop over pk
-    multiply_ID_over_key(upk, mpk, CRYPTO_PUBLICKEYBYTES, id_hash);
+    multiply_ID_over_key(upk, mpk, CRYPTO_MASTER_PUBLIC_KEY_BYTES, id_hash);
 }
 
 void multiply_ID_over_key(unsigned char *dest_key, const unsigned char *key, const unsigned long key_length,

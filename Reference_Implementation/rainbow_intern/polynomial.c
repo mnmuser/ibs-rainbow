@@ -1706,7 +1706,7 @@ unsigned char polynomial_value(unsigned o, const unsigned char *c, unsigned offs
     for (j = 0; j < o; j++) {
         f = mono_unrank_grlex(m, e[j]);
         v = mono_value(f, x);
-        p = (p + gf16v_get_ele(c, offset + j) * v) % 16;
+        p = p ^ gf16_mul(gf16v_get_ele(c, offset + j), v);
         free(f);
     }
 

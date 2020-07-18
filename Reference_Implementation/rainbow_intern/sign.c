@@ -62,7 +62,7 @@ crypto_sign(unsigned char *sm, unsigned long long *smlen, const unsigned char *m
 
 #if defined _RAINBOW_CLASSIC
 
-    return rainbow_sign(sm + mlen, (const msk_t *) sk, digest);
+    return rainbow_sign(sm + mlen, (const usk_t *) sk, digest);
 
 #elif defined _RAINBOW_CYCLIC
 
@@ -95,7 +95,7 @@ crypto_sign_open(unsigned char *m, unsigned long long *mlen,const unsigned char 
 
 #if defined _RAINBOW_CLASSIC
 
-    return rainbow_verify(digest, sm + mlen[0], (const mpk_t *) pk);
+    return rainbow_verify(digest, sm + mlen[0], (const upk_t *) pk);
 
 #elif defined _RAINBOW_CYCLIC
 

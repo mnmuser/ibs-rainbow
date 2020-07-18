@@ -33,7 +33,7 @@
 
 
 
-int rainbow_sign(uint8_t *signature, const msk_t *sk, const uint8_t *_digest) {
+int rainbow_sign(uint8_t *signature, const usk_t *sk, const uint8_t *_digest) {
     // allocate temporary storage.
     uint8_t *mat_l1 = aligned_alloc(32, _O1 * _O1_BYTE);
     uint8_t *mat_l2 = aligned_alloc(32, _O2 * _O2_BYTE);
@@ -43,7 +43,7 @@ int rainbow_sign(uint8_t *signature, const msk_t *sk, const uint8_t *_digest) {
     prng_t prng_sign;
     uint8_t prng_preseed[LEN_SKSEED + _HASH_LEN];
     memcpy(prng_preseed, sk->sk_seed, LEN_SKSEED);
-    memcpy( prng_preseed + LEN_SKSEED , _digest , _HASH_LEN );                        // prng_preseed = sk_seed || digest
+    memcpy(prng_preseed + LEN_SKSEED, _digest, _HASH_LEN);                        // prng_preseed = sk_seed || digest
     uint8_t prng_seed[_HASH_LEN];
     hash_msg( prng_seed , _HASH_LEN , prng_preseed , _HASH_LEN+LEN_SKSEED );
     prng_set( &prng_sign , prng_seed , _HASH_LEN );                                   // seed = H( sk_seed || digest )
@@ -167,7 +167,7 @@ int rainbow_sign(uint8_t *signature, const msk_t *sk, const uint8_t *_digest) {
 }
 
 
-int rainbow_verify(const uint8_t *digest, const uint8_t *signature, const mpk_t *pk) {
+int rainbow_verify(const uint8_t *digest, const uint8_t *signature, const upk_t *pk) {
     unsigned char digest_ck[_PUB_M_BYTE];
     // public_map( digest_ck , pk , signature ); Evaluating the quadratic public polynomials.
     batch_quad_trimat_eval(digest_ck, pk->pk, signature, _PUB_N, _PUB_M_BYTE);
