@@ -5,7 +5,6 @@
 ///
 
 
-#include <stdio.h>
 #include "blas_comm.h"
 #include "blas.h"
 
@@ -44,9 +43,6 @@ void quartic_UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsi
     unsigned char tmp_summand_B[(N_CUBIC_POLY + 1) / 2];
     unsigned char tmp_sum[N_QUARTIC_POLY];
 
-    unsigned final_o = 0;
-
-    unsigned final_e[15];
 
     for (unsigned i = 0; i < Aheight; i++) {
         for (unsigned j = 0; j < i; j++) {
@@ -124,7 +120,6 @@ void
 quartic_batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA, const unsigned char *B, unsigned Bheight,
                                unsigned size_Bcolvec, unsigned Bwidth,
                                unsigned size_batch) {
-
     unsigned Awidth = Bheight;
     unsigned Aheight = Awidth;
     for (unsigned i = 0; i < Aheight; i++) {
@@ -157,9 +152,8 @@ void batch_trimat_madd_gf256( unsigned char * bC , const unsigned char* btriA ,
     }
 }
 
-void quartic_batch_trimatTr_madd_gf16(unsigned char *bC, const unsigned char *btriA,
-                                      const unsigned char *B, unsigned Bheight, unsigned size_Bcolvec, unsigned Bwidth,
-                                      unsigned size_batch) {
+void quartic_batch_trimatTr_madd_gf16(unsigned char *bC, const unsigned char *btriA, const unsigned char *B,
+                                      unsigned Bheight, unsigned size_Bcolvec, unsigned Bwidth, unsigned size_batch) {
     unsigned Aheight = Bheight;
     for (unsigned i = 0; i < Aheight; i++) {
         for (unsigned j = 0; j < Bwidth; j++) {
@@ -255,13 +249,12 @@ void batch_matTr_madd_gf16( unsigned char * bC , const unsigned char* A_to_tr , 
 
 void
 quartic_batch_matTr_madd_gf16(unsigned char *bC, const unsigned char *A_to_tr, unsigned Aheight, unsigned size_Acolvec,
-                              unsigned Awidth,
-                              const unsigned char *bB, unsigned Bwidth, unsigned size_batch) {
+                              unsigned Awidth, const unsigned char *bB, unsigned Bwidth, unsigned size_batch) {
     unsigned Atr_height = Awidth;
     unsigned Atr_width = Aheight;
     for (unsigned i = 0; i < Atr_height; i++) {
         for (unsigned j = 0; j < Atr_width; j++) {
-            quartic_gf16v_madd2(bC, bB, j, 0, A_to_tr, i, j, size_batch * Bwidth, size_Acolvec);
+            quartic_gf16v_madd2(bC, bB, j, 2, A_to_tr, i, j, size_batch * Bwidth, size_Acolvec);
             //gf16v_madd(bC, &bB[j * Bwidth * size_batch], gf16v_get_ele(&A_to_tr[size_Acolvec * i], j),size_batch * Bwidth);
         }
         bC += size_batch * Bwidth * N_QUARTIC_POLY;
@@ -499,7 +492,7 @@ void quartic_gf16v_madd(uint8_t *C, const uint8_t *A, unsigned A_pointer_index, 
 
     for (unsigned l = 0; l < size_batch * 2; l++) { // *2 for gf16 (size is in byte)
         //the inner loop of gf16vmadd
-        polynomial_mul(2, &A[(A_pointer_index) * _ID * size_batch], l * _ID, _lin_e_power2, 2,
+        polynomial_mul(2, &A[(A_pointer_index) * N_LINEAR_POLY * size_batch], l * N_LINEAR_POLY, _full_e_power2, 2,
                        &B[B_pointer_index * size_Bcolvec],
                        B_offset * _ID,
                        _lin_e_power2, &tmp_o, tmp_product, 0, tmp_e);
@@ -511,7 +504,8 @@ void quartic_gf16v_madd(uint8_t *C, const uint8_t *A, unsigned A_pointer_index, 
 }
 
 
-void quartic_gf16v_madd2(uint8_t *C, const uint8_t *Av, unsigned A_pointer_index, char A_linear, const unsigned char *B,
+void quartic_gf16v_madd2(uint8_t *C, const uint8_t *Av, unsigned A_pointer_index, unsigned int A_grade,
+                         const unsigned char *B,
                          unsigned B_pointer_index, unsigned B_offset, unsigned size_batch,
                          unsigned size_Bcolvec) {
 
@@ -528,12 +522,17 @@ void quartic_gf16v_madd2(uint8_t *C, const uint8_t *Av, unsigned A_pointer_index
 
     unsigned C_grade;
 
-    if (A_linear) {
+    if (A_grade == 0) {
         e_A = _lin_e_power2;
         o_A = N_LINEAR_POLY - 1;
         A_loop_offset = _ID;
-        C_grade = 3;
-    } else {
+        C_grade = 3; //TODO: check
+    } else if (A_grade == 1) {
+        e_A = _full_e_power2;
+        o_A = N_LINEAR_POLY;
+        A_loop_offset = N_LINEAR_POLY;
+        C_grade = 2;
+    } else if (A_grade == 2) {
         e_A = _full_e_power2;
         o_A = N_QUADRATIC_POLY;
         A_loop_offset = N_QUARTIC_POLY;
@@ -612,8 +611,15 @@ void calculate_values_secret_key(unsigned char *usk, unsigned char *msk, unsigne
     usk += LEN_SKSEED;
     msk += LEN_SKSEED;
 
-    for (unsigned i = 0; i < (sizeof(usk_t) - LEN_SKSEED) * 2; i++) {
+    unsigned s_t_size = sizeof(((usk_t *) 0)->s1) + sizeof(((usk_t *) 0)->t1) + sizeof(((usk_t *) 0)->t4) +
+                        sizeof(((usk_t *) 0)->t3);
+    for (unsigned i = 0; i < s_t_size * 2; i++) {
         gf16v_set_ele(usk, i, polynomial_value(_ID, msk, i * _ID, _lin_e_power2, id));
+    }
+    usk += s_t_size;
+    msk += s_t_size;
+    for (unsigned i = 0; i < (sizeof(usk_t) - LEN_SKSEED - s_t_size) * 2; i++) {
+        gf16v_set_ele(usk, i, polynomial_value(N_LINEAR_POLY, msk, i * N_LINEAR_POLY, _full_e_power2, id));
     }
 }
 

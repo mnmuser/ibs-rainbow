@@ -125,8 +125,8 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
 */
     const unsigned char *t2 = sk->t4;
 
-    write_gf16_to_quartic(cpk->l1_Q1, sk->l1_F1, _O1_BYTE * N_TRIANGLE_TERMS(_V1));
-    write_gf16_to_quartic(cpk->l1_Q2, sk->l1_F2, _O1_BYTE * _V1 * _O1);
+    write_lin_to_quartic(cpk->l1_Q1, sk->l1_F1, _O1_BYTE * N_TRIANGLE_TERMS(_V1));
+    write_lin_to_quartic(cpk->l1_Q2, sk->l1_F2, _O1_BYTE * _V1 * _O1);
 
     ///CHECK Q1
     polynomial_print(15, cpk->l1_Q1, 0, _full_e_power2, "L1_Q1 ");
@@ -232,17 +232,17 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
     Q2 = F1_F1T*T1 + F2
     Q5 = UT( T1tr( F1*T1 + F2 )  + F5 )
 */
-    write_gf16_to_quartic(cpk->l2_Q1, sk->l2_F1, _O2_BYTE * N_TRIANGLE_TERMS(_V1));
+    write_lin_to_quartic(cpk->l2_Q1, sk->l2_F1, _O2_BYTE * N_TRIANGLE_TERMS(_V1));
 
     ///CHECK Q1
     polynomial_print(15, cpk->l2_Q1, 0, _full_e_power2, "L2_Q1 ");
     polynomial_print(15, cpk->l2_Q1, 126720 * 2 - 15, _full_e_power2, "L2_Q1 end");
     ///
 
-    write_gf16_to_quartic(cpk->l2_Q2, sk->l2_F2, _O2_BYTE * _V1 * _O1);
+    write_lin_to_quartic(cpk->l2_Q2, sk->l2_F2, _O2_BYTE * _V1 * _O1);
     quartic_batch_trimat_madd(cpk->l2_Q2, sk->l2_F1, sk->t1, _V1, _V1_BYTE, _O1, _O2_BYTE);      // F1*T1 + F2
 
-    write_gf16_to_quartic(cpk->l2_Q5, sk->l2_F5, _O2_BYTE * N_TRIANGLE_TERMS(_O1));
+    write_lin_to_quartic(cpk->l2_Q5, sk->l2_F5, _O2_BYTE * N_TRIANGLE_TERMS(_O1));
     set_quartic_zero(tempQ, _O2_BYTE * _O1 * _O1);                                               // l2_Q5
     quartic_batch_matTr_madd_gf16(tempQ, sk->t1, _V1, _V1_BYTE, _O1, cpk->l2_Q2, _O1,
                                   _O2_BYTE);        // t1_tr*(F1*T1 + F2)
@@ -271,7 +271,7 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
     Q9 = UT( T2tr*( F1*T2 + F2*T3 + F3 )  +      T3tr*( F5*T3 + F6 ) )
     Q6 = T1tr*( F1_F1T*T2 + F2*T3 + F3 )  + F2Tr*T2 + F5_F5T*T3 + F6
 */
-    write_gf16_to_quartic(cpk->l2_Q3, sk->l2_F3, _O2_BYTE * _V1 * _O2);
+    write_lin_to_quartic(cpk->l2_Q3, sk->l2_F3, _O2_BYTE * _V1 * _O2);
     quartic_batch_trimat_madd(cpk->l2_Q3, sk->l2_F1, t2, _V1, _V1_BYTE, _O2, _O2_BYTE);         // F1*T2 + F3
     quartic_batch_mat_madd_gf16(cpk->l2_Q3, sk->l2_F2, _V1, sk->t3, _O1, _O1_BYTE, _O2,
                                 _O2_BYTE);   // F1_T2 + F2_T3 + F3
@@ -280,7 +280,7 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
     quartic_batch_matTr_madd_gf16(tempQ, t2, _V1, _V1_BYTE, _O2, cpk->l2_Q3, _O2,
                                   _O2_BYTE);           // T2tr * ( ..... )
 
-    write_gf16_to_quartic(cpk->l2_Q6, sk->l2_F6, _O2_BYTE * _O1 * _O2);
+    write_lin_to_quartic(cpk->l2_Q6, sk->l2_F6, _O2_BYTE * _O1 * _O2);
 
     quartic_batch_trimat_madd(cpk->l2_Q6, sk->l2_F5, sk->t3, _O1, _O1_BYTE, _O2, _O2_BYTE);      // F5*T3 + F6
     quartic_batch_matTr_madd_gf16(tempQ, sk->t3, _O1, _O1_BYTE, _O2, cpk->l2_Q6, _O2,
@@ -337,12 +337,12 @@ void calculate_Q_from_F(ext_cpk_t *Qs, const msk_t *Fs) {
     calculate_Q_from_F_impl(Qs, Fs);
 }
 
-void write_gf16_to_quartic(unsigned char *q, const unsigned char *f, unsigned long length_f) {
+void write_lin_to_quartic(unsigned char *q, const unsigned char *f, unsigned long length_f) {
     set_quartic_zero(q, length_f); // to have a clean polynom
     for (unsigned x = 0; x < length_f * 2; x++) {
-        for (unsigned i = 0; i < _ID; i++) {
-            gf16v_set_ele(q, i + (N_QUARTIC_POLY * x) + 1,
-                          gf16v_get_ele(f, i + x * _ID)); // plus one, to write after the constant field
+        for (unsigned i = 0; i < N_LINEAR_POLY; i++) {
+            gf16v_set_ele(q, i + (N_QUARTIC_POLY * x),
+                          gf16v_get_ele(f, i + x * N_LINEAR_POLY)); // plus one, to write after the constant field
         }
     }
 

@@ -70,16 +70,15 @@ struct rainbow_master_secretkey {
     unsigned char t4[_V1_BYTE * _O2 * _ID];   ///< part of T map (gets quadratic) -> also known as t2
     unsigned char t3[_O1_BYTE * _O2 * _ID];   ///< part of T map
 
-    unsigned char l1_F1[_O1_BYTE * N_TRIANGLE_TERMS(_V1) *
-                        _ID];  ///< part of C-map, F1, Layer1 //TODO: maybe _ID+1 for constant factors
-    unsigned char l1_F2[_O1_BYTE * _V1 * _O1 * _ID];                ///< part of C-map, F2, Layer1
+    unsigned char l1_F1[_O1_BYTE * N_TRIANGLE_TERMS(_V1) * N_LINEAR_POLY];  ///< part of C-map, F1, Layer1
+    unsigned char l1_F2[_O1_BYTE * _V1 * _O1 * N_LINEAR_POLY];                ///< part of C-map, F2, Layer1
 
-    unsigned char l2_F1[_O2_BYTE * N_TRIANGLE_TERMS(_V1) * _ID];  ///< part of C-map, F1, Layer2
-    unsigned char l2_F2[_O2_BYTE * _V1 * _O1 * _ID];                ///< part of C-map, F2, Layer2
+    unsigned char l2_F1[_O2_BYTE * N_TRIANGLE_TERMS(_V1) * N_LINEAR_POLY];  ///< part of C-map, F1, Layer2
+    unsigned char l2_F2[_O2_BYTE * _V1 * _O1 * N_LINEAR_POLY];                ///< part of C-map, F2, Layer2
 
-    unsigned char l2_F3[_O2_BYTE * _V1 * _O2 * _ID];                ///< part of C-map, F3, Layer2
-    unsigned char l2_F5[_O2_BYTE * N_TRIANGLE_TERMS(_O1) * _ID];  ///< part of C-map, F5, Layer2
-    unsigned char l2_F6[_O2_BYTE * _O1 * _O2 * _ID];                ///< part of C-map, F6, Layer2
+    unsigned char l2_F3[_O2_BYTE * _V1 * _O2 * N_LINEAR_POLY];                ///< part of C-map, F3, Layer2
+    unsigned char l2_F5[_O2_BYTE * N_TRIANGLE_TERMS(_O1) * N_LINEAR_POLY];  ///< part of C-map, F5, Layer2
+    unsigned char l2_F6[_O2_BYTE * _O1 * _O2 * N_LINEAR_POLY];                ///< part of C-map, F6, Layer2
 } msk_t;
 
 

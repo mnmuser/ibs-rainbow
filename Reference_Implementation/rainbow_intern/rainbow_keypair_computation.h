@@ -71,7 +71,7 @@ void calculate_Q_from_F(ext_cpk_t *Qs, const msk_t *Fs);
 ///
 void calculate_F_from_Q(msk_t *Fs, const msk_t *Qs, msk_t *Ts);
 
-void write_gf16_to_quartic(unsigned char *q, const unsigned char *f, unsigned long length_f);
+void write_lin_to_quartic(unsigned char *q, const unsigned char *f, unsigned long length_f);
 
 void set_quartic_zero(unsigned char *q, unsigned length);
 

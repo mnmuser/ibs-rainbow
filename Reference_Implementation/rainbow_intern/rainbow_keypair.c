@@ -58,14 +58,14 @@ void generate_S_T(unsigned char *s_and_t, prng_t *prng0) {
 
 unsigned generate_l1_F12( unsigned char * sk, prng_t * prng0 ) {
     unsigned n_byte_generated = 0;
-    prng_gen(prng0, sk, _O1_BYTE * N_TRIANGLE_TERMS(_V1) * _ID);
+    prng_gen(prng0, sk, _O1_BYTE * N_TRIANGLE_TERMS(_V1) * N_LINEAR_POLY);
     /// Triangle: (n_var) (n_var*(n_var+1)/2)
-    sk += _O1_BYTE * N_TRIANGLE_TERMS(_V1) * _ID;
-    n_byte_generated += _O1_BYTE * N_TRIANGLE_TERMS(_V1) * _ID;
+    sk += _O1_BYTE * N_TRIANGLE_TERMS(_V1) * N_LINEAR_POLY;
+    n_byte_generated += _O1_BYTE * N_TRIANGLE_TERMS(_V1) * N_LINEAR_POLY;
 
-    prng_gen(prng0, sk, _O1_BYTE * _V1 * _O1 * _ID);  // l1_F2
-    sk += _O1_BYTE * _V1 * _O1 * _ID;
-    n_byte_generated += _O1_BYTE * _V1 * _O1 * _ID;
+    prng_gen(prng0, sk, _O1_BYTE * _V1 * _O1 * N_LINEAR_POLY);  // l1_F2
+    sk += _O1_BYTE * _V1 * _O1 * N_LINEAR_POLY;
+    n_byte_generated += _O1_BYTE * _V1 * _O1 * N_LINEAR_POLY;
 
     return n_byte_generated;
 }
@@ -75,29 +75,29 @@ static
 unsigned generate_l2_F12356( unsigned char * sk, prng_t * prng0 ) {
     unsigned n_byte_generated = 0;
 
-    prng_gen(prng0, sk, _O2_BYTE * N_TRIANGLE_TERMS(_V1) * _ID); // l2_F1
-    sk += _O2_BYTE * N_TRIANGLE_TERMS(_V1) * _ID;
-    n_byte_generated += _O2_BYTE * N_TRIANGLE_TERMS(_V1) * _ID;
+    prng_gen(prng0, sk, _O2_BYTE * N_TRIANGLE_TERMS(_V1) * N_LINEAR_POLY); // l2_F1
+    sk += _O2_BYTE * N_TRIANGLE_TERMS(_V1) * N_LINEAR_POLY;
+    n_byte_generated += _O2_BYTE * N_TRIANGLE_TERMS(_V1) * N_LINEAR_POLY;
 
-    prng_gen(prng0, sk, _O2_BYTE * _V1 * _O1 * _ID); // l2_F2
-    sk += _O2_BYTE * _V1 * _O1 * _ID;
-    n_byte_generated += _O2_BYTE * _V1 * _O1 * _ID;
+    prng_gen(prng0, sk, _O2_BYTE * _V1 * _O1 * N_LINEAR_POLY); // l2_F2
+    sk += _O2_BYTE * _V1 * _O1 * N_LINEAR_POLY;
+    n_byte_generated += _O2_BYTE * _V1 * _O1 * N_LINEAR_POLY;
 
-    prng_gen(prng0, sk, _O2_BYTE * _V1 * _O2 * _ID); // l2_F3
-    sk += _O2_BYTE * _V1 * _O1 * _ID;
-    n_byte_generated += _O2_BYTE * _V1 * _O1 * _ID;
+    prng_gen(prng0, sk, _O2_BYTE * _V1 * _O2 * N_LINEAR_POLY); // l2_F3
+    sk += _O2_BYTE * _V1 * _O1 * N_LINEAR_POLY;
+    n_byte_generated += _O2_BYTE * _V1 * _O1 * N_LINEAR_POLY;
 
-    prng_gen(prng0, sk, _O2_BYTE * N_TRIANGLE_TERMS(_O1) * _ID); // l2_F5
-    sk += _O2_BYTE * N_TRIANGLE_TERMS(_O1) * _ID;
-    n_byte_generated += _O2_BYTE * N_TRIANGLE_TERMS(_O1) * _ID;
+    prng_gen(prng0, sk, _O2_BYTE * N_TRIANGLE_TERMS(_O1) * N_LINEAR_POLY); // l2_F5
+    sk += _O2_BYTE * N_TRIANGLE_TERMS(_O1) * N_LINEAR_POLY;
+    n_byte_generated += _O2_BYTE * N_TRIANGLE_TERMS(_O1) * N_LINEAR_POLY;
 
-    prng_gen(prng0, sk, _O2_BYTE * _O1 * _O2 * _ID); // l2_F6
-    n_byte_generated += _O2_BYTE * _O1 * _O2 * _ID;
+    prng_gen(prng0, sk, _O2_BYTE * _O1 * _O2 * N_LINEAR_POLY); // l2_F6
+    n_byte_generated += _O2_BYTE * _O1 * _O2 * N_LINEAR_POLY;
 
     return n_byte_generated;
 }
 
-//TODO: Hier entsteht F
+// Hier entsteht F
 static
 void generate_B1_B2( unsigned char * sk , prng_t * prng0 ) {
     sk += generate_l1_F12(sk, prng0); //Layer 1
@@ -284,7 +284,7 @@ void generate_identity_hash(unsigned char *digest, unsigned char *id, unsigned i
 /// works because F,S,T and P are homogeneous
 void multiply_identity_GF16(uint8_t *usk, uint8_t *upk, const unsigned char *id_hash, const uint8_t *msk,
                             const uint8_t *mpk) {
-    int sk_size = sizeof(msk_t) - offsetof(msk_t, l1_F1);
+    unsigned sk_size = sizeof(msk_t) - offsetof(msk_t, l1_F1);
 
     //Loop over sk
     multiply_ID_over_key(usk, msk, sk_size, id_hash);
