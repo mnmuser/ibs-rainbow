@@ -22,8 +22,9 @@ unsigned char mono_value(unsigned f[], unsigned char x[]);
 
 void perm_check0(unsigned n, unsigned p[]);
 
-void polynomial_add(unsigned o1, const unsigned char c1[], const unsigned e1[], unsigned o2, const unsigned char c2[],
-                    const unsigned e2[], unsigned *o, unsigned char c[], unsigned offset, unsigned e[]);
+void polynomial_add(unsigned char *dest, unsigned dest_offset, unsigned *dest_o, unsigned int dest_e[], unsigned A_o,
+                    unsigned char *summand_A, unsigned A_offset, const unsigned int A_e[], unsigned B_o,
+                    const unsigned char *summand_B, unsigned B_offset, const unsigned int B_e[]);
 
 void polynomial_compress(unsigned o1, unsigned char c1[], unsigned c1_offset, unsigned e1[], unsigned *o2,
                          unsigned char c2[],

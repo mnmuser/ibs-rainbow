@@ -104,9 +104,6 @@ void quartic_extcpk_to_pk(mpk_t *pk, const ext_cpk_t *cpk) {
                    _O2_BYTE * N_QUARTIC_POLY);
             idx_l1 += _O1_BYTE * N_QUARTIC_POLY;
             idx_l2 += _O2_BYTE * N_QUARTIC_POLY;
-            printf("pk-pointer-l1: %u\n", (_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY));
-            printf("L1 pub_idx: %u\n", pub_idx);
-            printf("L2 pub_idx: %u\n", pub_idx + _O1_BYTE);
         }
     }
 
@@ -175,9 +172,6 @@ void quartic_extcpk_to_pk(mpk_t *pk, const ext_cpk_t *cpk) {
                    _O2_BYTE * N_QUARTIC_POLY);
             idx_l1 += _O1_BYTE * N_QUARTIC_POLY;
             idx_l2 += _O2_BYTE * N_QUARTIC_POLY;
-            printf("pk-pointer-l1: %u\n", (_PUB_M_BYTE * pub_idx * N_QUARTIC_POLY));
-            printf("L1 pub_idx: %u\n", pub_idx);
-            printf("L2 pub_idx: %u\n", pub_idx + _O1_BYTE);
         }
     }
 }
@@ -427,6 +421,12 @@ void set_quartic_zero(unsigned char *q, const unsigned length) {
     memset(q, 0, length * N_QUARTIC_POLY);
 }
 
+/// copy a gf16-polynomial of grade n; grade 0 is linear without constant
+/// \param dest
+/// \param gf16_offset_dest
+/// \param src
+/// \param gf16_offset_src
+/// \param grade_n
 void gf16_grade_n_poly_copy(unsigned char *dest, unsigned gf16_offset_dest, const unsigned char *src,
                             unsigned gf16_offset_src, unsigned grade_n) {
     for (unsigned i = 0; i < _grade_n_poly_terms(grade_n); i++) {
@@ -434,8 +434,3 @@ void gf16_grade_n_poly_copy(unsigned char *dest, unsigned gf16_offset_dest, cons
     }
 }
 
-void gf16_lin_poly_copy_non_constant(unsigned char *dest, const unsigned char *src, unsigned gf16_offset_src) {
-    for (unsigned i = 0; i < _ID + 1; i++) { // +1 because of the constant factor in the polynom
-        gf16v_set_ele(dest, i, gf16v_get_ele(src, gf16_offset_src + i));
-    }
-}

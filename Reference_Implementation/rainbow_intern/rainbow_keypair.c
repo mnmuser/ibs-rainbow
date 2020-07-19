@@ -119,20 +119,6 @@ void calculate_t4( unsigned char * t2_to_t4 , const unsigned char *t1 , const un
     }
 }
 
-
-static
-void
-obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2_polys, unsigned n_terms, const unsigned char *s1) {
-    unsigned char temp[_O1_BYTE + 32];
-    while (n_terms--) {
-        gfmat_prod(temp, s1, _O1_BYTE, _O2, l2_polys); //looped gf16v_madd
-        gf256v_add(l1_polys, temp, _O1_BYTE);
-        l1_polys += _O1_BYTE;
-        l2_polys += _O2_BYTE;
-    }
-}
-
-//TODO: check this function
 static
 void quartic_obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2_polys, unsigned poly_grade,
                                 unsigned n_terms,
@@ -165,7 +151,7 @@ void quartic_obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2
 
 //            polynomial_print(15,tmp_l1_polys,0,_full_e_power2,"temp_l1:");
 
-            polynomial_add(15, temp, _full_e_power2, 10, tmp_l1_polys, _full_e_power2, &o, tmp_sum, 0, e);
+            polynomial_add(tmp_sum, 0, &o, e, 15, temp, 0, _full_e_power2, 10, tmp_l1_polys, 0, _full_e_power2);
 
 //            polynomial_print(o,tmp_sum,0,e,"temp_sum(e):");
 

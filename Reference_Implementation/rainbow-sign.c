@@ -22,7 +22,7 @@ int main( int argc , char ** argv )
     printf("hash size: %d\n", _HASH_LEN);
     printf("signature size: %d\n\n", CRYPTO_BYTES);
 
-    if (!(3 == argc)) {
+    if (3 != argc) {
         printf("Usage:\n\n\trainbow-sign sk_file_name file_to_be_signed\n\n");
         return -1;
     }

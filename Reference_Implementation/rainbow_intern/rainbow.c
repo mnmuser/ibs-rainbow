@@ -65,7 +65,7 @@ int rainbow_sign(uint8_t *signature, const usk_t *sk, const uint8_t *_digest) {
     }
 
     // Given the vinegars, pre-compute variables needed for layer 2
-    uint8_t r_l1_F1[_O1_BYTE] = {0}; // TODO: what is r?
+    uint8_t r_l1_F1[_O1_BYTE] = {0};
     uint8_t r_l2_F1[_O2_BYTE] = {0};
     batch_quad_trimat_eval(r_l1_F1, sk->l1_F1, vinegar, _V1, _O1_BYTE);
     batch_quad_trimat_eval(r_l2_F1, sk->l2_F1, vinegar, _V1, _O2_BYTE);

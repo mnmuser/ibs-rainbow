@@ -5,6 +5,7 @@
 
 #include "polynomial.h"
 #include "rainbow_blas.h"
+#include "rainbow_keypair_computation.h"
 
 
 /*
@@ -1012,8 +1013,9 @@ void perm_check0(unsigned n, unsigned p[])
 
 /******************************************************************************/
 
-void polynomial_add(unsigned o1, const unsigned char c1[], const unsigned e1[], unsigned o2, const unsigned char c2[],
-                    const unsigned e2[], unsigned *o, unsigned char c[], unsigned offset, unsigned e[])
+void polynomial_add(unsigned char *dest, unsigned dest_offset, unsigned *dest_o, unsigned int dest_e[], unsigned A_o,
+                    unsigned char *summand_A, unsigned A_offset, const unsigned int A_e[], unsigned B_o,
+                    const unsigned char *summand_B, unsigned B_offset, const unsigned int B_e[])
 
 /******************************************************************************/
 /*
@@ -1058,14 +1060,18 @@ void polynomial_add(unsigned o1, const unsigned char c1[], const unsigned e1[], 
     the polynomial sum.
 */
 {
+    //needed, because else this function will write to far into the key..
+    unsigned char tmp_src[(A_o + 1) / 2];
+    unsigned char tmp_dst[(A_o + B_o + 1) / 2];
 
+    //TODO: temp save, so you can dest src and summand
 
-    *o = o1 + o2;
-    r8vec_concatenate(o1, c1, o2, c2, c, offset);
-    i4vec_concatenate(o1, e1, o2, e2, e);
+    *dest_o = A_o + B_o;
+    r8vec_concatenate(A_o, summand_A, B_o, summand_B, dest, dest_offset);
+    i4vec_concatenate(A_o, A_e, B_o, B_e, dest_e);
 
-    polynomial_sort(*o, c, offset, e);
-    polynomial_compress(*o, c, offset, e, o, c, offset, e);
+    polynomial_sort(*dest_o, dest, dest_offset, dest_e);
+    polynomial_compress(*dest_o, dest, dest_offset, dest_e, dest_o, dest, dest_offset, dest_e);
 }
 
 /******************************************************************************/
