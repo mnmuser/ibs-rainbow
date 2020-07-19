@@ -341,9 +341,6 @@ void quartic_gf16v_madd_to_grade(uint8_t *C, const uint8_t *A, unsigned A_pointe
                                  unsigned size_Bcolvec);
 
 
-void quartic_linear_gf16v_madd(uint8_t *C, const uint8_t *A, unsigned A_pointer_index, const unsigned char *B,
-                               unsigned B_pointer_index, unsigned B_offset, unsigned size_batch, unsigned size_Bcolvec);
-
 void quartic_batch_trimatTr_madd_gf16(unsigned char *bC, const unsigned char *btriA,
                                       const unsigned char *B, unsigned Bheight, unsigned size_Bcolvec, unsigned Bwidth,
                                       unsigned size_batch);

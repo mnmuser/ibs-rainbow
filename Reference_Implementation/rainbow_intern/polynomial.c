@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #include <math.h>
+#include <memory.h>
 
 #include "polynomial.h"
 #include "rainbow_blas.h"
@@ -778,7 +779,7 @@ unsigned mono_rank_grlex(unsigned m, unsigned x[])
 
 /******************************************************************************/
 
-unsigned *mono_unrank_grlex(unsigned m, unsigned rank)
+void mono_unrank_grlex(unsigned m, unsigned rank, unsigned *dest_f)
 
 /******************************************************************************/
 /*
@@ -819,8 +820,8 @@ unsigned *mono_unrank_grlex(unsigned m, unsigned rank)
     unsigned r;
     unsigned rank1;
     unsigned rank2;
-    unsigned *x;
-    unsigned *xs;
+
+    // removed malloc and free concept (+ 30% performance while debugging)
 /*
   Ensure that 1 <= M.
 */
@@ -843,9 +844,8 @@ unsigned *mono_unrank_grlex(unsigned m, unsigned rank)
   Special case M == 1.
 */
     if (m == 1) {
-        x = (unsigned *) malloc(m * sizeof(unsigned));
-        x[0] = rank - 1;
-        return x;
+        dest_f[0] = rank - 1;
+        return;
     }
 /*
   Determine the appropriate value of NM.
@@ -875,7 +875,7 @@ unsigned *mono_unrank_grlex(unsigned m, unsigned rank)
 */
     ks = m - 1;
     ns = nm + m - 1;
-    xs = (unsigned *) malloc(ks * sizeof(unsigned));
+    unsigned xs[ks];
 
     j = 1;
 
@@ -893,16 +893,11 @@ unsigned *mono_unrank_grlex(unsigned m, unsigned rank)
 /*
   Convert from KSUBSET format to COMP format.
 */
-    x = (unsigned *) malloc(m * sizeof(unsigned));
-    x[0] = xs[0] - 1;
+    dest_f[0] = xs[0] - 1;
     for (i = 2; i < m; i++) {
-        x[i - 1] = xs[i - 1] - xs[i - 2] - 1;
+        dest_f[i - 1] = xs[i - 1] - xs[i - 2] - 1;
     }
-    x[m - 1] = ns - xs[ks - 1];
-
-    free(xs);
-
-    return x;
+    dest_f[m - 1] = ns - xs[ks - 1];
 }
 
 /******************************************************************************/
@@ -1013,15 +1008,16 @@ void perm_check0(unsigned n, unsigned p[])
 
 /******************************************************************************/
 
-void polynomial_add(unsigned char *dest, unsigned dest_offset, unsigned *dest_o, unsigned int dest_e[], unsigned A_o,
-                    unsigned char *summand_A, unsigned A_offset, const unsigned int A_e[], unsigned B_o,
-                    const unsigned char *summand_B, unsigned B_offset, const unsigned int B_e[])
+void
+polynomial_add(unsigned char *destSummand, unsigned dest_offset, unsigned dest_grade, unsigned char *summand,
+               unsigned summand_offset, unsigned summand_o, const unsigned int summand_e[])
 
 /******************************************************************************/
 /*
   Purpose:
 
     POLYNOMIAL_ADD adds two polynomials.
+
     - Attention: One summand-polynomial must not be the destination-polynomial at the same time.
 
   Licensing:
@@ -1036,6 +1032,7 @@ void polynomial_add(unsigned char *dest, unsigned dest_offset, unsigned *dest_o,
 
     John Burkardt
 
+ 4
   Parameters:
 
     Input, unsigned O1, the "order" of polynomial 1.
@@ -1060,18 +1057,35 @@ void polynomial_add(unsigned char *dest, unsigned dest_offset, unsigned *dest_o,
     the polynomial sum.
 */
 {
+    unsigned B_o = _grade_n_poly_terms(dest_grade);
+    unsigned dest_o = summand_o + B_o;;
+
+    unsigned dest_e[dest_o];
+
+    //normal Polynom has standard e
+    unsigned const *B_e = _full_e_power2;
+
     //needed, because else this function will write to far into the key..
-    unsigned char tmp_src[(A_o + 1) / 2];
-    unsigned char tmp_dst[(A_o + B_o + 1) / 2];
+    unsigned char tmp_B[(B_o + 1) / 2];
+    unsigned char tmp_summand[(summand_o + 1) / 2];
+    unsigned char tmp_dst[(summand_o + B_o + 1) / 2];
 
-    //TODO: temp save, so you can dest src and summand
+    gf16_copy(tmp_summand, 0, summand, summand_offset, summand_o);
+    gf16_grade_n_poly_copy(tmp_B, 0, destSummand, dest_offset, dest_grade);
 
-    *dest_o = A_o + B_o;
-    r8vec_concatenate(A_o, summand_A, B_o, summand_B, dest, dest_offset);
-    i4vec_concatenate(A_o, A_e, B_o, B_e, dest_e);
+    /// MAIN PART///
+    r8vec_concatenate(summand_o, summand, B_o, tmp_B, tmp_dst, 0);
+    i4vec_concatenate(summand_o, summand_e, B_o, B_e, dest_e);
 
-    polynomial_sort(*dest_o, dest, dest_offset, dest_e);
-    polynomial_compress(*dest_o, dest, dest_offset, dest_e, dest_o, dest, dest_offset, dest_e);
+    polynomial_sort(dest_o, tmp_dst, 0, dest_e);
+    polynomial_compress(dest_o, tmp_dst, 0, dest_e, &dest_o, tmp_dst, 0, dest_e);
+    /// END ///
+
+    if (dest_o > N_QUARTIC_POLY) {
+        printf("polynom too big! O: %u\n", dest_o); //TODO: reomve
+    }
+
+    gf16_copy(destSummand, dest_offset, tmp_dst, 0, dest_o);
 }
 
 /******************************************************************************/
@@ -1211,13 +1225,14 @@ void polynomial_mul(unsigned o1, const unsigned char c1[], unsigned c1_offset, c
     unsigned m = _ID;
 
     unsigned *f;
-    unsigned *f1;
-    unsigned *f2;
+    unsigned *f1 = malloc(m * sizeof(unsigned));
+    unsigned *f2 = malloc(m * sizeof(unsigned));
     unsigned i;
     unsigned j;
     unsigned k;
 
     f = (unsigned *) malloc(m * sizeof(unsigned));
+
 
     *o = 0;
     for (j = 0; j < o2; j++) {
@@ -1230,18 +1245,20 @@ void polynomial_mul(unsigned o1, const unsigned char c1[], unsigned c1_offset, c
 
             gf16v_set_ele(c, *o + c_offset, tmp_product);
 
-            f1 = mono_unrank_grlex(m, e1[i]);
-            f2 = mono_unrank_grlex(m, e2[j]);
+            mono_unrank_grlex(m, e1[i], f1);
+            mono_unrank_grlex(m, e2[j], f2);
             for (k = 0; k < m; k++) {
                 f[k] = f1[k] + f2[k];
             }
             e[*o] = mono_rank_grlex(m, f);
-            free(f1);
-            free(f2);
+            memset(f1, 0, m * sizeof(unsigned));
+            memset(f2, 0, m * sizeof(unsigned));
             *o = *o + 1;
         }
     }
 
+    free(f1);
+    free(f2);
     free(f);
 
     polynomial_sort(*o, c, c_offset, e);
@@ -1284,13 +1301,13 @@ void polynomial_print(unsigned o, const unsigned char *c, unsigned gf16_offset, 
     Input, char *TITLE, a title.
 */
 {
-    unsigned *f;
+    unsigned m = _ID;
+    unsigned f[m];
     unsigned i;
     unsigned j;
 
     printf("%s\n", title);
 
-    unsigned m = _ID;
 
     if (o == 0) {
         printf("      0.\n");
@@ -1300,7 +1317,7 @@ void polynomial_print(unsigned o, const unsigned char *c, unsigned gf16_offset, 
             printf("+ ");
             printf("%hhu * x^(", gf16v_get_ele(c, j + gf16_offset));
 
-            f = mono_unrank_grlex(m, e[j]);
+            mono_unrank_grlex(m, e[j], f);
             for (i = 0; i < m; i++) {
                 printf("%d", f[i]);
                 if (i < m - 1) {
@@ -1309,7 +1326,6 @@ void polynomial_print(unsigned o, const unsigned char *c, unsigned gf16_offset, 
                     printf(")");
                 }
             }
-            free(f);
 
             if (j == o - 1) {
                 printf(".");
@@ -1414,7 +1430,7 @@ unsigned char polynomial_value(unsigned o, const unsigned char *c, unsigned offs
 */
 {
     unsigned m = _ID;
-    unsigned *f;
+    unsigned f[m];
     unsigned j;
     unsigned char p;
     unsigned char v;
@@ -1423,10 +1439,9 @@ unsigned char polynomial_value(unsigned o, const unsigned char *c, unsigned offs
 
 
     for (j = 0; j < o; j++) {
-        f = mono_unrank_grlex(m, e[j]);
+        mono_unrank_grlex(m, e[j], f);
         v = mono_value(f, x);
         p = p ^ gf16_mul(gf16v_get_ele(c, offset + j), v);
-        free(f);
     }
 
     return p;

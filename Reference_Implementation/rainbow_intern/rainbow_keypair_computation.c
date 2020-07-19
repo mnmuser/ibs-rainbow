@@ -21,75 +21,6 @@
 
 
 
-void extcpk_to_pk(mpk_t *pk, const ext_cpk_t *cpk) {
-    const unsigned char *idx_l1 = cpk->l1_Q1;
-    const unsigned char *idx_l2 = cpk->l2_Q1;
-    for (unsigned i = 0; i < _V1; i++) {
-        for (unsigned j = i; j < _V1; j++) {
-            unsigned pub_idx = idx_of_trimat(i, j, _PUB_N);
-            memcpy(&pk->pk[_PUB_M_BYTE * pub_idx], idx_l1, _O1_BYTE);
-            memcpy((&pk->pk[_PUB_M_BYTE * pub_idx]) + _O1_BYTE, idx_l2, _O2_BYTE);
-            idx_l1 += _O1_BYTE;
-            idx_l2 += _O2_BYTE;
-        }
-    }
-    idx_l1 = cpk->l1_Q2;
-    idx_l2 = cpk->l2_Q2;
-    for(unsigned i=0;i<_V1;i++) {
-        for(unsigned j=_V1;j<_V1+_O1;j++) {
-            unsigned pub_idx = idx_of_trimat(i,j,_PUB_N);
-            memcpy( & pk->pk[ _PUB_M_BYTE*pub_idx ] , idx_l1 , _O1_BYTE );
-            memcpy( (&pk->pk[ _PUB_M_BYTE*pub_idx ]) + _O1_BYTE , idx_l2 , _O2_BYTE );
-            idx_l1 += _O1_BYTE;
-            idx_l2 += _O2_BYTE;
-        }
-    }
-    idx_l1 = cpk->l1_Q3;
-    idx_l2 = cpk->l2_Q3;
-    for(unsigned i=0;i<_V1;i++) {
-        for(unsigned j=_V1+_O1;j<_PUB_N;j++) {
-            unsigned pub_idx = idx_of_trimat(i,j,_PUB_N);
-            memcpy( & pk->pk[ _PUB_M_BYTE*pub_idx ]             , idx_l1 , _O1_BYTE );
-            memcpy( (&pk->pk[ _PUB_M_BYTE*pub_idx ]) + _O1_BYTE , idx_l2 , _O2_BYTE );
-            idx_l1 += _O1_BYTE;
-            idx_l2 += _O2_BYTE;
-        }
-    }
-    idx_l1 = cpk->l1_Q5;
-    idx_l2 = cpk->l2_Q5;
-    for(unsigned i=_V1;i<_V1+_O1;i++) {
-        for(unsigned j=i;j<_V1+_O1;j++) {
-            unsigned pub_idx = idx_of_trimat(i,j,_PUB_N);
-            memcpy( & pk->pk[ _PUB_M_BYTE*pub_idx ]             , idx_l1 , _O1_BYTE );
-            memcpy( (&pk->pk[ _PUB_M_BYTE*pub_idx ]) + _O1_BYTE , idx_l2 , _O2_BYTE );
-            idx_l1 += _O1_BYTE;
-            idx_l2 += _O2_BYTE;
-        }
-    }
-    idx_l1 = cpk->l1_Q6;
-    idx_l2 = cpk->l2_Q6;
-    for(unsigned i=_V1;i<_V1+_O1;i++) {
-        for(unsigned j=_V1+_O1;j<_PUB_N;j++) {
-            unsigned pub_idx = idx_of_trimat(i,j,_PUB_N);
-            memcpy( & pk->pk[ _PUB_M_BYTE*pub_idx ]             , idx_l1 , _O1_BYTE );
-            memcpy( (&pk->pk[ _PUB_M_BYTE*pub_idx ]) + _O1_BYTE , idx_l2 , _O2_BYTE );
-            idx_l1 += _O1_BYTE;
-            idx_l2 += _O2_BYTE;
-        }
-    }
-    idx_l1 = cpk->l1_Q9;
-    idx_l2 = cpk->l2_Q9;
-    for (unsigned i = _V1 + _O1; i < _PUB_N; i++) {
-        for (unsigned j = i; j < _PUB_N; j++) {
-            unsigned pub_idx = idx_of_trimat(i, j, _PUB_N);
-            memcpy(&pk->pk[_PUB_M_BYTE * pub_idx], idx_l1, _O1_BYTE);
-            memcpy((&pk->pk[_PUB_M_BYTE * pub_idx]) + _O1_BYTE, idx_l2, _O2_BYTE);
-            idx_l1 += _O1_BYTE;
-            idx_l2 += _O2_BYTE;
-        }
-    }
-}
-
 void quartic_extcpk_to_pk(mpk_t *pk, const ext_cpk_t *cpk) {
 
     ///ATTENTION: look at those for-loops!
@@ -421,7 +352,7 @@ void set_quartic_zero(unsigned char *q, const unsigned length) {
     memset(q, 0, length * N_QUARTIC_POLY);
 }
 
-/// copy a gf16-polynomial of grade n; grade 0 is linear without constant
+/// copy a gf16-polynomial of grade n
 /// \param dest
 /// \param gf16_offset_dest
 /// \param src
@@ -430,6 +361,13 @@ void set_quartic_zero(unsigned char *q, const unsigned length) {
 void gf16_grade_n_poly_copy(unsigned char *dest, unsigned gf16_offset_dest, const unsigned char *src,
                             unsigned gf16_offset_src, unsigned grade_n) {
     for (unsigned i = 0; i < _grade_n_poly_terms(grade_n); i++) {
+        gf16v_set_ele(dest, i + gf16_offset_dest, gf16v_get_ele(src, gf16_offset_src + i));
+    }
+}
+
+void gf16_copy(unsigned char *dest, unsigned gf16_offset_dest, const unsigned char *src,
+               unsigned gf16_offset_src, unsigned size_values) {
+    for (unsigned i = 0; i < size_values; i++) {
         gf16v_set_ele(dest, i + gf16_offset_dest, gf16v_get_ele(src, gf16_offset_src + i));
     }
 }

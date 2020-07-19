@@ -78,6 +78,9 @@ void set_quartic_zero(unsigned char *q, unsigned length);
 void gf16_grade_n_poly_copy(unsigned char *dest, unsigned gf16_offset_dest, const unsigned char *src,
                             unsigned gf16_offset_src, unsigned grade_n);
 
+void gf16_copy(unsigned char *dest, unsigned gf16_offset_dest, const unsigned char *src,
+               unsigned gf16_offset_src, unsigned size_values);
+
 #ifdef  __cplusplus
 }
 #endif

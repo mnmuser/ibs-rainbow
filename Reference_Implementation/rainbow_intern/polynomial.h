@@ -16,15 +16,15 @@ void mono_next_grlex(unsigned m, unsigned x[]);
 
 unsigned mono_rank_grlex(unsigned m, unsigned x[]);
 
-unsigned *mono_unrank_grlex(unsigned m, unsigned rank);
+void mono_unrank_grlex(unsigned m, unsigned rank, unsigned *dest_f);
 
 unsigned char mono_value(unsigned f[], unsigned char x[]);
 
 void perm_check0(unsigned n, unsigned p[]);
 
-void polynomial_add(unsigned char *dest, unsigned dest_offset, unsigned *dest_o, unsigned int dest_e[], unsigned A_o,
-                    unsigned char *summand_A, unsigned A_offset, const unsigned int A_e[], unsigned B_o,
-                    const unsigned char *summand_B, unsigned B_offset, const unsigned int B_e[]);
+void
+polynomial_add(unsigned char *destSummand, unsigned dest_offset, unsigned dest_grade, unsigned char *summand,
+               unsigned summand_offset, unsigned summand_o, const unsigned int summand_e[]);
 
 void polynomial_compress(unsigned o1, unsigned char c1[], unsigned c1_offset, unsigned e1[], unsigned *o2,
                          unsigned char c2[],
