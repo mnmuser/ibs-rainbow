@@ -1173,10 +1173,10 @@ void polynomial_compress(unsigned o1, unsigned char c1[], unsigned c1_offset, un
 
 /******************************************************************************/
 
-void polynomial_mul(unsigned o1, const unsigned char c1[], unsigned c1_offset, const unsigned e1[], unsigned o2,
-                    const unsigned char c2[],
-                    unsigned c2_offset,
-                    const unsigned e2[], unsigned *o, unsigned char c[], unsigned c_offset, unsigned e[])
+void
+polynomial_mul(const unsigned char *factor_A, unsigned A_offset, unsigned A_grade, const unsigned char *factor_B,
+               unsigned B_offset, unsigned B_grade, unsigned char *C, unsigned C_offset, unsigned *C_o,
+               unsigned int C_e[])
 
 /******************************************************************************/
 /*
@@ -1222,47 +1222,49 @@ void polynomial_mul(unsigned o1, const unsigned char c1[], unsigned c1_offset, c
     polynomial product.
 */
 {
+    unsigned A_o = _grade_n_poly_terms(A_grade);
+    unsigned const *A_e = _full_e_power2;
+
+    unsigned B_o = _grade_n_poly_terms(B_grade);
+    unsigned const *B_e = _full_e_power2;
+
+    if (A_grade == 0) A_e = _lin_e_power2;
+    if (B_grade == 0) B_e = _lin_e_power2;
+
     unsigned m = _ID;
 
-    unsigned *f;
-    unsigned *f1 = malloc(m * sizeof(unsigned));
-    unsigned *f2 = malloc(m * sizeof(unsigned));
+    unsigned f[m];
+    unsigned f1[m];
+    unsigned f2[m];
     unsigned i;
     unsigned j;
     unsigned k;
 
-    f = (unsigned *) malloc(m * sizeof(unsigned));
-
-
-    *o = 0;
-    for (j = 0; j < o2; j++) {
-        for (i = 0; i < o1; i++) {
+    *C_o = 0;
+    for (j = 0; j < B_o; j++) {
+        for (i = 0; i < A_o; i++) {
             //c[*o] = c1[i] * c2[j]; -> adapt for GF16:
 
-            unsigned char factor_a = gf16v_get_ele(c1, i + c1_offset);
-            unsigned char factor_b = gf16v_get_ele(c2, j + c2_offset);
-            unsigned char tmp_product = gf16_mul(factor_a, factor_b);
+            unsigned char tmp_a = gf16v_get_ele(factor_A, i + A_offset);
+            unsigned char tmp_b = gf16v_get_ele(factor_B, j + B_offset);
+            unsigned char tmp_product = gf16_mul(tmp_a, tmp_b);
 
-            gf16v_set_ele(c, *o + c_offset, tmp_product);
+            gf16v_set_ele(C, *C_o + C_offset, tmp_product);
 
-            mono_unrank_grlex(m, e1[i], f1);
-            mono_unrank_grlex(m, e2[j], f2);
+            mono_unrank_grlex(m, A_e[i], f1);
+            mono_unrank_grlex(m, B_e[j], f2);
             for (k = 0; k < m; k++) {
                 f[k] = f1[k] + f2[k];
             }
-            e[*o] = mono_rank_grlex(m, f);
+            C_e[*C_o] = mono_rank_grlex(m, f);
             memset(f1, 0, m * sizeof(unsigned));
             memset(f2, 0, m * sizeof(unsigned));
-            *o = *o + 1;
+            *C_o = *C_o + 1;
         }
     }
 
-    free(f1);
-    free(f2);
-    free(f);
-
-    polynomial_sort(*o, c, c_offset, e);
-    polynomial_compress(*o, c, c_offset, e, o, c, c_offset, e);
+    polynomial_sort(*C_o, C, C_offset, C_e);
+    polynomial_compress(*C_o, C, C_offset, C_e, C_o, C, C_offset, C_e);
 }
 
 /******************************************************************************/

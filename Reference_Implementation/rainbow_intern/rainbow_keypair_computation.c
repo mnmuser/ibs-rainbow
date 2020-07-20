@@ -6,14 +6,11 @@
 #include "rainbow_keypair_computation.h"
 
 #include "blas_comm.h"
-#include "blas.h"
 #include "rainbow_blas.h"
 #include "polynomial.h"
 
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
-#include <stdio.h>
 
 
 ////////////////////////////////////////////////////////////////
@@ -158,8 +155,8 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
 
     quartic_batch_matTr_madd_gf16(tempQ, sk->t1, _V1, _V1_BYTE, _O1, cpk->l1_Q2, _O1, _O1_BYTE); // t1_tr*(F1*T1 + F2)
 
-//    polynomial_print(15, tempQ, 0, _full_e_power2, "tempQ5(0): ");
-//    polynomial_print(15, tempQ, 126720 * 2 - 15, _full_e_power2, "tempQ5(end): ");
+    polynomial_print(15, tempQ, 0, _full_e_power2, "tempQ5(0): ");
+    polynomial_print(15, tempQ, 126720 * 2 - 15, _full_e_power2, "tempQ5(end): ");
 
 
     quartic_UpperTrianglize(cpk->l1_Q5, tempQ, _O1, _O1_BYTE);    // UT( ... )   // Q5
@@ -285,11 +282,16 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
     quartic_batch_trimat_madd(cpk->l2_Q6, sk->l2_F5, sk->t3, _O1, _O1_BYTE, _O2, _O2_BYTE);      // F5*T3 + F6
     quartic_batch_matTr_madd_gf16(tempQ, sk->t3, _O1, _O1_BYTE, _O2, cpk->l2_Q6, _O2,
                                   _O2_BYTE);       // T2tr*( ..... ) + T3tr*( ..... )
+
     set_quartic_zero(cpk->l2_Q9, _O2_BYTE * N_TRIANGLE_TERMS(_O2));
     quartic_UpperTrianglize(cpk->l2_Q9, tempQ, _O2, _O2_BYTE);                                   // Q9
 
     ///CHECK Q9
     polynomial_print(15, cpk->l2_Q9, 0, _full_e_power2, "l2_Q9(0): ");
+
+    polynomial_print(15, cpk->l2_Q9, 126720 * 2 - 60, _full_e_power2, "L2_Q9 end -45");
+    polynomial_print(15, cpk->l2_Q9, 126720 * 2 - 45, _full_e_power2, "L2_Q9 end -30");
+    polynomial_print(15, cpk->l2_Q9, 126720 * 2 - 30, _full_e_power2, "L2_Q9 end -15");
     polynomial_print(15, cpk->l2_Q9, 126720 * 2 - 15, _full_e_power2, "L2_Q9 end");
     ///
 

@@ -135,19 +135,9 @@ void quartic_obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2
 
 //        polynomial_print(15, temp, 0, _full_e_power2, "temp:");
 
-        unsigned e[27]; //e has to be long enough (?) for poly_add
-        unsigned o = 0;
-        unsigned char tmp_l1_polys[(N_QUARTIC_POLY + 5) / 2];
-        unsigned char tmp_sum[(N_QUARTIC_POLY * 2) / 2];
-
-
 
         for (unsigned i = 0; i < _O1_BYTE * 2; i++) {
-
-
 //            polynomial_print(15,temp,0,_full_e_power2,"temp:");
-
-//            gf16_grade_n_poly_copy(tmp_l1_polys, 0, l1_polys, i * N_QUARTIC_POLY, poly_grade);
 
 //            polynomial_print(15,tmp_l1_polys,0,_full_e_power2,"temp_l1:");
 
@@ -156,8 +146,6 @@ void quartic_obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2
 //            polynomial_print(o,tmp_sum,0,e,"temp_sum(e):");
 
 //            polynomial_print(o,tmp_sum,0,_full_e_power2,"temp_sum:");
-
-//            gf16_grade_n_poly_copy(l1_polys, i * N_QUARTIC_POLY, tmp_sum, 0, poly_grade + 1);
 
 //            polynomial_print(15,l1_polys,i * N_QUARTIC_POLY,_full_e_power2,"l1:");
         }
@@ -207,51 +195,52 @@ void generate_keypair(mpk_t *rpk, msk_t *sk, const unsigned char *sk_seed) {
     ///TODO: try to move this into usk-calculation, cause I would need grade 4 for t4
     //quartic_calculate_t4(sk->t2, sk->t1, sk->t3); // t2 = t2 + t1*t3
 
-    quartic_obsfucate_l1_polys(pk->l1_Q1, pk->l2_Q1, 1, N_TRIANGLE_TERMS(_V1), sk->s1); // -> integrate S :)
-
-    ///CHECK Q1
-    polynomial_print(15, pk->l1_Q1, 0, _full_e_power2, "obsfucated L1_Q1 ");
-    polynomial_print(15, pk->l1_Q1, 126720 * 2 - 15, _full_e_power2, "obsfucated L1_Q1 end");
-    ///
-
-    quartic_obsfucate_l1_polys(pk->l1_Q2, pk->l2_Q2, 2, _V1 * _O1, sk->s1);
-
-    ///CHECK Q2
-    polynomial_print(15, pk->l1_Q2, 0, _full_e_power2, "obsfucated L1_Q2: ");
-    polynomial_print(15, pk->l1_Q2, 491520 - 15, _full_e_power2, "obsfucated L1_Q2 end: "); //last position in Q2
-    ///
-
-    quartic_obsfucate_l1_polys(pk->l1_Q3, pk->l2_Q3, 2, _V1 * _O2, sk->s1);
-
-    ///CHECK Q3
-    polynomial_print(15, pk->l1_Q3, 0, _full_e_power2, "obsfucated Q3:");
-    polynomial_print(15, pk->l1_Q3, 491520 - 15, _full_e_power2, "obsfucated L1_Q3 end: ");
-    ///
-
-    quartic_obsfucate_l1_polys(pk->l1_Q5, pk->l2_Q5, 3, N_TRIANGLE_TERMS(_O1), sk->s1);
-
-    ///CHECK Q5
-    polynomial_print(15, pk->l1_Q5, 0, _full_e_power2, "obsfucated l1_Q5(0): ");
-    polynomial_print(15, pk->l1_Q5, 126720 * 2 - 15, _full_e_power2, "obsfucated L1_Q5 end");
-    ///
-
-    quartic_obsfucate_l1_polys(pk->l1_Q6, pk->l2_Q6, 3, _O1 * _O2, sk->s1);
-
-    ///CHECK Q6
-    polynomial_print(15, pk->l1_Q6, 0, _full_e_power2, "obsfucated Q6:");
-    polynomial_print(15, pk->l1_Q6, 491520 - 15, _full_e_power2, "obsfucated L1_Q6 end: ");
-    ///
-
-    quartic_obsfucate_l1_polys(pk->l1_Q9, pk->l2_Q9, 3, N_TRIANGLE_TERMS(_O2), sk->s1);
-
-    ///CHECK Q9
-    polynomial_print(15, pk->l1_Q9, 0, _full_e_power2, "obsfucated l1_Q9(0): ");
-    polynomial_print(15, pk->l1_Q9, 126720 * 2 - 15, _full_e_power2, "obsfucated L1_Q9 end");
-    ///
+//    quartic_obsfucate_l1_polys(pk->l1_Q1, pk->l2_Q1, 1, N_TRIANGLE_TERMS(_V1), sk->s1); // -> integrate S :)
+//
+//    ///CHECK Q1
+//    polynomial_print(15, pk->l1_Q1, 0, _full_e_power2, "obsfucated L1_Q1 ");
+//    polynomial_print(15, pk->l1_Q1, 126720 * 2 - 15, _full_e_power2, "obsfucated L1_Q1 end");
+//    ///
+//
+//    quartic_obsfucate_l1_polys(pk->l1_Q2, pk->l2_Q2, 2, _V1 * _O1, sk->s1);
+//
+//    ///CHECK Q2
+//    polynomial_print(15, pk->l1_Q2, 0, _full_e_power2, "obsfucated L1_Q2: ");
+//    polynomial_print(15, pk->l1_Q2, 491520 - 15, _full_e_power2, "obsfucated L1_Q2 end: "); //last position in Q2
+//    ///
+//
+//    quartic_obsfucate_l1_polys(pk->l1_Q3, pk->l2_Q3, 2, _V1 * _O2, sk->s1);
+//
+//    ///CHECK Q3
+//    polynomial_print(15, pk->l1_Q3, 0, _full_e_power2, "obsfucated Q3:");
+//    polynomial_print(15, pk->l1_Q3, 491520 - 15, _full_e_power2, "obsfucated L1_Q3 end: ");
+//    ///
+//
+//    quartic_obsfucate_l1_polys(pk->l1_Q5, pk->l2_Q5, 3, N_TRIANGLE_TERMS(_O1), sk->s1);
+//
+//    ///CHECK Q5
+//    polynomial_print(15, pk->l1_Q5, 0, _full_e_power2, "obsfucated l1_Q5(0): ");
+//    polynomial_print(15, pk->l1_Q5, 126720 * 2 - 15, _full_e_power2, "obsfucated L1_Q5 end");
+//    ///
+//
+//    quartic_obsfucate_l1_polys(pk->l1_Q6, pk->l2_Q6, 3, _O1 * _O2, sk->s1);
+//
+//    ///CHECK Q6
+//    polynomial_print(15, pk->l1_Q6, 0, _full_e_power2, "obsfucated Q6:");
+//    polynomial_print(15, pk->l1_Q6, 491520 - 15, _full_e_power2, "obsfucated L1_Q6 end: ");
+//    ///
+//
+//    quartic_obsfucate_l1_polys(pk->l1_Q9, pk->l2_Q9, 3, N_TRIANGLE_TERMS(_O2), sk->s1);
+//
+//    ///CHECK Q9
+//    polynomial_print(15, pk->l1_Q9, 0, _full_e_power2, "obsfucated l1_Q9(0): ");
+//    polynomial_print(15, pk->l1_Q9, 126720 * 2 - 15, _full_e_power2, "obsfucated L1_Q9 end");
+//    ///
 
     // so far, the pk contains the full pk but in ext_cpk_t format.
 
-    quartic_extcpk_to_pk(rpk, pk);     // convert the public key from ext_cpk_t to mpk_t.
+//    quartic_extcpk_to_pk(rpk, pk);   //TODO comment in  // convert the public key from ext_cpk_t to mpk_t.
+    memcpy(rpk, pk, sizeof(mpk_t));
 
     free(pk);
 }

@@ -31,10 +31,10 @@ void polynomial_compress(unsigned o1, unsigned char c1[], unsigned c1_offset, un
                          unsigned c2_offset,
                          unsigned e2[]);
 
-void polynomial_mul(unsigned o1, const unsigned char c1[], unsigned c1_offset, const unsigned e1[], unsigned o2,
-                    const unsigned char c2[],
-                    unsigned c2_offset,
-                    const unsigned e2[], unsigned *o, unsigned char c[], unsigned c_offset, unsigned e[]);
+void
+polynomial_mul(const unsigned char *factor_A, unsigned A_offset, unsigned A_grade, const unsigned char *factor_B,
+               unsigned B_offset, unsigned B_grade, unsigned char *C, unsigned C_offset, unsigned *C_o,
+               unsigned int C_e[]);
 
 void polynomial_print(unsigned o, const unsigned char *c, unsigned gf16_offset, const unsigned *e, char *title);
 

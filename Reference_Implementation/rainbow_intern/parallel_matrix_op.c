@@ -5,6 +5,7 @@
 ///
 
 
+#include <stdio.h>
 #include "blas_comm.h"
 #include "blas.h"
 
@@ -36,6 +37,8 @@ void UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsigned Awi
 
 void quartic_UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsigned Awidth, unsigned size_batch) {
 
+    //TODO: wirtes repeatly to the same poitn :(
+
     unsigned char *runningC = btriC;
     unsigned Aheight = Awidth;
 
@@ -44,7 +47,7 @@ void quartic_UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsi
             unsigned idx = idx_of_trimat(j, i, Aheight);
             for (unsigned k = 0; k < size_batch * 2; k++) { //*2 because GF16
 
-                polynomial_add(btriC + idx * size_batch * N_QUARTIC_POLY, N_QUARTIC_POLY * k, 1,
+                polynomial_add(btriC + idx * size_batch * N_QUARTIC_POLY, N_QUARTIC_POLY * k, 3,
                                bA + size_batch * (i * Awidth + j) * N_QUARTIC_POLY, N_QUARTIC_POLY * k,
                                N_CUBIC_POLY, _full_e_power2);
             }
@@ -52,7 +55,7 @@ void quartic_UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsi
         }
         for (unsigned l = 0; l < size_batch * (Aheight - i) * 2; l++) {
 
-            polynomial_add(runningC, N_QUARTIC_POLY * l, 1, bA + size_batch * (i * Awidth + i) * N_QUARTIC_POLY,
+            polynomial_add(runningC, N_QUARTIC_POLY * l, 3, bA + size_batch * (i * Awidth + i) * N_QUARTIC_POLY,
                            l * N_QUARTIC_POLY, N_CUBIC_POLY, _full_e_power2);
         }
         //non quartic: gf256v_add(runningC, bA + size_batch * (i * Awidth + i), size_batch * (Aheight - i)); /// ATTENTION GF256
@@ -392,12 +395,6 @@ void batch_quad_trimat_eval_gf256( unsigned char * y, const unsigned char * trim
     }
 }
 
-
-
-
-
-
-
 void batch_quad_recmat_eval_gf16( unsigned char * z, const unsigned char * y, unsigned dim_y, const unsigned char * mat,
         const unsigned char * x, unsigned dim_x , unsigned size_batch )
 {
@@ -453,31 +450,20 @@ void quartic_gf16v_madd(uint8_t *C, unsigned C_grade, const uint8_t *A, unsigned
                         unsigned A_structure_grade, const unsigned char *B, unsigned B_pointer_index, unsigned B_offset,
                         unsigned B_grade, unsigned B_structure_grade, unsigned size_batch, unsigned size_Bcolvec) {
 
+    unsigned A_loop_offset = _grade_n_poly_terms(A_structure_grade);
+    unsigned B_loop_offset = _grade_n_poly_terms((B_structure_grade));
+
+    ///temporal variables to konow the structure of the product:
     unsigned char tmp_product[(N_QUARTIC_POLY + 5) / 2];
     unsigned tmp_e[N_QUARTIC_POLY + N_QUADRATIC_POLY]; //don't ask
     unsigned tmp_o = 0;
 
-    unsigned const *A_e = _full_e_power2;
-    unsigned A_o = _grade_n_poly_terms(A_grade);
-    unsigned A_loop_offset = _grade_n_poly_terms(A_structure_grade);
-
-    unsigned const *B_e = _full_e_power2;
-    unsigned B_o = _grade_n_poly_terms(B_grade);
-    unsigned B_loop_offset = _grade_n_poly_terms((B_structure_grade));
-
-    if (A_grade == 0) A_e = _lin_e_power2;
-    if (B_grade == 0) B_e = _lin_e_power2;
-
     for (unsigned l = 0; l < size_batch * 2; l++) { // *2 for gf16 (size is in byte)
-        //the inner loop of gf16vmadd
-        polynomial_mul(A_o, &A[(A_pointer_index) * A_loop_offset * size_batch], l * A_loop_offset, A_e, B_o,
+        polynomial_mul(&A[(A_pointer_index) * A_loop_offset * size_batch], l * A_loop_offset, A_grade,
                        &B[B_pointer_index * size_Bcolvec * B_loop_offset], //TODO: check if B_loop_offset is right here
-                       B_offset * B_loop_offset,
-                       B_e, &tmp_o, tmp_product, 0, tmp_e);
-        //TODO: get local variables in poly_mul
+                       B_offset * B_loop_offset, B_grade, tmp_product, 0, &tmp_o, tmp_e);
 
         polynomial_add(C, (l * N_QUARTIC_POLY), C_grade, tmp_product, 0, tmp_o, tmp_e);
-
     }
 }
 
@@ -486,6 +472,7 @@ void calculate_values_public_key(unsigned char *upk, unsigned char *mpk, unsigne
     for (unsigned i = 0; i < sizeof(upk_t) * 2; i++) {
         value_i = polynomial_value(N_QUARTIC_POLY, mpk, i * N_QUARTIC_POLY, _full_e_power2, id);
         gf16v_set_ele(upk, i, value_i);
+        printf("offset: %u\n", i * N_QUARTIC_POLY);
     }
 }
 
