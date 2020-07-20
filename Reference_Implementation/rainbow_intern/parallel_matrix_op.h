@@ -320,25 +320,13 @@ void batch_quad_recmat_eval_gf256(unsigned char *z, const unsigned char *y, unsi
                                   const unsigned char *mat, const unsigned char *x, unsigned dim_x,
                                   unsigned size_batch);
 
-void quartic_gf16v_madd(uint8_t *C, const uint8_t *A, unsigned A_pointer_index, const unsigned char *B,
-                        unsigned B_pointer_index, unsigned B_offset, unsigned size_batch, unsigned size_Bcolvec);
-
-void quartic_gf16v_madd_quadratic_lin(uint8_t *C, const uint8_t *A, unsigned A_pointer_index, const unsigned char *B,
-                                      unsigned B_pointer_index, unsigned B_offset, unsigned size_batch,
-                                      unsigned size_Bcolvec);
+void quartic_gf16v_madd(uint8_t *C, unsigned C_grade, const uint8_t *A, unsigned A_pointer_index, unsigned A_grade,
+                        unsigned A_structure_grade, const unsigned char *B, unsigned B_pointer_index, unsigned B_offset,
+                        unsigned B_grade, unsigned B_structure_grade, unsigned size_batch, unsigned size_Bcolvec);
 
 void
 quartic_batch_matTr_madd_gf16(unsigned char *bC, const unsigned char *A_to_tr, unsigned Aheight, unsigned size_Acolvec,
                               unsigned Awidth, const unsigned char *bB, unsigned Bwidth, unsigned size_batch);
-
-void quartic_gf16v_madd2(uint8_t *C, const uint8_t *Av, unsigned A_pointer_index, unsigned int A_grade,
-                         const unsigned char *B,
-                         unsigned B_pointer_index, unsigned B_offset, unsigned size_batch,
-                         unsigned size_Bcolvec);
-
-void quartic_gf16v_madd_to_grade(uint8_t *C, const uint8_t *A, unsigned A_pointer_index, const unsigned char *B,
-                                 unsigned B_pointer_index, unsigned B_offset, unsigned B_grade, unsigned size_batch,
-                                 unsigned size_Bcolvec);
 
 
 void quartic_batch_trimatTr_madd_gf16(unsigned char *bC, const unsigned char *btriA, const unsigned char *B,

@@ -1009,8 +1009,8 @@ void perm_check0(unsigned n, unsigned p[])
 /******************************************************************************/
 
 void
-polynomial_add(unsigned char *destSummand, unsigned dest_offset, unsigned dest_grade, unsigned char *summand,
-               unsigned summand_offset, unsigned summand_o, const unsigned int summand_e[])
+polynomial_add(unsigned char *destSummand, unsigned dest_offset, unsigned dest_grade, const unsigned char *summand,
+               unsigned summand_offset, unsigned summand_o, const unsigned int *summand_e)
 
 /******************************************************************************/
 /*
