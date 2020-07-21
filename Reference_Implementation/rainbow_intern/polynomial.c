@@ -1158,7 +1158,7 @@ void polynomial_compress(unsigned o1, unsigned char c1[], unsigned c1_offset, un
                 tmpA = gf16v_get_ele(c2, put - 1 + c2_offset);
                 tmpB = gf16v_get_ele(c1, get - 1 + c1_offset);
                 tmpSum = tmpA ^ tmpB;
-                //TODO: check
+                //TODO: check!!
                 gf16v_set_ele(c2, put - 1, tmpSum);
             } else {
                 put = put + 1;

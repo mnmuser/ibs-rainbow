@@ -65,9 +65,12 @@ unsigned idx_of_2trimat( unsigned i_row , unsigned j_col , unsigned n_var )
 /// @param[in]   bwidth   - the width of the batched matrix A, i.e., A is a Awidth x Awidth matrix.
 /// @param[in]   size_batch - number of the batched elements in the corresponding position of the matrix.
 ///
-void UpperTrianglize( unsigned char * btriC , const unsigned char * bA , unsigned Awidth, unsigned size_batch );
+void UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsigned Awidth, unsigned size_batch);
 
 void quartic_UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsigned Awidth, unsigned size_batch);
+
+void quartic_copy_UpperTrianglize_copy(unsigned char *btriC, const unsigned char *bA, unsigned A_grade, unsigned Awidth,
+                                       unsigned size_batch);
 
 
 ////////////////////  Section:  matrix multiplications  ///////////////////////////////

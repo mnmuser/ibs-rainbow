@@ -159,7 +159,7 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
     polynomial_print(15, tempQ, 126720 * 2 - 15, _full_e_power2, "tempQ5(end): ");
 
 
-    quartic_UpperTrianglize(cpk->l1_Q5, tempQ, _O1, _O1_BYTE);    // UT( ... )   // Q5
+    quartic_copy_UpperTrianglize_copy(cpk->l1_Q5, tempQ, 3, _O1, _O1_BYTE);    // UT( ... )   // Q5
 
     ///CHECK Q5
     polynomial_print(15, cpk->l1_Q5, 0, _full_e_power2, "l1_Q5(0): ");
@@ -194,7 +194,7 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
 //    polynomial_print(15, tempQ, 0, _full_e_power2, "tempQ9(0): ");
 //    polynomial_print(15, tempQ, 126720 * 2 - 15, _full_e_power2, "tempQ9(end): ");
 
-    quartic_UpperTrianglize(cpk->l1_Q9, tempQ, _O2, _O1_BYTE);                                   // Q9
+    quartic_copy_UpperTrianglize_copy(cpk->l1_Q9, tempQ, 3, _O2, _O1_BYTE);                                   // Q9
 
     ///CHECK Q9
     polynomial_print(15, cpk->l1_Q9, 0, _full_e_power2, "l1_Q9(0): ");
@@ -284,7 +284,7 @@ void calculate_Q_from_F_ref(ext_cpk_t *cpk, const msk_t *sk) {
                                   _O2_BYTE);       // T2tr*( ..... ) + T3tr*( ..... )
 
     set_quartic_zero(cpk->l2_Q9, _O2_BYTE * N_TRIANGLE_TERMS(_O2));
-    quartic_UpperTrianglize(cpk->l2_Q9, tempQ, _O2, _O2_BYTE);                                   // Q9
+    quartic_copy_UpperTrianglize_copy(cpk->l2_Q9, tempQ, 3, _O2, _O2_BYTE);                                   // Q9
 
     ///CHECK Q9
     polynomial_print(15, cpk->l2_Q9, 0, _full_e_power2, "l2_Q9(0): ");

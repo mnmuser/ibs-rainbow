@@ -37,6 +37,41 @@ void UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsigned Awi
 
 void quartic_UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsigned Awidth, unsigned size_batch) {
 
+    unsigned char *runningC = btriC;
+    unsigned Aheight = Awidth;
+
+    for (unsigned i = 0; i < Aheight; i++) {
+        for (unsigned j = 0; j < i; j++) {
+            unsigned idx = idx_of_trimat(j, i, Aheight);
+            for (unsigned k = 0; k < size_batch * 2; k++) { //*2 because GF16
+
+                polynomial_add(btriC + idx * size_batch * N_QUARTIC_POLY, N_QUARTIC_POLY * k, 2,
+                               bA + size_batch * (i * Awidth + j) * N_QUARTIC_POLY, N_QUARTIC_POLY * k,
+                               N_CUBIC_POLY, _full_e_power2);
+            }
+            //non quartic: gf256v_add( btriC + idx*size_batch , bA + size_batch*(i*Awidth+j) , size_batch );
+        }
+        for (unsigned l = 0; l < size_batch * (Aheight - i) * 2; l++) {
+
+            polynomial_print(15, runningC, N_QUARTIC_POLY * l, _full_e_power2, "C:");
+            polynomial_print(15, bA + size_batch * (i * Awidth + i) * N_QUARTIC_POLY, N_QUARTIC_POLY * l,
+                             _full_e_power2, "A:");
+
+            polynomial_add(runningC, N_QUARTIC_POLY * l, 2, bA + size_batch * (i * Awidth + i) * N_QUARTIC_POLY,
+                           l * N_QUARTIC_POLY, N_CUBIC_POLY, _full_e_power2);
+
+            polynomial_print(15, runningC, N_QUARTIC_POLY * l, _full_e_power2, "written C:");
+
+        }
+        //non quartic: gf256v_add(runningC, bA + size_batch * (i * Awidth + i), size_batch * (Aheight - i)); /// ATTENTION GF256
+        runningC += size_batch * (Aheight - i) * N_QUARTIC_POLY;
+    }
+}
+
+///if C is empty
+void quartic_copy_UpperTrianglize_copy(unsigned char *btriC, const unsigned char *bA, unsigned A_grade, unsigned Awidth,
+                                       unsigned size_batch) {
+
     //TODO: wirtes repeatly to the same poitn :(
 
     unsigned char *runningC = btriC;
@@ -46,19 +81,15 @@ void quartic_UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsi
         for (unsigned j = 0; j < i; j++) {
             unsigned idx = idx_of_trimat(j, i, Aheight);
             for (unsigned k = 0; k < size_batch * 2; k++) { //*2 because GF16
-
-                polynomial_add(btriC + idx * size_batch * N_QUARTIC_POLY, N_QUARTIC_POLY * k, 3,
-                               bA + size_batch * (i * Awidth + j) * N_QUARTIC_POLY, N_QUARTIC_POLY * k,
-                               N_CUBIC_POLY, _full_e_power2);
+                gf16_grade_n_poly_copy(btriC + idx * size_batch * N_QUARTIC_POLY, N_QUARTIC_POLY * k,
+                                       bA + size_batch * (i * Awidth + j) * N_QUARTIC_POLY, N_QUARTIC_POLY * k,
+                                       A_grade);
             }
-            //non quartic: gf256v_add( btriC + idx*size_batch , bA + size_batch*(i*Awidth+j) , size_batch );
         }
         for (unsigned l = 0; l < size_batch * (Aheight - i) * 2; l++) {
-
-            polynomial_add(runningC, N_QUARTIC_POLY * l, 3, bA + size_batch * (i * Awidth + i) * N_QUARTIC_POLY,
-                           l * N_QUARTIC_POLY, N_CUBIC_POLY, _full_e_power2);
+            gf16_grade_n_poly_copy(runningC, N_QUARTIC_POLY * l, bA + size_batch * (i * Awidth + i) * N_QUARTIC_POLY,
+                                   l * N_QUARTIC_POLY, A_grade);
         }
-        //non quartic: gf256v_add(runningC, bA + size_batch * (i * Awidth + i), size_batch * (Aheight - i)); /// ATTENTION GF256
         runningC += size_batch * (Aheight - i) * N_QUARTIC_POLY;
     }
 }
