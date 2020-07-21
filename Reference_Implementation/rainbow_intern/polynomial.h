@@ -1,32 +1,30 @@
-unsigned i4_choose(unsigned n, unsigned k);
+unsigned i4_choose(int n, int k);
 
-unsigned i4_max(unsigned i1, unsigned i2);
+int i4_max(int i1, int i2);
 
-unsigned i4_min(unsigned i1, unsigned i2);
+int i4_min(int i1, int i2);
 
 void i4vec_concatenate(unsigned n1, const unsigned a[], unsigned n2, const unsigned b[], unsigned c[]);
 
 void i4vec_permute(unsigned n, unsigned p[], unsigned a[]);
 
-unsigned *i4vec_sort_heap_index_a(unsigned n, unsigned a[]);
+unsigned *i4vec_sort_heap_index_a(unsigned n, const unsigned int *a);
 
-unsigned i4vec_sum(unsigned n, unsigned a[]);
+int i4vec_sum(unsigned n, const unsigned int *a);
 
-void mono_next_grlex(unsigned m, unsigned x[]);
+unsigned mono_rank_grlex(int m, unsigned *x);
 
-unsigned mono_rank_grlex(unsigned m, unsigned x[]);
-
-void mono_unrank_grlex(unsigned m, unsigned rank, unsigned *dest_f);
+void mono_unrank_grlex(int m, unsigned rank, unsigned *dest_f);
 
 unsigned char mono_value(unsigned f[], unsigned char x[]);
 
-void perm_check0(unsigned n, unsigned p[]);
+void perm_check0(unsigned n, const unsigned int *p);
 
 void
 polynomial_add(unsigned char *destSummand, unsigned dest_offset, unsigned dest_grade, const unsigned char *summand,
                unsigned summand_offset, unsigned summand_o, const unsigned int *summand_e);
 
-void polynomial_compress(unsigned o1, unsigned char c1[], unsigned c1_offset, unsigned e1[], unsigned *o2,
+void polynomial_compress(unsigned o1, unsigned char c1[], unsigned c1_offset, unsigned const e1[], unsigned *o2,
                          unsigned char c2[],
                          unsigned c2_offset,
                          unsigned e2[]);

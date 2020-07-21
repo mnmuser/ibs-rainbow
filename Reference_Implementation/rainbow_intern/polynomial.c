@@ -21,7 +21,7 @@
 
 /******************************************************************************/
 
-unsigned i4_choose(unsigned n, unsigned k)
+unsigned i4_choose(int n, int k)
 
 /******************************************************************************/
 /*
@@ -66,9 +66,9 @@ unsigned i4_choose(unsigned n, unsigned k)
     things taken K at a time.
 */
 {
-    unsigned i;
-    unsigned mn;
-    unsigned mx;
+    int i;
+    int mn;
+    int mx;
     unsigned value;
 
     mn = i4_min(k, n - k);
@@ -91,7 +91,7 @@ unsigned i4_choose(unsigned n, unsigned k)
 
 /******************************************************************************/
 
-unsigned i4_max(unsigned i1, unsigned i2)
+int i4_max(int i1, int i2)
 
 /******************************************************************************/
 /*
@@ -118,7 +118,7 @@ unsigned i4_max(unsigned i1, unsigned i2)
     Output, unsigned I4_MAX, the larger of I1 and I2.
 */
 {
-    unsigned value;
+    int value;
 
     if (i2 < i1) {
         value = i1;
@@ -130,7 +130,7 @@ unsigned i4_max(unsigned i1, unsigned i2)
 
 /******************************************************************************/
 
-unsigned i4_min(unsigned i1, unsigned i2)
+int i4_min(int i1, int i2)
 
 /******************************************************************************/
 /*
@@ -157,7 +157,7 @@ unsigned i4_min(unsigned i1, unsigned i2)
     Output, unsigned I4_MIN, the smaller of I1 and I2.
 */
 {
-    unsigned value;
+    int value;
 
     if (i1 < i2) {
         value = i1;
@@ -275,7 +275,7 @@ void i4vec_permute(unsigned n1, unsigned p1[], unsigned a[])
     int *p = (int *) p1; //CAST unsigned to signed for this operations
     int n = (int) n1;
 
-    int a_temp;
+    unsigned a_temp;
     int i;
     int iget;
     int iput;
@@ -343,7 +343,7 @@ void i4vec_permute(unsigned n1, unsigned p1[], unsigned a[])
 
 /******************************************************************************/
 
-unsigned *i4vec_sort_heap_index_a(unsigned n, unsigned a[])
+unsigned *i4vec_sort_heap_index_a(unsigned n, const unsigned *a)
 
 /******************************************************************************/
 /*
@@ -465,7 +465,7 @@ unsigned *i4vec_sort_heap_index_a(unsigned n, unsigned a[])
 
 /******************************************************************************/
 
-unsigned i4vec_sum(unsigned n, unsigned a[])
+int i4vec_sum(unsigned n, const unsigned *a)
 
 /******************************************************************************/
 /*
@@ -509,137 +509,17 @@ unsigned i4vec_sum(unsigned n, unsigned a[])
 */
 {
     unsigned i;
-    unsigned sum;
+    int sum;
 
     sum = 0;
     for (i = 0; i < n; i++) {
-        sum = sum + a[i];
+        sum = sum + (int) a[i];
     }
 
     return sum;
 }
 
-/******************************************************************************/
-
-void mono_next_grlex(unsigned m, unsigned x[])
-
-/******************************************************************************/
-/*
-  Purpose:
-
-    MONO_NEXT_GRLEX returns the next monomial in grlex order.
-
-  Discussion:
-
-    Example:
-
-    M = 3
-
-    #  X(1)  X(2)  X(3)  Degree
-      +------------------------
-    1 |  0     0     0        0
-      |
-    2 |  0     0     1        1
-    3 |  0     1     0        1
-    4 |  1     0     0        1
-      |
-    5 |  0     0     2        2
-    6 |  0     1     1        2
-    7 |  0     2     0        2
-    8 |  1     0     1        2
-    9 |  1     1     0        2
-   10 |  2     0     0        2
-      |
-   11 |  0     0     3        3
-   12 |  0     1     2        3
-   13 |  0     2     1        3
-   14 |  0     3     0        3
-   15 |  1     0     2        3
-   16 |  1     1     1        3
-   17 |  1     2     0        3
-   18 |  2     0     1        3
-   19 |  2     1     0        3
-   20 |  3     0     0        3
-
-  Licensing:
-
-    This code is distributed under the GNU LGPL license.
-
-  Modified:
-
-    07 December 2013
-
-  Author:
-
-    John Burkardt
-
-  Parameters:
-
-    Input, unsigned M, the spatial dimension.
-
-    Input/output, unsigned X[M], the current monomial.
-    The first element is X = [ 0, 0, ..., 0, 0 ].
-*/
-{
-    unsigned i;
-    unsigned im1;
-    unsigned j;
-    unsigned t;
-/*
-  Ensure that 1 <= D.
-*/
-    if (m < 1) {
-        fprintf(stderr, "\n");
-        fprintf(stderr, "MONO_NEXT_GRLEX - Fatal error!\n");
-        fprintf(stderr, "  M < 1\n");
-        exit(1);
-    }
-/*
-  Ensure that 0 <= X(I).
-*/
-    for (i = 0; i < m; i++) {
-        if (x[i] < 0) {
-            fprintf(stderr, "\n");
-            fprintf(stderr, "MONO_NEXT_GRLEX - Fatal error!\n");
-            fprintf(stderr, "  X[I] < 0\n");
-            exit(1);
-        }
-    }
-/*
-  Find I, the index of the rightmost nonzero entry of X.
-*/
-    i = 0;
-    for (j = m; 1 <= j; j--) {
-        if (0 < x[j - 1]) {
-            i = j;
-            break;
-        }
-    }
-/*
-  set T = X(I)
-  set X(I) to zero,
-  increase X(I-1) by 1,
-  increment X(M) by T-1.
-*/
-    if (i == 0) {
-        x[m - 1] = 1;
-        return;
-    } else if (i == 1) {
-        t = x[0] + 1;
-        im1 = m;
-    } else if (1 < i) {
-        t = x[i - 1];
-        im1 = i - 1;
-    }
-
-    x[i - 1] = 0;
-    x[im1 - 1] = x[im1 - 1] + 1;
-    x[m - 1] = x[m - 1] + t - 1;
-}
-
-/******************************************************************************/
-
-unsigned mono_rank_grlex(unsigned m, unsigned x[])
+unsigned mono_rank_grlex(int m, unsigned *x)
 
 /******************************************************************************/
 /*
@@ -706,15 +586,15 @@ unsigned mono_rank_grlex(unsigned m, unsigned x[])
     Output, unsigned MONO_RANK_GRLEX, the rank.
 */
 {
-    unsigned i;
-    unsigned j;
-    unsigned ks;
-    unsigned n;
-    unsigned nm;
-    unsigned ns;
+    int i;
+    int j;
+    int ks;
+    int n;
+    int nm;
+    int ns;
     unsigned rank;
-    unsigned tim1;
-    unsigned *xs;
+    int tim1;
+    int *xs;
 /*
   Ensure that 1 <= M.
 */
@@ -725,17 +605,6 @@ unsigned mono_rank_grlex(unsigned m, unsigned x[])
         exit(1);
     }
 /*
-  Ensure that 0 <= X(I).
-*/
-    for (i = 0; i < m; i++) {
-        if (x[i] < 0) {
-            fprintf(stderr, "\n");
-            fprintf(stderr, "MONO_RANK_GRLEX - Fatal error!\n");
-            fprintf(stderr, "  X[I] < 0\n");
-            exit(1);
-        }
-    }
-/*
   NM = sum ( X )
 */
     nm = i4vec_sum(m, x);
@@ -744,10 +613,10 @@ unsigned mono_rank_grlex(unsigned m, unsigned x[])
 */
     ns = nm + m - 1;
     ks = m - 1;
-    xs = (unsigned *) malloc(ks * sizeof(unsigned));
-    xs[0] = x[0] + 1;
+    xs = (int *) malloc(ks * sizeof(int));
+    xs[0] = (int) x[0] + 1;
     for (i = 2; i < m; i++) {
-        xs[i - 1] = xs[i - 2] + x[i - 1] + 1;
+        xs[i - 1] = xs[i - 2] + (int) x[i - 1] + 1;
     }
 /*
   Compute the rank.
@@ -779,7 +648,7 @@ unsigned mono_rank_grlex(unsigned m, unsigned x[])
 
 /******************************************************************************/
 
-void mono_unrank_grlex(unsigned m, unsigned rank, unsigned *dest_f)
+void mono_unrank_grlex(int m, unsigned rank, unsigned *dest_f)
 
 /******************************************************************************/
 /*
@@ -812,11 +681,11 @@ void mono_unrank_grlex(unsigned m, unsigned rank, unsigned *dest_f)
     sum ( 1 <= I <= M ) X[I] = NM.
 */
 {
-    unsigned i;
-    unsigned j;
-    unsigned ks;
-    unsigned nm;
-    unsigned ns;
+    int i;
+    int j;
+    int ks;
+    int nm;
+    int ns;
     unsigned r;
     unsigned rank1;
     unsigned rank2;
@@ -950,7 +819,7 @@ unsigned char mono_value(unsigned f[], unsigned char x[])
 
 /******************************************************************************/
 
-void perm_check0(unsigned n, unsigned p[])
+void perm_check0(unsigned n, const unsigned *p)
 
 /******************************************************************************/
 /*
@@ -1088,7 +957,7 @@ polynomial_add(unsigned char *destSummand, unsigned dest_offset, unsigned dest_g
 
 /******************************************************************************/
 
-void polynomial_compress(unsigned o1, unsigned char c1[], unsigned c1_offset, unsigned e1[], unsigned *o2,
+void polynomial_compress(unsigned o1, unsigned char c1[], unsigned c1_offset, unsigned const e1[], unsigned *o2,
                          unsigned char c2[],
                          unsigned c2_offset,
                          unsigned e2[])
@@ -1229,14 +1098,14 @@ polynomial_mul(const unsigned char *factor_A, unsigned A_offset, unsigned A_grad
     if (A_grade == 0) A_e = _lin_e_power2;
     if (B_grade == 0) B_e = _lin_e_power2;
 
-    unsigned m = _ID;
+    int m = _ID;
 
     unsigned f[m];
     unsigned f1[m];
     unsigned f2[m];
     unsigned i;
     unsigned j;
-    unsigned k;
+    int k;
 
     *C_o = 0;
     for (j = 0; j < B_o; j++) {
@@ -1301,9 +1170,9 @@ void polynomial_print(unsigned o, const unsigned char *c, unsigned gf16_offset, 
     Input, char *TITLE, a title.
 */
 {
-    unsigned m = _ID;
+    int m = _ID;
     unsigned f[m];
-    unsigned i;
+    int i;
     unsigned j;
 
     printf("%s\n", title);
@@ -1429,7 +1298,7 @@ unsigned char polynomial_value(unsigned o, const unsigned char *c, unsigned offs
     Output, double POLYNOMIAL_VALUE[NX], the value of the polynomial at X.
 */
 {
-    unsigned m = _ID;
+    int m = _ID;
     unsigned f[m];
     unsigned j;
     unsigned char p;
