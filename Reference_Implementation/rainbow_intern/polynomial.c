@@ -1074,16 +1074,14 @@ polynomial_add(unsigned char *destSummand, unsigned dest_offset, unsigned dest_g
     gf16_grade_n_poly_copy(tmp_B, 0, destSummand, dest_offset, dest_grade);
 
     /// MAIN PART///
-    r8vec_concatenate(summand_o, summand, B_o, tmp_B, tmp_dst, 0);
+    r8vec_concatenate(summand_o, tmp_summand, B_o, tmp_B, tmp_dst, 0);
     i4vec_concatenate(summand_o, summand_e, B_o, B_e, dest_e);
 
     polynomial_sort(dest_o, tmp_dst, 0, dest_e);
-    polynomial_compress(dest_o, tmp_dst, 0, dest_e, &dest_o, tmp_dst, 0, dest_e);
-    /// END ///
 
-    if (dest_o > N_QUARTIC_POLY) {
-        printf("polynom too big! O: %u\n", dest_o); //TODO: reomve
-    }
+    polynomial_compress(dest_o, tmp_dst, 0, dest_e, &dest_o, tmp_dst, 0, dest_e);
+
+    /// END ///
 
     gf16_copy(destSummand, dest_offset, tmp_dst, 0, dest_o);
 }
