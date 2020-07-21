@@ -795,8 +795,6 @@ unsigned char mono_value(unsigned f[], unsigned char x[])
 
     Input, unsigned M, the spatial dimension.
 
-    Input, unsigned N, the number of evaluation points.
-
     Input, unsigned F[M], the exponents of the monomial.
 
     Input, double X[M*N], the coordinates of the evaluation points.
@@ -810,7 +808,7 @@ unsigned char mono_value(unsigned f[], unsigned char x[])
 
     for (i = 0; i < m; i++) {
         v = v * (unsigned char) pow(gf16v_get_ele(x, i), f[i]);//TODO: Casting not the best way?
-        v = v % 16;
+        v = v % 16; //TODO: BULLSHIT, solve it with a multiply loop!
     }
 
 
@@ -942,13 +940,20 @@ polynomial_add(unsigned char *destSummand, unsigned dest_offset, unsigned dest_g
     gf16_copy(tmp_summand, 0, summand, summand_offset, summand_o);
     gf16_grade_n_poly_copy(tmp_B, 0, destSummand, dest_offset, dest_grade);
 
+    polynomial_print(summand_o, tmp_summand, 0, summand_e, "summand:");
+    polynomial_print(B_o, tmp_B, 0, _full_e_power2, "tmp_C:");
+
     /// MAIN PART///
     r8vec_concatenate(summand_o, tmp_summand, B_o, tmp_B, tmp_dst, 0);
     i4vec_concatenate(summand_o, summand_e, B_o, B_e, dest_e);
 
     polynomial_sort(dest_o, tmp_dst, 0, dest_e);
 
+    polynomial_print(dest_o, tmp_dst, 0, dest_e, "sorted C:");
+
     polynomial_compress(dest_o, tmp_dst, 0, dest_e, &dest_o, tmp_dst, 0, dest_e);
+
+    polynomial_print(dest_o, tmp_dst, 0, dest_e, "compressed C:");
 
     /// END ///
 
