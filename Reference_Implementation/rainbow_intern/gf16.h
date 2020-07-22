@@ -6,6 +6,7 @@
 #define _GF16_H_
 
 #include <stdint.h>
+#include <stdio.h>
 
 // gf4 := gf2[x]/x^2+x+1
 static inline uint8_t gf4_mul_2(uint8_t a) {
@@ -109,6 +110,25 @@ static inline uint8_t gf16_inv(uint8_t a) {
     uint8_t a8 = gf16_squ(a4);
     uint8_t a6 = gf16_mul(a4, a2);
     return gf16_mul(a8, a6);
+}
+
+static inline uint8_t gf16_pow(uint8_t base, uint8_t power) {
+    uint8_t result = base;
+    uint8_t tmp_result;
+    switch (power) {
+        case 0:
+            return 1;
+        case 1:
+            return result;
+        case 2:
+            return gf16_squ(base);
+        default:
+            for (int i = 0; i < power - 1; i++) {
+                tmp_result = result;
+                result = gf16_mul(tmp_result, base);
+            }
+            return result;
+    }
 }
 
 static inline uint8_t gf16_mul_4(uint8_t a) {

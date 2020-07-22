@@ -799,33 +799,24 @@ unsigned char mono_value(unsigned f[], unsigned char x[])
 
     Input, double X[M], the coordinates of the evaluation points (ID).
 
-    Output, double MONO_VALUE[N], the value of the monomial at X.
+    Output, double MONO_VALUE, the value of the monomial at X.
 */
 {
     unsigned m = _ID;
     unsigned i;
-    unsigned j;
+    unsigned char factor;
     unsigned char tmp_v;
-    unsigned char tmp_base;
     unsigned char v = 1;
 
     for (i = 0; i < m; i++) {
-        if (f[i] == 0) {
-            tmp_v = 1;
-        } else if (f[i] == 1) {
-            tmp_v = gf16v_get_ele(x, i);
-        } else {
-            for (j = 0; j < f[i]; j++) {
-                tmp_base = gf16v_get_ele(x, i);
-                tmp_v = gf16_mul(tmp_v, tmp_base); //most complex way to do pow
-            }
-        }
-        v = gf16_mul(v, tmp_v);
+        factor = gf16_pow(gf16v_get_ele(x, i), f[i]);
+        tmp_v = v;
+        v = gf16_mul(tmp_v, factor);
     }
+
     return v;
 }
-//v = v * (unsigned char) pow(gf16v_get_ele(x, i), f[i]);//TODO: Casting not the best way?
-//v = v % 16; //TODO: BULLSHIT, solve it with a multiply loop!
+
 /******************************************************************************/
 
 void perm_check0(unsigned n, const unsigned *p)
