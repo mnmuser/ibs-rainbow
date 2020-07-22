@@ -70,11 +70,11 @@ quartic_gf16mat_prod_ref(uint8_t *c, const uint8_t *matA, unsigned n_A_vec_byte,
                          unsigned b_grade) {
     memset(c, 0, n_A_vec_byte * N_QUARTIC_POLY); //set number of O1-bytes in matrix to 0
     for (unsigned i = 0; i < n_A_width; i++) { // loop over number of vinegars
-        //uint8_t bb = gf16v_get_ele(b, i); //get element i from vinegar-array //TODO: FAIL here?
+        //uint8_t bb = gf16v_get_ele(b, i); //get element i from vinegar-array
         /// Achtung: l2_polys is grade 1,2 oder 3, matA is grade 1
-        quartic_gf16v_madd(c, 1, matA, i * n_A_vec_byte, 0, 0, b, 0, i, b_grade, 4, n_A_vec_byte, n_A_width);
-        //gf16v_madd(c, matA, bb, n_A_vec_byte); // -> _gf16v_madd_u32
-        //matA += n_A_vec_byte * _ID;
+        quartic_gf16v_madd(c, 1, matA, 0, b, i, b_grade, 4, n_A_vec_byte);
+        //gf16v_madd(c, matA, bb, n_A_vec_byte);
+        matA += n_A_vec_byte * _ID;
     }
 }
 

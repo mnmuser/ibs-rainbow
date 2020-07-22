@@ -30,7 +30,7 @@ int main( int argc , char ** argv )
     // set random seed
     unsigned char rnd_seed[48] = {0};
     int rr = byte_from_binfile(rnd_seed, 48, (4 == argc) ? argv[3]
-                                                         : "/dev/random"); //TODO: wenn also kein rnd übergeben wird, dann /dev/random
+                                                         : "/dev/random"); //wenn also kein rnd übergeben wird, dann /dev/random
     if (0 != rr) printf("read seed file fail.\n");
     randombytes_init(rnd_seed, NULL, 256);
 

@@ -259,9 +259,7 @@ int calculate_usk(usk_t *usk, msk_t *msk, unsigned char *id) {
 }
 
 int calculate_upk(upk_t *upk, mpk_t *mpk, unsigned char *id) {
-    //TODO:
     calculate_values_public_key((unsigned char *) upk, (unsigned char *) mpk, id);
-
     return 0;
 }
 

@@ -24,19 +24,16 @@ void
 polynomial_add(unsigned char *destSummand, unsigned dest_offset, unsigned dest_grade, const unsigned char *summand,
                unsigned summand_offset, unsigned summand_o, const unsigned int *summand_e);
 
-void polynomial_compress(unsigned o1, unsigned char c1[], unsigned c1_offset, unsigned const e1[], unsigned *o2,
-                         unsigned char c2[],
-                         unsigned c2_offset,
-                         unsigned e2[]);
+void polynomial_compress(unsigned o1, unsigned char c1[], const unsigned int e1[], unsigned *o2, unsigned char c2[],
+                         unsigned int e2[]);
 
 void
 polynomial_mul(const unsigned char *factor_A, unsigned A_offset, unsigned A_grade, const unsigned char *factor_B,
-               unsigned B_offset, unsigned B_grade, unsigned char *C, unsigned C_offset, unsigned *C_o,
-               unsigned int C_e[]);
+               unsigned B_offset, unsigned B_grade, unsigned char *C, unsigned *C_o, unsigned int C_e[]);
 
 void polynomial_print(unsigned o, const unsigned char *c, unsigned gf16_offset, const unsigned *e, char *title);
 
-void polynomial_sort(unsigned o, unsigned char c[], unsigned offset, unsigned e[]);
+void polynomial_sort(unsigned o, unsigned char c[], unsigned int e[]);
 
 unsigned char
 polynomial_value(unsigned o, const unsigned char *c, unsigned offset, unsigned const e[], unsigned char *x);
@@ -45,4 +42,4 @@ void
 r8vec_concatenate(unsigned n1, const unsigned char a[], unsigned n2, const unsigned char b[], unsigned char c[],
                   unsigned offset);
 
-void r8vec_permute(unsigned n, unsigned p[], unsigned char a[], unsigned offset);
+void r8vec_permute(unsigned n1, unsigned int p1[], unsigned char a[]);
