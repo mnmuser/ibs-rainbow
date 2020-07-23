@@ -18,8 +18,8 @@ int main(int argc, char **argv) {
     printf("hash size: %d\n", _HASH_LEN);
     printf("signature size: %d\n\n", CRYPTO_BYTES);
 
-    if (4 != argc) {
-        printf("Usage:\n\n\trainbow-gen-usersk msk_file_name identity usk_file_name\n\n");
+    if (!(4 == argc || 5 == argc)) {
+        printf("Usage:\n\n\trainbow-gen-usersk msk_file_name identity usk_file_name [upk_file_name]\n\n");
         return -1;
     }
 
@@ -73,7 +73,29 @@ int main(int argc, char **argv) {
     byte_fdump(fp, CRYPTO_ALGNAME " user secret key", _usk, sizeof(usk_t)); //usk speichern und beschriften
     fclose(fp);
 
-    //free upk and rest
+    //calculate upk from usk (for debugging), if filename is given
+    if (argc == 5) {
+        uint8_t *_upk = malloc(sizeof(upk_t));
+        re = calculate_upk_from_usk((upk_t *) _upk, (usk_t *) _usk); //TODO: T4!!!!
+        if (0 != re) {
+            printf("%s generate user-public-key fails.\n", CRYPTO_ALGNAME);
+            return -1;
+        }
+
+        //write upk to disk
+        fp = fopen(argv[4], "w+");
+        if (NULL == fp) {
+            printf("fail to write user public key file.\n");
+            return -1;
+        }
+        byte_fdump(fp, CRYPTO_ALGNAME " user-public-key", _upk,
+                   CRYPTO_USER_SECRET_KEY_BYTES); //upk speichern und beschriften
+        fclose(fp);
+
+        free(_upk);
+    }
+
+    //free usk and rest
 
     free(_msk);
     free(_identity);

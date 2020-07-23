@@ -44,15 +44,21 @@ int main( int argc , char ** argv )
         return -1;
     }
 
+
+//    byte_fdump( stdout ,"sk:", _sk , CRYPTO_USER_SECRET_KEY_BYTES );
+//    free(_sk);
+//    return 0;
+
+
     unsigned char *msg = NULL;
     unsigned long long mlen = 0;
     r = byte_read_file(&msg, &mlen, argv[2]);
     if (0 != r) {
         printf("fail to read message file.\n");
         return -1;
-	}
+    }
 
-	unsigned char * signature = malloc( mlen + CRYPTO_BYTES );
+    unsigned char *signature = malloc(mlen + CRYPTO_BYTES);
 	if( NULL == signature ) {
 		printf("alloc memory for signature buffer fail.\n");
 		return -1;

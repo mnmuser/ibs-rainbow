@@ -122,6 +122,18 @@ void calculate_t4( unsigned char * t2_to_t4 , const unsigned char *t1 , const un
 }
 
 static
+void
+obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2_polys, unsigned n_terms, const unsigned char *s1) {
+    unsigned char temp[_O1_BYTE + 32];
+    while (n_terms--) {
+        gfmat_prod(temp, s1, _O1_BYTE, _O2, l2_polys);
+        gf256v_add(l1_polys, temp, _O1_BYTE);
+        l1_polys += _O1_BYTE;
+        l2_polys += _O2_BYTE;
+    }
+}
+
+static
 void quartic_obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2_polys, unsigned poly_grade,
                                 unsigned n_terms,
                                 const unsigned char *s1) {
@@ -186,13 +198,13 @@ void generate_keypair(mpk_t *rpk, msk_t *sk, const unsigned char *sk_seed) {
 
     _generate_secretkey(sk, sk_seed);
 
-    // set up a temporary structure ext_cpk_t for calculating public key.
-    ext_cpk_t *pk = (ext_cpk_t *) aligned_alloc(32, sizeof(ext_cpk_t));
-    calculate_Q_from_F(pk, sk);
+    // set up a temporary structure ext_mpk_t for calculating public key.
+    ext_mpk_t *pk = (ext_mpk_t *) aligned_alloc(32, sizeof(ext_mpk_t));
+    quartic_calculate_Q_from_F(pk, sk);
 
     /// at this point P = F o T ; S is still missing and P/Q is cubic on ID
 
-    ///TODO: try to move this into usk-calculation, cause I would need grade 4 for t4
+    ///TODO: moved this into usk-calculation, cause I would need grade 4 for t4...
     //quartic_calculate_t4(sk->t2, sk->t1, sk->t3); // t2 = t2 + t1*t3
 
     quartic_obsfucate_l1_polys(pk->l1_Q1, pk->l2_Q1, 1, N_TRIANGLE_TERMS(_V1), sk->s1); // -> integrate S :)
@@ -237,9 +249,9 @@ void generate_keypair(mpk_t *rpk, msk_t *sk, const unsigned char *sk_seed) {
     polynomial_print(15, pk->l1_Q9, 126720 * 2 - 15, _full_e_power2, "obsfucated L1_Q9 end");
     ///
 
-    // so far, the pk contains the full pk but in ext_cpk_t format.
+    // so far, the pk contains the full pk but in ext_mpk_t format.
 
-    quartic_extcpk_to_pk(rpk, pk);   //TODO comment in  // convert the public key from ext_cpk_t to mpk_t.
+    quartic_extcpk_to_pk(rpk, pk);   //TODO comment in  // convert the public key from ext_mpk_t to mpk_t.
 //    memcpy(rpk, pk, sizeof(mpk_t));
 
     free(pk);
@@ -249,7 +261,6 @@ void generate_keypair(mpk_t *rpk, msk_t *sk, const unsigned char *sk_seed) {
 ////////////////////// IDENTITY ///////////////////////////
 
 int calculate_usk(usk_t *usk, msk_t *msk, unsigned char *id) {
-
     calculate_values_secret_key((unsigned char *) usk, (unsigned char *) msk, id);
 
     //last but not least: (so I don't need to make t4 quartic)
@@ -260,6 +271,24 @@ int calculate_usk(usk_t *usk, msk_t *msk, unsigned char *id) {
 
 int calculate_upk(upk_t *upk, mpk_t *mpk, unsigned char *id) {
     calculate_values_public_key((unsigned char *) upk, (unsigned char *) mpk, id);
+    return 0;
+}
+
+/// for debugging purposes
+/// \param upk
+/// \param usk
+/// \return
+int calculate_upk_from_usk(upk_t *upk, usk_t *usk) {
+    ext_cpk_t *pk = (ext_cpk_t *) aligned_alloc(32, sizeof(ext_cpk_t));
+    calculate_Q_from_F(pk, usk, usk);
+    obsfucate_l1_polys(pk->l1_Q1, pk->l2_Q1, N_TRIANGLE_TERMS(_V1), usk->s1);
+    obsfucate_l1_polys(pk->l1_Q2, pk->l2_Q2, _V1 * _O1, usk->s1);
+    obsfucate_l1_polys(pk->l1_Q3, pk->l2_Q3, _V1 * _O2, usk->s1);
+    obsfucate_l1_polys(pk->l1_Q5, pk->l2_Q5, N_TRIANGLE_TERMS(_O1), usk->s1);
+    obsfucate_l1_polys(pk->l1_Q6, pk->l2_Q6, _O1 * _O2, usk->s1);
+    obsfucate_l1_polys(pk->l1_Q9, pk->l2_Q9, N_TRIANGLE_TERMS(_O2), usk->s1);
+    extcpk_to_pk(upk, pk);
+    free(pk);
     return 0;
 }
 

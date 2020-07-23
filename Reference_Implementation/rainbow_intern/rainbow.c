@@ -178,10 +178,11 @@ int rainbow_verify(const uint8_t *digest, const uint8_t *signature, const upk_t 
     memcpy(digest_salt + _HASH_LEN, signature + _PUB_N_BYTE, _SALT_BYTE);
     hash_msg(correct, _PUB_M_BYTE, digest_salt, _HASH_LEN + _SALT_BYTE);  // H( digest || salt )
 
-    // check consistancy.
+    // check consistency.
     unsigned char cc = 0;
     for(unsigned i=0;i<_PUB_M_BYTE;i++) {
-        cc |= (digest_ck[i]^correct[i]);
+        cc |= (digest_ck[i] ^ correct[i]);
+        printf("Stelle %u: %u\n", i, (digest_ck[i] ^ correct[i]));
     }
     return (0==cc)? 0: -1;
 }

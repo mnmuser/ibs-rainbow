@@ -78,7 +78,7 @@ struct rainbow_master_secretkey {
 
     unsigned char l2_F3[_O2_BYTE * _V1 * _O2 * N_LINEAR_POLY];                ///< part of C-map, F3, Layer2
     unsigned char l2_F5[_O2_BYTE * N_TRIANGLE_TERMS(_O1) * N_LINEAR_POLY];  ///< part of C-map, F5, Layer2
-    unsigned char l2_F6[_O2_BYTE * _O1 * _O2 * N_LINEAR_POLY];                ///< part of C-map, F6, Layer2 TODO
+    unsigned char l2_F6[_O2_BYTE * _O1 * _O2 * N_LINEAR_POLY];                ///< part of C-map, F6, Layer2
 } msk_t;
 
 
@@ -151,6 +151,8 @@ void generate_secretkey(msk_t *sk, const unsigned char *sk_seed);
 int calculate_usk(usk_t *usk, msk_t *msk, unsigned char *id);
 
 int calculate_upk(upk_t *upk, mpk_t *mpk, unsigned char *id);
+
+int calculate_upk_from_usk(upk_t *upk, usk_t *usk);
 
 /////////////////ID///////////////////
 

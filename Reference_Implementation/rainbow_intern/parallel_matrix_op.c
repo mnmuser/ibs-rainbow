@@ -122,7 +122,7 @@ quartic_batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA, co
         for (unsigned j = 0; j < Bwidth; j++) {
             for (unsigned k = 0; k < Bheight; k++) {
                 if (k < i) continue;
-                quartic_gf16v_madd(bC, 1, &btriA[(k - i) * size_batch * N_LINEAR_POLY], 1,
+                quartic_gf16v_madd(bC, 1, &btriA[(k - i) * size_batch * N_LINEAR_POLY], 1, 1,
                                    &B[j * size_Bcolvec * _ID], k, 0, 0, size_batch);
 //                gf16v_madd(bC, &btriA[(k - i) * size_batch], gf16v_get_ele(&B[j * size_Bcolvec], k), size_batch);
             }
@@ -157,7 +157,7 @@ void quartic_batch_trimatTr_madd_gf16(unsigned char *bC, const unsigned char *bt
         for (unsigned j = 0; j < Bwidth; j++) {
             for (unsigned k = 0; k < Bheight; k++) {
                 if (i < k) continue;
-                quartic_gf16v_madd(bC, 2, &btriA[size_batch * (idx_of_trimat(k, i, Aheight)) * N_LINEAR_POLY], 1,
+                quartic_gf16v_madd(bC, 2, &btriA[size_batch * (idx_of_trimat(k, i, Aheight)) * N_LINEAR_POLY], 1, 1,
                                    &B[j * size_Bcolvec * _ID], k, 0, 0,
                                    size_batch);
                 //gf16v_madd( bC , & btriA[ size_batch*(idx_of_trimat(k,i,Aheight)) ] , gf16v_get_ele( &B[j*size_Bcolvec] , k ) , size_batch );
@@ -252,8 +252,8 @@ quartic_batch_matTr_madd_gf16(unsigned char *bC, const unsigned char *A_to_tr, u
     unsigned Atr_width = Aheight;
     for (unsigned i = 0; i < Atr_height; i++) {
         for (unsigned j = 0; j < Atr_width; j++) {
-            quartic_gf16v_madd(bC, 3, &bB[j * Bwidth * size_batch * _ID], 0,
-                               &A_to_tr[size_Acolvec * i * N_QUARTIC_POLY], j, 2, 4, size_batch * Bwidth);
+            quartic_gf16v_madd(bC, 3, &bB[j * Bwidth * size_batch * N_QUARTIC_POLY], 2, 4,
+                               &A_to_tr[size_Acolvec * i * _ID], j, 0, 0, size_batch * Bwidth);
             //gf16v_madd(bC, &bB[j * Bwidth * size_batch], gf16v_get_ele(&A_to_tr[size_Acolvec * i], j),size_batch * Bwidth);
         }
         bC += size_batch * Bwidth * N_QUARTIC_POLY;
@@ -283,7 +283,7 @@ void quartic_batch_bmatTr_madd_gf16(unsigned char *bC, const unsigned char *bA_t
     for (unsigned i = 0; i < Aheight; i++) {
         for (unsigned j = 0; j < Bwidth; j++) {
             for (unsigned k = 0; k < Bheight; k++) {
-                quartic_gf16v_madd(bC, 1, &bA[size_batch * (i + k * Aheight) * N_LINEAR_POLY], 1,
+                quartic_gf16v_madd(bC, 1, &bA[size_batch * (i + k * Aheight) * N_LINEAR_POLY], 1, 1,
                                    &B[j * size_Bcolvec * _ID], k, 0, 0,
                                    size_batch);
                 //gf16v_madd( bC , & bA[ size_batch*(i+k*Aheight) ] , gf16v_get_ele( &B[j*size_Bcolvec] , k ) , size_batch );
@@ -331,7 +331,7 @@ void quartic_batch_mat_madd_gf16(unsigned char *bC, const unsigned char *bA, uns
     for (unsigned i = 0; i < Aheight; i++) {
         for (unsigned j = 0; j < Bwidth; j++) {
             for (unsigned k = 0; k < Bheight; k++) {
-                quartic_gf16v_madd(bC, 2, &bA[k * size_batch * N_LINEAR_POLY], 1, &B[j * size_Bcolvec * _ID], k, 0,
+                quartic_gf16v_madd(bC, 2, &bA[k * size_batch * N_LINEAR_POLY], 1, 1, &B[j * size_Bcolvec * _ID], k, 0,
                                    0, size_batch);
                 //gf16v_madd( bC , & bA[ k*size_batch ] , gf16v_get_ele( &B[j*size_Bcolvec] , k ) , size_batch );
             }
@@ -472,11 +472,12 @@ void batch_quad_recmat_eval_gf256( unsigned char * z, const unsigned char * y, u
     }
 }
 
-void quartic_gf16v_madd(uint8_t *C, unsigned C_grade, const uint8_t *A, unsigned A_grade, const unsigned char *B,
-                        unsigned B_offset, unsigned B_grade, unsigned B_structure_grade, unsigned size_batch) {
+void quartic_gf16v_madd(uint8_t *C, unsigned C_grade, const uint8_t *A, unsigned A_grade, unsigned A_strucutre_grade,
+                        const unsigned char *B, unsigned B_offset, unsigned B_grade, unsigned B_structure_grade,
+                        unsigned size_batch) {
 
-    unsigned A_loop_offset = _grade_n_poly_terms(A_grade);
-    unsigned B_loop_offset = _grade_n_poly_terms((B_structure_grade));
+    unsigned A_loop_offset = _grade_n_poly_terms(A_strucutre_grade);
+    unsigned B_loop_offset = _grade_n_poly_terms(B_structure_grade);
 
     ///temporal variables to konow the structure of the product:
     unsigned char tmp_product[(N_QUARTIC_POLY + 5) / 2];
@@ -484,9 +485,18 @@ void quartic_gf16v_madd(uint8_t *C, unsigned C_grade, const uint8_t *A, unsigned
     unsigned tmp_o = 0;
 
     for (unsigned l = 0; l < size_batch * 2; l++) { // *2 for gf16 (size is in byte)
+//        polynomial_print(_ID,A,l* A_loop_offset, _lin_e_power2,"A:");
+//        polynomial_print(6,B,B_offset * B_loop_offset,_full_e_power2,"B:");
+
         polynomial_mul(A, l * A_loop_offset, A_grade, B, B_offset * B_loop_offset, B_grade, tmp_product, &tmp_o, tmp_e);
 
+//        polynomial_print(tmp_o,tmp_product,0,tmp_e,"Produkt:");
+//        polynomial_print(15,C,l * N_QUARTIC_POLY,_full_e_power2,"old C:");
+
         polynomial_add(C, (l * N_QUARTIC_POLY), C_grade, tmp_product, 0, tmp_o, tmp_e);
+
+
+//        polynomial_print(15,C,l * N_QUARTIC_POLY,_full_e_power2,"written:");
     }
 }
 
