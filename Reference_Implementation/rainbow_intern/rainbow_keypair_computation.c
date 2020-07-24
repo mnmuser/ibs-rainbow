@@ -542,7 +542,16 @@ void write_lin_to_quartic(unsigned char *q, const unsigned char *f, unsigned lon
                           gf16v_get_ele(f, i + x * N_LINEAR_POLY)); // plus one, to write after the constant field
         }
     }
+}
 
+void write_lin_wo_const_to_quadratic(unsigned char *dest, const unsigned char *src, unsigned long length_f) {
+    set_quartic_zero(dest, length_f); // to have a clean polynom
+    for (unsigned x = 0; x < length_f * 2; x++) {
+        for (unsigned i = 0; i < _ID; i++) {
+            gf16v_set_ele(dest, i + (N_QUADRATIC_POLY * x),
+                          gf16v_get_ele(src, i + x * _ID)); // plus one, to write after the constant field
+        }
+    }
 }
 
 void set_quartic_zero(unsigned char *q, const unsigned length) {

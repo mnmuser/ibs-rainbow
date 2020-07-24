@@ -210,8 +210,7 @@ void
 quartic_gf16mat_prod_ref(uint8_t *c, const uint8_t *matA, unsigned n_A_vec_byte, unsigned n_A_width, const uint8_t *b,
                          unsigned b_grade);
 
-void
-quartic_linear_gf16mat_prod_ref(uint8_t *c, const uint8_t *matA, unsigned n_A_vec_byte, unsigned n_A_width,
+void quadratic_gf16mat_prod_ref(uint8_t *c, const uint8_t *matA, unsigned n_A_vec_byte, unsigned n_A_width,
                                 const uint8_t *b);
 
 #ifdef  __cplusplus

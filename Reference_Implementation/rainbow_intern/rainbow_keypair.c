@@ -51,7 +51,7 @@ void generate_S_T(unsigned char *s_and_t, prng_t *prng0) {
     prng_gen(prng0, s_and_t, _V1_BYTE * _O1 * _ID); // T1
     s_and_t += _V1_BYTE * _O1 * _ID;
     prng_gen(prng0, s_and_t, _V1_BYTE * _O2 * _ID); // T2 bzw. T4
-    s_and_t += _V1_BYTE * _O2 * _ID;
+    s_and_t += _V1_BYTE * _O2 * _ID; // skip more fields (needed for later (t4-calculation))
     prng_gen(prng0, s_and_t, _O1_BYTE * _O2 * _ID); // T3
 }
 
@@ -113,11 +113,32 @@ void calculate_t4( unsigned char * t2_to_t4 , const unsigned char *t1 , const un
     //  t4 = T_sk.t1 * T_sk.t3 - T_sk.t2
     unsigned char temp[_V1_BYTE + 32];
     unsigned char *t4 = t2_to_t4;
-    for (unsigned i = 0; i < _O2; i++) {  /// t3 width
+    for (unsigned i = 0; i < _O2; i++) {  // t3 width
         gfmat_prod(temp, t1, _V1_BYTE, _O1, t3);
         gf256v_add(t4, temp, _V1_BYTE);
         t4 += _V1_BYTE;
         t3 += _O1_BYTE;
+    }
+}
+
+static
+void quadratic_calculate_t4(unsigned char *t2_to_t4, const unsigned char *t1, const unsigned char *t3) {
+    unsigned char tmp_t2[_V1_BYTE * _O2 * _ID];
+    memcpy(tmp_t2, t2_to_t4, _V1_BYTE * _O2 * _ID);
+    write_lin_wo_const_to_quadratic(t2_to_t4, tmp_t2, _V1_BYTE * _O2);
+
+    //  t4 = T_sk.t1 * T_sk.t3 - T_sk.t2
+    unsigned char temp[_V1_BYTE * N_QUADRATIC_POLY + 32];
+    unsigned char *t4 = t2_to_t4;
+    for (unsigned i = 0; i < _V1_BYTE; i++) {
+        quadratic_gf16mat_prod_ref(temp, t1, _V1_BYTE, _O1, t3);
+        //gfmat_prod(temp, t1, _V1_BYTE, _O1, t3);
+        for (unsigned i = 0; i < _O1_BYTE * 2; i++) {
+            polynomial_add(t2_to_t4, i * N_QUADRATIC_POLY, 1, temp, i * _ID, N_QUADRATIC_POLY, _full_e_power2);
+        }
+//        gf256v_add(t4, temp, _V1_BYTE);
+        t4 += _V1_BYTE * N_QUADRATIC_POLY;
+        t3 += _O1_BYTE * _ID;
     }
 }
 
@@ -140,33 +161,13 @@ void quartic_obsfucate_l1_polys(unsigned char *l1_polys, const unsigned char *l2
     unsigned char temp[_O1_BYTE * N_QUARTIC_POLY + 32];
 
     while (n_terms--) { //for-loop *for* runaways
-//        polynomial_print(2, s1, 0, _lin_e_power2, "s1:");
-//        polynomial_print(15, l2_polys, 0, _full_e_power2, "l2:");
-
         quartic_gf16mat_prod_ref(temp, s1, _O1_BYTE, _O2, l2_polys, poly_grade);
 
-//        polynomial_print(15, temp, 0, _full_e_power2, "temp:");
-
-
         for (unsigned i = 0; i < _O1_BYTE * 2; i++) {
-//            polynomial_print(15,temp,0,_full_e_power2,"temp:");
-
-//            polynomial_print(15,tmp_l1_polys,0,_full_e_power2,"temp_l1:");
-
-            polynomial_add(l1_polys, i * N_QUARTIC_POLY, poly_grade, temp, i * N_QUARTIC_POLY, 15, _full_e_power2);
-
-//            polynomial_print(o,tmp_sum,0,e,"temp_sum(e):");
-
-//            polynomial_print(o,tmp_sum,0,_full_e_power2,"temp_sum:");
-
-//            polynomial_print(15,l1_polys,i * N_QUARTIC_POLY,_full_e_power2,"l1:");
+            polynomial_add(l1_polys, i * N_QUARTIC_POLY, poly_grade, temp, i * N_QUARTIC_POLY, N_QUARTIC_POLY,
+                           _full_e_power2);
         }
-//        polynomial_print(o, l1_polys, 0, e, "temp:");
-
         //gf256v_add( l1_polys , temp , _O1_BYTE ); //add u32 (temp) on whole length of l1_polys
-
-//        polynomial_print(15, l1_polys, 0, _full_e_power2, "l1:");
-//        polynomial_print(15, l2_polys, 0, _full_e_power2, "l2:");
 
         l1_polys += _O1_BYTE * N_QUARTIC_POLY;
         l2_polys += _O2_BYTE * N_QUARTIC_POLY;
@@ -204,8 +205,8 @@ void generate_keypair(mpk_t *rpk, msk_t *sk, const unsigned char *sk_seed) {
 
     /// at this point P = F o T ; S is still missing and P/Q is cubic on ID
 
-    ///TODO: moved this into usk-calculation, cause I would need grade 4 for t4...
-    //quartic_calculate_t4(sk->t2, sk->t1, sk->t3); // t2 = t2 + t1*t3
+    ///TODO: is this right?
+//    quadratic_calculate_t4(sk->t4, sk->t1, sk->t3); // t2 = t2 + t1*t3
 
     quartic_obsfucate_l1_polys(pk->l1_Q1, pk->l2_Q1, 1, N_TRIANGLE_TERMS(_V1), sk->s1); // -> integrate S :)
 
@@ -257,8 +258,8 @@ void generate_keypair(mpk_t *rpk, msk_t *sk, const unsigned char *sk_seed) {
 
     // so far, the pk contains the full pk but in ext_mpk_t format.
 
-//    quartic_extcpk_to_pk(rpk, pk);   //TODO comment in  // convert the public key from ext_mpk_t to mpk_t.
-    memcpy(rpk, pk, sizeof(mpk_t));
+    quartic_extcpk_to_pk(rpk, pk);   //TODO comment in  // convert the public key from ext_mpk_t to mpk_t.
+//    memcpy(rpk, pk, sizeof(mpk_t));
 
     free(pk);
 }
@@ -271,7 +272,6 @@ int calculate_usk(usk_t *usk, msk_t *msk, unsigned char *id) {
 
     //last but not least: (so I don't need to make t4 quartic)
     calculate_t4(usk->t4, usk->t1, usk->t3);
-
     return 0;
 }
 

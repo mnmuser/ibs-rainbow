@@ -80,7 +80,17 @@ void quartic_calculate_Q_from_F(ext_mpk_t *Qs, const msk_t *Fs);
 
 void calculate_Q_from_F(ext_cpk_t *Qs, const usk_t *Fs, const usk_t *Ts);
 
+/// @brief function to write from a linear funtion to a quartic function respecting gaps
+/// \param q
+/// \param f
+/// \param length_f
 void write_lin_to_quartic(unsigned char *q, const unsigned char *f, unsigned long length_f);
+
+/// @brief function to write from a linear function without constant to a quadratic function respecting gaps
+/// \param dest
+/// \param src
+/// \param length_f
+void write_lin_wo_const_to_quadratic(unsigned char *dest, const unsigned char *src, unsigned long length_f);
 
 void set_quartic_zero(unsigned char *q, unsigned length);
 

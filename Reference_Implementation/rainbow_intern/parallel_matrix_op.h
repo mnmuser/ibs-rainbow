@@ -323,9 +323,9 @@ void batch_quad_recmat_eval_gf256(unsigned char *z, const unsigned char *y, unsi
                                   const unsigned char *mat, const unsigned char *x, unsigned dim_x,
                                   unsigned size_batch);
 
-void quartic_gf16v_madd(uint8_t *C, unsigned C_grade, const uint8_t *A, unsigned A_grade, unsigned A_strucutre_grade,
-                        const unsigned char *B, unsigned B_offset, unsigned B_grade, unsigned B_structure_grade,
-                        unsigned size_batch);
+void quartic_gf16v_madd(uint8_t *C, unsigned C_grade, unsigned C_structure_grade, const uint8_t *A, unsigned A_grade,
+                        unsigned A_strucutre_grade, const unsigned char *B, unsigned B_offset, unsigned B_grade,
+                        unsigned B_structure_grade, unsigned size_batch);
 
 void
 quartic_batch_matTr_madd_gf16(unsigned char *bC, const unsigned char *A_to_tr, unsigned Aheight, unsigned size_Acolvec,
