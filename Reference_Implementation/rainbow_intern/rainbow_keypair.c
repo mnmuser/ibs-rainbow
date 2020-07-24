@@ -298,6 +298,7 @@ int calculate_usk_and_upk(usk_t *usk, upk_t *upk, msk_t *msk, unsigned char *id)
     obsfucate_l1_polys(pk->l1_Q6, pk->l2_Q6, _O1 * _O2, usk->s1);
     obsfucate_l1_polys(pk->l1_Q9, pk->l2_Q9, N_TRIANGLE_TERMS(_O2), usk->s1);
     extcpk_to_pk(upk, pk);
+//    memcpy(upk,pk,sizeof(upk_t));
     free(pk);
 
     //t4 in usk

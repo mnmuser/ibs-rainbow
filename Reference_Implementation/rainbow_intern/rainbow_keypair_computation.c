@@ -228,7 +228,7 @@ void quartic_calculate_Q_from_F_ref(ext_mpk_t *cpk, const msk_t *sk) {
     polynomial_print(N_QUARTIC_POLY, tempQ, size_tempQ * 2 - N_QUARTIC_POLY, _full_e_power2, "tempQ5(end): ");
 
 
-    quartic_copy_UpperTrianglize_copy(cpk->l1_Q5, tempQ, 3, _O1, _O1_BYTE);    // UT( ... )   // Q5
+    quartic_UpperTrianglize(cpk->l1_Q5, tempQ, _O1, _O1_BYTE);    // UT( ... )   // Q5 //TODO: copy?
 
     ///CHECK Q5
     polynomial_print(N_QUARTIC_POLY, cpk->l1_Q5, 0, _full_e_power2, "l1_Q5(0): ");
@@ -265,7 +265,7 @@ void quartic_calculate_Q_from_F_ref(ext_mpk_t *cpk, const msk_t *sk) {
     quartic_batch_matTr_madd_gf16(tempQ, t2, _V1, _V1_BYTE, _O2, cpk->l1_Q3, _O2,
                                   _O1_BYTE);           // T2tr * ( F1_T2 + F2_T3 )
 
-    quartic_copy_UpperTrianglize_copy(cpk->l1_Q9, tempQ, 3, _O2, _O1_BYTE);                                   // Q9
+    quartic_UpperTrianglize(cpk->l1_Q9, tempQ, _O2, _O1_BYTE);                                   // Q9
 
     ///CHECK Q9
     polynomial_print(N_QUARTIC_POLY, cpk->l1_Q9, 0, _full_e_power2, "l1_Q9(0): ");
@@ -358,7 +358,7 @@ void quartic_calculate_Q_from_F_ref(ext_mpk_t *cpk, const msk_t *sk) {
                                   _O2_BYTE);       // T2tr*( ..... ) + T3tr*( ..... )
 
     set_quartic_zero(cpk->l2_Q9, _O2_BYTE * N_TRIANGLE_TERMS(_O2));
-    quartic_copy_UpperTrianglize_copy(cpk->l2_Q9, tempQ, 3, _O2, _O2_BYTE);                                   // Q9
+    quartic_UpperTrianglize(cpk->l2_Q9, tempQ, _O2, _O2_BYTE);                                   // Q9
 
     ///CHECK Q9
     polynomial_print(N_QUARTIC_POLY, cpk->l2_Q9, 0, _full_e_power2, "l2_Q9(0): ");
