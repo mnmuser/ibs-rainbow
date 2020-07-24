@@ -5,7 +5,6 @@
 ///
 
 
-#include <stdio.h>
 #include "blas_comm.h"
 #include "blas.h"
 
@@ -475,7 +474,7 @@ void batch_quad_recmat_eval_gf256( unsigned char * z, const unsigned char * y, u
 void quartic_gf16v_madd(uint8_t *C, unsigned C_grade, const uint8_t *A, unsigned A_grade, unsigned A_strucutre_grade,
                         const unsigned char *B, unsigned B_offset, unsigned B_grade, unsigned B_structure_grade,
                         unsigned size_batch) {
-
+    //todo: NOT CORRECT FOR ODD id-size
     unsigned A_loop_offset = _grade_n_poly_terms(A_strucutre_grade);
     unsigned B_loop_offset = _grade_n_poly_terms(B_structure_grade);
 

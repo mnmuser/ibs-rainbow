@@ -39,7 +39,9 @@ int main( int argc , char ** argv )
     r = byte_fget(fp, pk, CRYPTO_USER_PUBLIC_KEY_BYTES);
     fclose(fp);
     if (CRYPTO_USER_PUBLIC_KEY_BYTES != r) {
+        printf("R: %i should be: %lu", r, CRYPTO_USER_PUBLIC_KEY_BYTES);
         printf("fail to load key file.\n");
+
         return -1;
     }
 

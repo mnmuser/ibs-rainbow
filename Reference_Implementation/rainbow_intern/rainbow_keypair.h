@@ -29,9 +29,9 @@ extern  "C" {
 /// standard e TODO: only for ID2
 
 
-extern const unsigned _full_e_power2[N_QUARTIC_POLY + 3];
+extern const unsigned _full_e_power2[15 + 3];
 
-extern const unsigned _lin_e_power2[_ID];
+extern const unsigned _lin_e_power2[2];
 
 unsigned _grade_n_poly_terms(unsigned grade); //TODO: extern, static, global namespace...
 
@@ -152,7 +152,7 @@ int calculate_usk(usk_t *usk, msk_t *msk, unsigned char *id);
 
 int calculate_upk(upk_t *upk, mpk_t *mpk, unsigned char *id);
 
-int calculate_upk_from_usk(upk_t *upk, usk_t *usk);
+int calculate_usk_and_upk(usk_t *usk, upk_t *upk, msk_t *msk, unsigned char *id);
 
 /////////////////ID///////////////////
 

@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
         printf("fail to open user public key file.\n");
         return -1;
     }
-    byte_fdump(fp, CRYPTO_ALGNAME " user public key", _upk, sizeof(upk_t)); //pk speichern und beschriften
+    byte_fdump(fp, CRYPTO_ALGNAME " user-public-key", _upk, sizeof(upk_t)); //pk speichern und beschriften
     fclose(fp);
 
     //free upk and rest

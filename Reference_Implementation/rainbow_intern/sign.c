@@ -90,7 +90,7 @@ crypto_sign_open(unsigned char *m, unsigned long long *mlen,const unsigned char 
     memcpy(m, sm, smlen - _SIGNATURE_BYTE);
     mlen[0] = smlen - _SIGNATURE_BYTE;
 
-    unsigned char digest[_HASH_LEN];
+    unsigned char digest[_HASH_LEN]; // digest is the hash of the message
     hash_msg(digest, _HASH_LEN, m, *mlen);
 
 #if defined _RAINBOW_CLASSIC

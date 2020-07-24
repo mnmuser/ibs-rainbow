@@ -56,29 +56,19 @@ int main(int argc, char **argv) {
 
     uint8_t *_usk = malloc(sizeof(usk_t));
 
-    //calculate usk with mpk and ID
-
-    int re = calculate_usk((usk_t *) _usk, (msk_t *) _msk, _identity);
-    if (0 != re) {
-        printf("%s generate user-secret-key fails.\n", CRYPTO_ALGNAME);
-        return -1;
-    }
-
-    //write upk to disk
-    fp = fopen(argv[3], "w+");
-    if (NULL == fp) {
-        printf("fail to write user secret key file.\n");
-        return -1;
-    }
-    byte_fdump(fp, CRYPTO_ALGNAME " user secret key", _usk, sizeof(usk_t)); //usk speichern und beschriften
-    fclose(fp);
-
-    //calculate upk from usk (for debugging), if filename is given
-    if (argc == 5) {
-        uint8_t *_upk = malloc(sizeof(upk_t));
-        re = calculate_upk_from_usk((upk_t *) _upk, (usk_t *) _usk); //TODO: T4!!!!
+    if (argc == 4) {
+        //calculate usk with mpk and ID
+        int re = calculate_usk((usk_t *) _usk, (msk_t *) _msk, _identity);
         if (0 != re) {
-            printf("%s generate user-public-key fails.\n", CRYPTO_ALGNAME);
+            printf("%s generate user-secret-key fails.\n", CRYPTO_ALGNAME);
+            return -1;
+        }
+    } else {
+        //calculate upk from usk (for debugging), if filename is given
+        uint8_t *_upk = malloc(sizeof(upk_t));
+        int re = calculate_usk_and_upk((usk_t *) _usk, (upk_t *) _upk, (msk_t *) _msk, _identity); //TODO: T4!!!!
+        if (0 != re) {
+            printf("%s generate upk and usk fails.\n", CRYPTO_ALGNAME);
             return -1;
         }
 
@@ -89,11 +79,21 @@ int main(int argc, char **argv) {
             return -1;
         }
         byte_fdump(fp, CRYPTO_ALGNAME " user-public-key", _upk,
-                   CRYPTO_USER_SECRET_KEY_BYTES); //upk speichern und beschriften
+                   CRYPTO_USER_PUBLIC_KEY_BYTES); //upk speichern und beschriften
         fclose(fp);
 
         free(_upk);
     }
+
+    //write usk to disk
+    fp = fopen(argv[3], "w+");
+    if (NULL == fp) {
+        printf("fail to write user secret key file.\n");
+        return -1;
+    }
+    byte_fdump(fp, CRYPTO_ALGNAME " user secret key", _usk, sizeof(usk_t)); //usk speichern und beschriften
+    fclose(fp);
+
 
     //free usk and rest
 

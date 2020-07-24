@@ -605,6 +605,17 @@ unsigned mono_rank_grlex(int m, unsigned *x)
         exit(1);
     }
 /*
+  Ensure that 0 <= X(I).
+*/
+    for (i = 0; i < m; i++) {
+        if (x[i] < 0) {
+            fprintf(stderr, "\n");
+            fprintf(stderr, "MONO_RANK_GRLEX - Fatal error!\n");
+            fprintf(stderr, "  X[I] < 0\n");
+            exit(1);
+        }
+    }
+/*
   NM = sum ( X )
 */
     nm = i4vec_sum(m, x);
@@ -613,7 +624,7 @@ unsigned mono_rank_grlex(int m, unsigned *x)
 */
     ns = nm + m - 1;
     ks = m - 1;
-    xs = (int *) malloc(ks * sizeof(int));
+    xs = (int *) malloc((ks + 1) * sizeof(int));
     xs[0] = (int) x[0] + 1;
     for (i = 2; i < m; i++) {
         xs[i - 1] = xs[i - 2] + (int) x[i - 1] + 1;
