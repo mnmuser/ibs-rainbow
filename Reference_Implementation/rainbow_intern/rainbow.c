@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdio.h>
 
 
 #include "utils_prng.h"
@@ -32,18 +33,17 @@
 
 
 
-int rainbow_sign( uint8_t * signature , const sk_t * sk , const uint8_t * _digest )
-{
+int rainbow_sign(uint8_t *signature, const usk_t *sk, const uint8_t *_digest) {
     // allocate temporary storage.
-    uint8_t * mat_l1 = aligned_alloc( 32 , _O1*_O1_BYTE );
-    uint8_t * mat_l2 = aligned_alloc( 32 , _O2*_O2_BYTE );
-    uint8_t * mat_buffer = aligned_alloc( 32 , 2*_MAX_O*_MAX_O_BYTE );
+    uint8_t *mat_l1 = aligned_alloc(32, _O1 * _O1_BYTE);
+    uint8_t *mat_l2 = aligned_alloc(32, _O2 * _O2_BYTE);
+    uint8_t *mat_buffer = aligned_alloc(32, 2 * _MAX_O * _MAX_O_BYTE);
 
     // setup PRNG
     prng_t prng_sign;
-    uint8_t prng_preseed[LEN_SKSEED+_HASH_LEN];
-    memcpy( prng_preseed , sk->sk_seed , LEN_SKSEED );
-    memcpy( prng_preseed + LEN_SKSEED , _digest , _HASH_LEN );                        // prng_preseed = sk_seed || digest
+    uint8_t prng_preseed[LEN_SKSEED + _HASH_LEN];
+    memcpy(prng_preseed, sk->sk_seed, LEN_SKSEED);
+    memcpy(prng_preseed + LEN_SKSEED, _digest, _HASH_LEN);                        // prng_preseed = sk_seed || digest
     uint8_t prng_seed[_HASH_LEN];
     hash_msg( prng_seed , _HASH_LEN , prng_preseed , _HASH_LEN+LEN_SKSEED );
     prng_set( &prng_sign , prng_seed , _HASH_LEN );                                   // seed = H( sk_seed || digest )
@@ -65,7 +65,7 @@ int rainbow_sign( uint8_t * signature , const sk_t * sk , const uint8_t * _diges
     }
 
     // Given the vinegars, pre-compute variables needed for layer 2
-    uint8_t r_l1_F1[_O1_BYTE] = {0}; // TODO: what is r?
+    uint8_t r_l1_F1[_O1_BYTE] = {0};
     uint8_t r_l2_F1[_O2_BYTE] = {0};
     batch_quad_trimat_eval(r_l1_F1, sk->l1_F1, vinegar, _V1, _O1_BYTE);
     batch_quad_trimat_eval(r_l2_F1, sk->l2_F1, vinegar, _V1, _O2_BYTE);
@@ -167,54 +167,21 @@ int rainbow_sign( uint8_t * signature , const sk_t * sk , const uint8_t * _diges
 }
 
 
-
-
-
-int rainbow_verify( const uint8_t * digest , const uint8_t * signature , const pk_t * pk )
-{
+int rainbow_verify(const uint8_t *digest, const uint8_t *signature, const upk_t *pk) {
     unsigned char digest_ck[_PUB_M_BYTE];
     // public_map( digest_ck , pk , signature ); Evaluating the quadratic public polynomials.
-    batch_quad_trimat_eval( digest_ck , pk->pk , signature , _PUB_N , _PUB_M_BYTE );
+    batch_quad_trimat_eval(digest_ck, pk->pk, signature, _PUB_N, _PUB_M_BYTE);
 
     unsigned char correct[_PUB_M_BYTE];
     unsigned char digest_salt[_HASH_LEN + _SALT_BYTE];
-    memcpy( digest_salt , digest , _HASH_LEN );
-    memcpy( digest_salt+_HASH_LEN , signature+_PUB_N_BYTE , _SALT_BYTE );
-    hash_msg( correct , _PUB_M_BYTE , digest_salt , _HASH_LEN+_SALT_BYTE );  // H( digest || salt )
+    memcpy(digest_salt, digest, _HASH_LEN);
+    memcpy(digest_salt + _HASH_LEN, signature + _PUB_N_BYTE, _SALT_BYTE);
+    hash_msg(correct, _PUB_M_BYTE, digest_salt, _HASH_LEN + _SALT_BYTE);  // H( digest || salt )
 
-    // check consistancy.
+    // check consistency.
     unsigned char cc = 0;
     for(unsigned i=0;i<_PUB_M_BYTE;i++) {
-        cc |= (digest_ck[i]^correct[i]);
+        cc |= (digest_ck[i] ^ correct[i]);
     }
     return (0==cc)? 0: -1;
 }
-
-
-
-///////////////  cyclic version  ///////////////////////////
-
-
-int rainbow_sign_cyclic( uint8_t * signature , const csk_t * csk , const uint8_t * digest )
-{
-    sk_t * sk = aligned_alloc( 32 , sizeof(sk_t) + 32 );
-    if( NULL == sk ) return -1;
-    generate_secretkey_cyclic( sk, csk->pk_seed , csk->sk_seed );   // generating classic secret key.
-
-    int r = rainbow_sign( signature , sk , digest );
-    free( sk );
-    return r;
-}
-
-int rainbow_verify_cyclic( const uint8_t * digest , const uint8_t * signature , const cpk_t * _pk )
-{
-    pk_t * pk = aligned_alloc( 32 , sizeof(pk_t) + 32 );
-    if( NULL == pk ) return -1;
-    cpk_to_pk( pk , _pk );         // generating classic public key.
-
-    int r = rainbow_verify( digest , signature , pk );
-    free( pk );
-    return r;
-}
-
-

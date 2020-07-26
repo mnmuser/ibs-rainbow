@@ -76,14 +76,15 @@ static inline void _gf256v_mul_scalar_u32(uint8_t *a, uint8_t b, unsigned _num_b
 
 /////////////////////////////////////
 
+// I don't modify this function because of problems with the data-types (depending to the length of ID)
 static inline void
 _gf16v_madd_u32(uint8_t *accu_c, const uint8_t *a, uint8_t gf16_b, unsigned _num_byte) { // 3. Variable in 2. einsetzen
-    unsigned n_u32 = _num_byte >> 2; // = num_byte * 2^(2)
-    uint32_t *c_u32 = (uint32_t *) accu_c;
-    const uint32_t *a_u32 = (const uint32_t *) a;
+    unsigned n_u32 = _num_byte >> 2; // -> divide by 4, number of u32-Numbers
+    uint32_t *c_u32 = (uint32_t *) accu_c; // c_u32 points to accu_c
+    const uint32_t *a_u32 = (const uint32_t *) a; // a-u32 points to a
     for (unsigned i = 0; i < n_u32; i++) {
         c_u32[i] ^= gf16v_mul_u32(a_u32[i],
-                                  gf16_b); // zeilenweise gf_16_b in a(_u32) einsetzen, dann XOR (nichts, wenn accu_c null)
+                                  gf16_b); /// GF16mul: hier wird gleich auf u32 (also 4 byte) operiert, aber schon gf16; gf16_b hat nur 4 bit
     }
     union tmp_32 {
         uint8_t u8[4];
@@ -91,7 +92,7 @@ _gf16v_madd_u32(uint8_t *accu_c, const uint8_t *a, uint8_t gf16_b, unsigned _num
     } t;
     accu_c += (n_u32 << 2);
     a += (n_u32 << 2);
-    unsigned rem = _num_byte & 3;
+    unsigned rem = _num_byte & 3; // -> the last 2 bits (ein U32 hat 4 Byte, hier gehts um die letzten 3 Byte)
     for (unsigned i = 0; i < rem; i++) t.u8[i] = a[i];
     t.u32 = gf16v_mul_u32(t.u32, gf16_b);
     for (unsigned i = 0; i < rem; i++) accu_c[i] ^= t.u8[i];

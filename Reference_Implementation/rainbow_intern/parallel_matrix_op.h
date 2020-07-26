@@ -7,6 +7,7 @@
 #define _P_MATRIX_OP_H_
 
 
+#include "rainbow_keypair.h"
 
 #ifdef  __cplusplus
 extern  "C" {
@@ -64,9 +65,12 @@ unsigned idx_of_2trimat( unsigned i_row , unsigned j_col , unsigned n_var )
 /// @param[in]   bwidth   - the width of the batched matrix A, i.e., A is a Awidth x Awidth matrix.
 /// @param[in]   size_batch - number of the batched elements in the corresponding position of the matrix.
 ///
-void UpperTrianglize( unsigned char * btriC , const unsigned char * bA , unsigned Awidth, unsigned size_batch );
+void UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsigned Awidth, unsigned size_batch);
 
+void quartic_UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsigned Awidth, unsigned size_batch);
 
+void quartic_copy_UpperTrianglize_copy(unsigned char *btriC, const unsigned char *bA, unsigned A_grade, unsigned Awidth,
+                                       unsigned size_batch);
 
 
 ////////////////////  Section:  matrix multiplications  ///////////////////////////////
@@ -84,8 +88,15 @@ void UpperTrianglize( unsigned char * btriC , const unsigned char * bA , unsigne
 /// @param[in]   Bwidth           - the width of B.
 /// @param[in]   size_batch - number of the batched elements in the corresponding position of the matrix.
 ///
-void batch_trimat_madd_gf16( unsigned char * bC , const unsigned char* btriA ,
-        const unsigned char* B , unsigned Bheight, unsigned size_Bcolvec , unsigned Bwidth, unsigned size_batch );
+void batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA,
+                            const unsigned char *B, unsigned Bheight, unsigned size_Bcolvec, unsigned Bwidth,
+                            unsigned size_batch);
+
+///ID_SHIT
+void
+quartic_batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA, const unsigned char *B, unsigned Bheight,
+                               unsigned size_Bcolvec, unsigned Bwidth,
+                               unsigned size_batch);
 
 ///
 /// @brief  bC += btriA * B  , in GF(256)
@@ -308,15 +319,33 @@ void batch_quad_recmat_eval_gf16( unsigned char * z, const unsigned char * y, un
 /// @param[in]   dim_x        - the length of x.
 /// @param[in]   size_batch - number of the batched elements in the corresponding position of the matrix.
 ///
-void batch_quad_recmat_eval_gf256( unsigned char * z, const unsigned char * y, unsigned dim_y,
-        const unsigned char * mat, const unsigned char * x, unsigned dim_x , unsigned size_batch );
+void batch_quad_recmat_eval_gf256(unsigned char *z, const unsigned char *y, unsigned dim_y,
+                                  const unsigned char *mat, const unsigned char *x, unsigned dim_x,
+                                  unsigned size_batch);
+
+void quartic_gf16v_madd(uint8_t *C, unsigned C_grade, unsigned C_structure_grade, const uint8_t *A, unsigned A_grade,
+                        unsigned A_strucutre_grade, const unsigned char *B, unsigned B_offset, unsigned B_grade,
+                        unsigned B_structure_grade, unsigned size_batch);
+
+void
+quartic_batch_matTr_madd_gf16(unsigned char *bC, const unsigned char *A_to_tr, unsigned Aheight, unsigned size_Acolvec,
+                              unsigned Awidth, const unsigned char *bB, unsigned Bwidth, unsigned size_batch);
 
 
+void quartic_batch_trimatTr_madd_gf16(unsigned char *bC, const unsigned char *btriA, const unsigned char *B,
+                                      unsigned Bheight, unsigned size_Bcolvec, unsigned Bwidth, unsigned size_batch);
 
+void quartic_batch_mat_madd_gf16(unsigned char *bC, const unsigned char *bA, unsigned Aheight,
+                                 const unsigned char *B, unsigned Bheight, unsigned size_Bcolvec, unsigned Bwidth,
+                                 unsigned size_batch);
 
+void quartic_batch_bmatTr_madd_gf16(unsigned char *bC, const unsigned char *bA_to_tr, unsigned Awidth_before_tr,
+                                    const unsigned char *B, unsigned Bheight, unsigned size_Bcolvec, unsigned Bwidth,
+                                    unsigned size_batch);
 
+void calculate_values_public_key(unsigned char *upk, unsigned char *mpk, unsigned char *id);
 
-
+void calculate_values_secret_key(unsigned char *usk, unsigned char *msk, unsigned char *id);
 
 #ifdef  __cplusplus
 }
@@ -324,4 +353,3 @@ void batch_quad_recmat_eval_gf256( unsigned char * z, const unsigned char * y, u
 
 
 #endif // _P_MATRIX_OP_H_
-

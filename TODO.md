@@ -25,6 +25,6 @@ usk = S * S', S'⁻1 * F * T'⁻1 , T' * T
 
 ## optional things
 
-- get Level I, III and V in one directory (set compile flags in makefile) (almost no differences between directories)
-- get Classic, Cyclic and Cyclic_compressed in one file (set compile flags in makefile)
+- get Level I, III and V in one directory (set compile flags in makefile) (almost no differences between directories) ✔
+- get Classic, Cyclic and Cyclic_compressed in one file (set compile flags in makefile) ✔
 - same for AVX2 and SSE3?

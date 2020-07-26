@@ -24,18 +24,21 @@
 
 #if defined _RAINBOW_CLASSIC
 
-#define CRYPTO_SECRETKEYBYTES sizeof(sk_t)
-#define CRYPTO_PUBLICKEYBYTES sizeof(pk_t)
+#define CRYPTO_MASTER_SECRET_KEY_BYTES sizeof(msk_t)
+#define CRYPTO_MASTER_PUBLIC_KEY_BYTES sizeof(mpk_t)
+
+#define CRYPTO_USER_SECRET_KEY_BYTES sizeof(usk_t)
+#define CRYPTO_USER_PUBLIC_KEY_BYTES sizeof(upk_t)
 
 #elif defined _RAINBOW_CYCLIC
 
-#define CRYPTO_SECRETKEYBYTES sizeof(sk_t)
-#define CRYPTO_PUBLICKEYBYTES sizeof(cpk_t)
+#define CRYPTO_MASTER_SECRET_KEY_BYTES sizeof(msk_t)
+#define CRYPTO_MASTER_PUBLIC_KEY_BYTES sizeof(cpk_t)
 
 #elif defined _RAINBOW_CYCLIC_COMPRESSED
 
-#define CRYPTO_SECRETKEYBYTES sizeof(csk_t)
-#define CRYPTO_PUBLICKEYBYTES sizeof(cpk_t)
+#define CRYPTO_MASTER_SECRET_KEY_BYTES sizeof(csk_t)
+#define CRYPTO_MASTER_PUBLIC_KEY_BYTES sizeof(cpk_t)
 
 #else
 error here

@@ -1,5 +1,5 @@
-///  @file rainbow-genkey.c
-///  @brief A command-line tool for generating key pairs.
+///  @file rainbow-gen-masterkey.c
+///  @brief A command-line tool for generating master key pairs.
 ///
 
 #include <stdio.h>
@@ -15,27 +15,28 @@
 
 int main( int argc , char ** argv )
 {
-	printf( "%s\n", CRYPTO_ALGNAME );
+    printf("%s\n", CRYPTO_ALGNAME);
 
-    printf("sk size: %lu\n", CRYPTO_SECRETKEYBYTES);
-    printf("pk size: %lu\n", CRYPTO_PUBLICKEYBYTES);
+    printf("msk size: %lu\n", CRYPTO_MASTER_SECRET_KEY_BYTES);
+    printf("mpk size: %lu\n", CRYPTO_MASTER_PUBLIC_KEY_BYTES);
     printf("hash size: %d\n", _HASH_LEN);
     printf("signature size: %d\n\n", CRYPTO_BYTES);
 
     if (!((3 == argc) || (4 == argc))) {
-        printf("Usage:\n\n\trainbow-genkey pk_file_name sk_file_name [random_seed_file]\n\n");
+        printf("Usage:\n\n\trainbow-gen-masterkey pk_file_name sk_file_name [random_seed_file]\n\n");
         return -1;
     }
 
     // set random seed
     unsigned char rnd_seed[48] = {0};
     int rr = byte_from_binfile(rnd_seed, 48, (4 == argc) ? argv[3] : "/dev/random");
+    //wenn also kein rnd übergeben wird, dann /dev/random
     if (0 != rr) printf("read seed file fail.\n");
     randombytes_init(rnd_seed, NULL, 256);
 
 
-    uint8_t *_sk = (uint8_t *) malloc(CRYPTO_SECRETKEYBYTES);
-    uint8_t *_pk = (uint8_t *) malloc(CRYPTO_PUBLICKEYBYTES);
+    uint8_t *_sk = (uint8_t *) malloc(CRYPTO_MASTER_SECRET_KEY_BYTES);
+    uint8_t *_pk = (uint8_t *) malloc(CRYPTO_MASTER_PUBLIC_KEY_BYTES);
     FILE *fp;
 
     int r = crypto_sign_keypair(_pk, _sk); //keys erstellen
@@ -49,7 +50,7 @@ int main( int argc , char ** argv )
         printf("fail to open public key file.\n");
         return -1;
     }
-    byte_fdump(fp, CRYPTO_ALGNAME " public key", _pk, CRYPTO_PUBLICKEYBYTES); //pk speichern und beschriften
+    byte_fdump(fp, CRYPTO_ALGNAME " public key", _pk, CRYPTO_MASTER_PUBLIC_KEY_BYTES); //pk speichern und beschriften
     fclose(fp);
 
     fp = fopen(argv[2], "w+");
@@ -58,11 +59,11 @@ int main( int argc , char ** argv )
         return -1;
     }
     //ptr = (unsigned char *)&sk;
-    //sprintf(msg,"%s secret key", name);
-    byte_fdump(fp, CRYPTO_ALGNAME " secret key", _sk, CRYPTO_SECRETKEYBYTES); // sk speichern und beschriften
+    //printf(msg,"%s secret key", name);
+    byte_fdump(fp, CRYPTO_ALGNAME " secret key", _sk, CRYPTO_MASTER_SECRET_KEY_BYTES); // sk speichern und beschriften
     fclose(fp);
 
-    printf("generate %s pk/sk success.\n", CRYPTO_ALGNAME);
+    printf("generate %s mpk/msk success.\n", CRYPTO_ALGNAME);
 
     free(_sk);
     free(_pk);
