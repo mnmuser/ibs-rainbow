@@ -605,17 +605,6 @@ unsigned mono_rank_grlex(int m, unsigned *x)
         exit(1);
     }
 /*
-  Ensure that 0 <= X(I).
-*/
-    for (i = 0; i < m; i++) {
-        if (x[i] < 0) {
-            fprintf(stderr, "\n");
-            fprintf(stderr, "MONO_RANK_GRLEX - Fatal error!\n");
-            fprintf(stderr, "  X[I] < 0\n");
-            exit(1);
-        }
-    }
-/*
   NM = sum ( X )
 */
     nm = i4vec_sum(m, x);

@@ -182,7 +182,6 @@ int rainbow_verify(const uint8_t *digest, const uint8_t *signature, const upk_t 
     unsigned char cc = 0;
     for(unsigned i=0;i<_PUB_M_BYTE;i++) {
         cc |= (digest_ck[i] ^ correct[i]);
-        printf("Stelle %u: %u\n", i, (digest_ck[i] ^ correct[i]));
     }
     return (0==cc)? 0: -1;
 }
