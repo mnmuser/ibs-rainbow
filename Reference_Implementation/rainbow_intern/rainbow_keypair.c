@@ -205,7 +205,7 @@ void generate_keypair(mpk_t *rpk, msk_t *sk, const unsigned char *sk_seed) {
 
     /// at this point P = F o T ; S is still missing and P/Q is cubic on ID
 
-    ///TODO: is this right?
+    ///TODO: is this right? (let's test)
 //    quadratic_calculate_t4(sk->t4, sk->t1, sk->t3); // t2 = t2 + t1*t3
 
     quartic_obsfucate_l1_polys(pk->l1_Q1, pk->l2_Q1, 1, N_TRIANGLE_TERMS(_V1), sk->s1); // -> integrate S :)
