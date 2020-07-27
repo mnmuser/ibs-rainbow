@@ -482,30 +482,16 @@ void calculate_values_secret_key(unsigned char *usk, unsigned char *msk, unsigne
     usk += LEN_SKSEED;
     msk += LEN_SKSEED;
 
-    unsigned s1_t1_size = sizeof(((usk_t *) 0)->s1) + sizeof(((usk_t *) 0)->t1) + sizeof(((usk_t *) 0)->t4) +
-                          sizeof(((usk_t *) 0)->t3);
-//    unsigned t4_size = sizeof(((usk_t *) 0)->t4);
-//    unsigned t3_size = sizeof(((usk_t *) 0)->t3);
+    unsigned s_t_size = sizeof(((usk_t *) 0)->s1) + sizeof(((usk_t *) 0)->t1) + sizeof(((usk_t *) 0)->t4) +
+                        sizeof(((usk_t *) 0)->t3);
 
-    for (unsigned i = 0; i < s1_t1_size * 2; i++) {
+    for (unsigned i = 0; i < s_t_size * 2; i++) {
         gf16v_set_ele(usk, i, polynomial_value(_ID, msk, i * _ID, _lin_e_power2, id));
     }
-    usk += s1_t1_size;
-    msk += s1_t1_size * _ID;
+    usk += s_t_size;
+    msk += s_t_size * _ID;
 
-//    for (unsigned i = 0; i < t4_size * 2; i++) {
-//        gf16v_set_ele(usk, i, polynomial_value(N_QUADRATIC_POLY, msk, i * N_QUADRATIC_POLY, _full_e_power2, id));
-//    }
-//    usk += t4_size;
-//    msk += t4_size * N_QUADRATIC_POLY;
-//
-//    for (unsigned i = 0; i < t3_size * 2; i++) {
-//        gf16v_set_ele(usk, i, polynomial_value(_ID, msk, i * _ID, _lin_e_power2, id));
-//    }
-//    usk += t3_size;
-//    msk += t3_size * _ID;
-
-    for (unsigned i = 0; i < (sizeof(usk_t) - LEN_SKSEED - (s1_t1_size)) * 2; i++) {//+t4_size+t3_size)) * 2; i++) {
+    for (unsigned i = 0; i < (sizeof(usk_t) - LEN_SKSEED - (s_t_size)) * 2; i++) {//+t4_size+t3_size)) * 2; i++) {
         gf16v_set_ele(usk, i, polynomial_value(N_LINEAR_POLY, msk, i * N_LINEAR_POLY, _full_e_power2, id));
     }
 }
