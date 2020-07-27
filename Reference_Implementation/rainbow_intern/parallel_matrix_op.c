@@ -7,6 +7,7 @@
 
 #include "blas_comm.h"
 #include "blas.h"
+#include "rainbow_blas.h"
 
 #include "parallel_matrix_op.h"
 #include "rainbow_keypair.h"
@@ -34,7 +35,7 @@ void UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsigned Awi
 }
 
 
-void quartic_UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsigned Awidth, unsigned size_batch) {
+void quartic_UpperTrianglize_gf16(unsigned char *btriC, const unsigned char *bA, unsigned Awidth, unsigned size_batch) {
 
     unsigned char *runningC = btriC;
     unsigned Aheight = Awidth;
@@ -58,32 +59,6 @@ void quartic_UpperTrianglize(unsigned char *btriC, const unsigned char *bA, unsi
         runningC += size_batch * (Aheight - i) * N_QUARTIC_POLY;
     }
 }
-
-///if C is empty
-void quartic_copy_UpperTrianglize_copy(unsigned char *btriC, const unsigned char *bA, unsigned A_grade, unsigned Awidth,
-                                       unsigned size_batch) {
-    unsigned char *runningC = btriC;
-    unsigned Aheight = Awidth;
-
-    for (unsigned i = 0; i < Aheight; i++) {
-        for (unsigned j = 0; j < i; j++) {
-            unsigned idx = idx_of_trimat(j, i, Aheight);
-            for (unsigned k = 0; k < size_batch * 2; k++) { //*2 because GF16
-                gf16_grade_n_poly_copy(btriC + idx * size_batch * N_QUARTIC_POLY, N_QUARTIC_POLY * k,
-                                       bA + size_batch * (i * Awidth + j) * N_QUARTIC_POLY, N_QUARTIC_POLY * k,
-                                       A_grade);
-            }
-        }
-        for (unsigned l = 0; l < size_batch * (Aheight - i) * 2; l++) {
-            gf16_grade_n_poly_copy(runningC, N_QUARTIC_POLY * l, bA + size_batch * (i * Awidth + i) * N_QUARTIC_POLY,
-                                   l * N_QUARTIC_POLY, A_grade);
-        }
-        runningC += size_batch * (Aheight - i) * N_QUARTIC_POLY;
-    }
-}
-
-
-
 
 /////////////////  Section: matrix multiplications  ///////////////////////////////
 
@@ -487,17 +462,10 @@ void quartic_gf16v_madd(uint8_t *C, unsigned C_grade, unsigned C_structure_grade
     unsigned tmp_o = 0;
 
     for (unsigned l = 0; l < size_batch * 2; l++) { // *2 for gf16 (size is in byte)
-//        polynomial_print(_ID,A,l* A_loop_offset, _lin_e_power2,"A:");
-//        polynomial_print(6,B,B_offset * B_loop_offset,_full_e_power2,"B:");
 
         polynomial_mul(A, l * A_loop_offset, A_grade, B, B_offset * B_loop_offset, B_grade, tmp_product, &tmp_o, tmp_e);
 
-//        polynomial_print(tmp_o,tmp_product,0,tmp_e,"Produkt:");
-//        polynomial_print(15,C,l * N_QUARTIC_POLY,_full_e_power2,"old C:");
-
         polynomial_add(C, l * C_loop_offset, C_grade, tmp_product, 0, tmp_o, tmp_e);
-
-//        polynomial_print(15,C,l * N_QUARTIC_POLY,_full_e_power2,"written:");
     }
 }
 

@@ -18,6 +18,11 @@
 #define gfv_mul_scalar  gf16v_mul_scalar
 #define gfv_madd        gf16v_madd
 
+#define write_lin_to_quartic    write_lin_to_quartic_gf16
+#define set_quartic_zero        set_quartic_zero_gf16
+#define grade_n_poly_copy       grade_n_poly_copy_gf16
+#define gfv_copy                gf16v_copy
+
 #define gfmat_prod      gf16mat_prod
 #define gfmat_inv       gf16mat_inv
 
@@ -31,7 +36,13 @@
 #define batch_quad_trimat_eval batch_quad_trimat_eval_gf16
 #define batch_quad_recmat_eval batch_quad_recmat_eval_gf16
 
-#define quartic_batch_trimat_madd quartic_batch_trimat_madd_gf16
+#define quartic_batch_trimat_madd   quartic_batch_trimat_madd_gf16
+#define quartic_batch_mat_madd      quartic_batch_mat_madd_gf16
+#define quartic_batch_matTr_madd    quartic_batch_matTr_madd_gf16
+#define quartic_batch_trimatTr_madd quartic_batch_trimatTr_madd_gf16
+#define quartic_batch_bmatTr_madd   quartic_batch_bmatTr_madd_gf16
+
+#define quartic_UpperTrianglize     quartic_UpperTrianglize_gf16
 #else
 
 #define gfv_get_ele     gf256v_get_ele

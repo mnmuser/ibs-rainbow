@@ -15,7 +15,7 @@
  *
  * Needed for Operations on the quartic id-polynomials.
  * Adapted for GF16 (and GF256).
- *
+ * TODO: GF256 and naming
  * Modified in May 2020.
  */
 
@@ -939,8 +939,8 @@ polynomial_add(unsigned char *destSummand, unsigned dest_offset, unsigned dest_g
     unsigned char tmp_summand[(summand_o + 1) / 2];
     unsigned char tmp_dst[(summand_o + B_o + 1) / 2];
 
-    gf16_copy(tmp_summand, 0, summand, summand_offset, summand_o);
-    gf16_grade_n_poly_copy(tmp_B, 0, destSummand, dest_offset, dest_grade);
+    gfv_copy(tmp_summand, 0, summand, summand_offset, summand_o);
+    grade_n_poly_copy(tmp_B, 0, destSummand, dest_offset, dest_grade);
 
 //    polynomial_print(summand_o, tmp_summand, 0, summand_e, "summand:");
 //    polynomial_print(B_o, tmp_B, 0, _full_e_power2, "tmp_C:");
@@ -959,7 +959,7 @@ polynomial_add(unsigned char *destSummand, unsigned dest_offset, unsigned dest_g
 
     /// END ///
 
-    gf16_copy(destSummand, dest_offset, tmp_dst, 0, dest_o);
+    gfv_copy(destSummand, dest_offset, tmp_dst, 0, dest_o);
 }
 
 /******************************************************************************/

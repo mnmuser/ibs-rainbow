@@ -84,7 +84,7 @@ void calculate_Q_from_F(ext_cpk_t *Qs, const usk_t *Fs, const usk_t *Ts);
 /// \param q
 /// \param f
 /// \param length_f
-void write_lin_to_quartic(unsigned char *q, const unsigned char *f, unsigned long length_f);
+void write_lin_to_quartic_gf16(unsigned char *q, const unsigned char *f, unsigned long length_f);
 
 /// @brief function to write from a linear function without constant to a quadratic function respecting gaps
 /// \param dest
@@ -92,13 +92,13 @@ void write_lin_to_quartic(unsigned char *q, const unsigned char *f, unsigned lon
 /// \param length_f
 void write_lin_wo_const_to_quadratic(unsigned char *dest, const unsigned char *src, unsigned long length_f);
 
-void set_quartic_zero(unsigned char *q, unsigned length);
+void set_quartic_zero_gf16(unsigned char *q, unsigned length);
 
-void gf16_grade_n_poly_copy(unsigned char *dest, unsigned gf16_offset_dest, const unsigned char *src,
+void grade_n_poly_copy_gf16(unsigned char *dest, unsigned gf16_offset_dest, const unsigned char *src,
                             unsigned gf16_offset_src, unsigned grade_n);
 
-void gf16_copy(unsigned char *dest, unsigned gf16_offset_dest, const unsigned char *src,
-               unsigned gf16_offset_src, unsigned size_values);
+void gf16v_copy(unsigned char *dest, unsigned gf16_offset_dest, const unsigned char *src,
+                unsigned gf16_offset_src, unsigned size_values);
 
 #ifdef  __cplusplus
 }
