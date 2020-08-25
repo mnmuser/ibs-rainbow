@@ -29,9 +29,9 @@ extern  "C" {
 /// standard e TODO: only for ID2
 
 
-extern const unsigned _full_e_power2[15 + 3];
+extern const unsigned _full_e[15];
 
-extern const unsigned _lin_e_power2[2];
+extern const unsigned _lin_e[2];
 
 unsigned _grade_n_poly_terms(unsigned grade); //TODO: extern, static, global namespace...
 

@@ -47,13 +47,13 @@ void quartic_UpperTrianglize_gf16(unsigned char *btriC, const unsigned char *bA,
 
                 polynomial_add(btriC + idx * size_batch * N_QUARTIC_POLY, N_QUARTIC_POLY * k, 3,
                                bA + size_batch * (i * Awidth + j) * N_QUARTIC_POLY, N_QUARTIC_POLY * k,
-                               N_CUBIC_POLY, _full_e_power2);
+                               N_CUBIC_POLY, _full_e);
             }
             //non quartic: gf256v_add( btriC + idx*size_batch , bA + size_batch*(i*Awidth+j) , size_batch );
         }
         for (unsigned l = 0; l < size_batch * (Aheight - i) * 2; l++) {
             polynomial_add(runningC, N_QUARTIC_POLY * l, 3, bA + size_batch * (i * Awidth + i) * N_QUARTIC_POLY,
-                           l * N_QUARTIC_POLY, N_CUBIC_POLY, _full_e_power2);
+                           l * N_QUARTIC_POLY, N_CUBIC_POLY, _full_e);
         }
         //non quartic: gf256v_add(runningC, bA + size_batch * (i * Awidth + i), size_batch * (Aheight - i)); /// ATTENTION GF256
         runningC += size_batch * (Aheight - i) * N_QUARTIC_POLY;
@@ -472,7 +472,7 @@ void quartic_gf16v_madd(uint8_t *C, unsigned C_grade, unsigned C_structure_grade
 void calculate_values_public_key(unsigned char *upk, unsigned char *mpk, unsigned char *id) {
     unsigned char value_i;
     for (unsigned i = 0; i < sizeof(upk_t) * 2; i++) {
-        value_i = polynomial_value(N_QUARTIC_POLY, mpk, i * N_QUARTIC_POLY, _full_e_power2, id);
+        value_i = polynomial_value(N_QUARTIC_POLY, mpk, i * N_QUARTIC_POLY, _full_e, id);
         gf16v_set_ele(upk, i, value_i);
     }
 }
@@ -486,13 +486,13 @@ void calculate_values_secret_key(unsigned char *usk, unsigned char *msk, unsigne
                         sizeof(((usk_t *) 0)->t3);
 
     for (unsigned i = 0; i < s_t_size * 2; i++) {
-        gf16v_set_ele(usk, i, polynomial_value(_ID, msk, i * _ID, _lin_e_power2, id));
+        gf16v_set_ele(usk, i, polynomial_value(_ID, msk, i * _ID, _lin_e, id));
     }
     usk += s_t_size;
     msk += s_t_size * _ID;
 
     for (unsigned i = 0; i < (sizeof(usk_t) - LEN_SKSEED - (s_t_size)) * 2; i++) {//+t4_size+t3_size)) * 2; i++) {
-        gf16v_set_ele(usk, i, polynomial_value(N_LINEAR_POLY, msk, i * N_LINEAR_POLY, _full_e_power2, id));
+        gf16v_set_ele(usk, i, polynomial_value(N_LINEAR_POLY, msk, i * N_LINEAR_POLY, _full_e, id));
     }
 }
 

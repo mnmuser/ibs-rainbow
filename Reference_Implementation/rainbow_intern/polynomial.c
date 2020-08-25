@@ -895,35 +895,12 @@ polynomial_add(unsigned char *destSummand, unsigned dest_offset, unsigned dest_g
 
   Modified:
 
-    01 December 2013
+    July 2020
 
   Author:
 
     John Burkardt
-
- 4
-  Parameters:
-
-    Input, unsigned O1, the "order" of polynomial 1.
-
-    Input, double C1[O1], the coefficients of polynomial 1.
-
-    Input, unsigned E1[O1], the indices of the exponents of 
-    polynomial 1.
-
-    Input, unsigned O2, the "order" of polynomial 2.
-
-    Input, double C2[O2], the coefficients of polynomial 2.
-
-    Input, unsigned E2[O2], the indices of the exponents of 
-    polynomial 2.
-
-    Output, unsigned *O, the "order" of the polynomial sum.
-
-    Output, double C[*O], the coefficients of the polynomial sum.
-
-    Output, unsigned E[*O], the indices of the exponents of 
-    the polynomial sum.
+    David Linder
 */
 {
     unsigned B_o = _grade_n_poly_terms(dest_grade);
@@ -932,7 +909,7 @@ polynomial_add(unsigned char *destSummand, unsigned dest_offset, unsigned dest_g
     unsigned dest_e[dest_o];
 
     //normal Polynom has standard e
-    unsigned const *B_e = _full_e_power2;
+    unsigned const *B_e = _full_e;
 
     //needed, because else this function will write to far into the key..
     unsigned char tmp_B[(B_o + 1) / 2];
@@ -943,9 +920,10 @@ polynomial_add(unsigned char *destSummand, unsigned dest_offset, unsigned dest_g
     grade_n_poly_copy(tmp_B, 0, destSummand, dest_offset, dest_grade);
 
 //    polynomial_print(summand_o, tmp_summand, 0, summand_e, "summand:");
-//    polynomial_print(B_o, tmp_B, 0, _full_e_power2, "tmp_C:");
+//    polynomial_print(B_o, tmp_B, 0, _full_e, "tmp_C:");
 
     /// MAIN PART///
+    //TODO: this could be done by easy XOR-loop ath the right position
     r8vec_concatenate(summand_o, tmp_summand, B_o, tmp_B, tmp_dst, 0);
     i4vec_concatenate(summand_o, summand_e, B_o, B_e, dest_e);
 
@@ -1094,13 +1072,13 @@ polynomial_mul(const unsigned char *factor_A, unsigned A_offset, unsigned A_grad
 */
 {
     unsigned A_o = _grade_n_poly_terms(A_grade);
-    unsigned const *A_e = _full_e_power2;
+    unsigned const *A_e = _full_e;
 
     unsigned B_o = _grade_n_poly_terms(B_grade);
-    unsigned const *B_e = _full_e_power2;
+    unsigned const *B_e = _full_e;
 
-    if (A_grade == 0) A_e = _lin_e_power2;
-    if (B_grade == 0) B_e = _lin_e_power2;
+    if (A_grade == 0) A_e = _lin_e;
+    if (B_grade == 0) B_e = _lin_e;
 
     int m = _ID;
 
