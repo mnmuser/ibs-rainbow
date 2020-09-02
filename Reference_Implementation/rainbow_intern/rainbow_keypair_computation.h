@@ -24,7 +24,7 @@ extern  "C" {
 ///
 typedef
 struct rainbow_extend_masterpublickey {
-    unsigned char l1_Q1[_O1_BYTE * N_TRIANGLE_TERMS(_V1) * N_QUARTIC_POLY]; //TODO: necessary for normal PK!?
+    unsigned char l1_Q1[_O1_BYTE * N_TRIANGLE_TERMS(_V1) * N_QUARTIC_POLY]; //fixme: Quadratic size should be enough (?)
     unsigned char l1_Q2[_O1_BYTE * _V1 * _O1 * N_QUARTIC_POLY];
     unsigned char l1_Q3[_O1_BYTE * _V1 * _O2 * N_QUARTIC_POLY];
     unsigned char l1_Q5[_O1_BYTE * N_TRIANGLE_TERMS(_O1) * N_QUARTIC_POLY];

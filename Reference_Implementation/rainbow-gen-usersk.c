@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
     } else {
         //calculate upk from usk (for debugging), if filename is given
         uint8_t *_upk = malloc(sizeof(upk_t));
-        int re = calculate_usk_and_upk((usk_t *) _usk, (upk_t *) _upk, (msk_t *) _msk, _identity); //TODO: T4!!!!
+        int re = calculate_usk_and_upk((usk_t *) _usk, (upk_t *) _upk, (msk_t *) _msk, _identity);
         if (0 != re) {
             printf("%s generate upk and usk fails.\n", CRYPTO_ALGNAME);
             return -1;

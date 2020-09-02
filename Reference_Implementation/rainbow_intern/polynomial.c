@@ -309,7 +309,7 @@ void i4vec_permute(unsigned n1, unsigned p1[], unsigned a[])
                 iput = iget;
                 iget = p[iget - 1];
 
-                p[iput - 1] = -p[iput - 1]; //TODO: hier geht was schief (?)
+                p[iput - 1] = -p[iput - 1];
 
                 if (iget < 1 || n < iget) {
                     fprintf(stderr, "\n");
@@ -923,7 +923,7 @@ polynomial_add(unsigned char *destSummand, unsigned dest_offset, unsigned dest_g
 //    polynomial_print(B_o, tmp_B, 0, _full_e, "tmp_C:");
 
     /// MAIN PART///
-    //TODO: this could be done by easy XOR-loop ath the right position
+    //TODO: this could be done by easy XOR-loop at the right position
     r8vec_concatenate(summand_o, tmp_summand, B_o, tmp_B, tmp_dst, 0);
     i4vec_concatenate(summand_o, summand_e, B_o, B_e, dest_e);
 
@@ -1008,7 +1008,6 @@ void polynomial_compress(unsigned o1, unsigned char c1[], const unsigned int e1[
                 tmpA = gf16v_get_ele(c2, put - 1);
                 tmpB = gf16v_get_ele(c1, get - 1);
                 tmpSum = tmpA ^ tmpB;
-                //TODO: check!!
                 gf16v_set_ele(c2, put - 1, tmpSum);
             } else {
                 put = put + 1;

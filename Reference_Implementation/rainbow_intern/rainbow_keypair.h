@@ -26,14 +26,12 @@
 extern  "C" {
 #endif
 
-/// standard e TODO: only for ID2
+// TODO: should not be hard-coded
+extern const unsigned _full_e[70];
 
+extern const unsigned _lin_e[4];
 
-extern const unsigned _full_e[15];
-
-extern const unsigned _lin_e[2];
-
-unsigned _grade_n_poly_terms(unsigned grade); //TODO: extern, static, global namespace...
+unsigned _grade_n_poly_terms(unsigned grade);
 
 /// @brief master public key for classic rainbow
 ///
@@ -102,7 +100,7 @@ struct rainbow_user_secretkey {
     /// seed for generating secret key.
     /// Generating S, T, and F for classic rainbow.
     /// Generating S and T only for cyclic rainbow.
-    unsigned char sk_seed[LEN_SKSEED]; //TODO: hust?
+    unsigned char sk_seed[LEN_SKSEED]; /// for setting the vinegar-variables
 
     unsigned char s1[_O1_BYTE * _O2];   ///< part of S map
     unsigned char t1[_V1_BYTE * _O1];   ///< part of T map

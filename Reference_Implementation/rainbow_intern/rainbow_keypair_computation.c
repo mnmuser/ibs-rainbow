@@ -166,7 +166,6 @@ void extcpk_to_pk(upk_t *pk, const ext_cpk_t *cpk) {
 
 
 void quartic_calculate_Q_from_F(ext_mpk_t *cpk, const msk_t *sk) {
-    //TODO: hey you, this could be done multi-threaded https://doi.org/10.1007/978-1-4419-5906-5 -> Related Work
 /*
     Layer 1
     Computing :
@@ -182,8 +181,8 @@ void quartic_calculate_Q_from_F(ext_mpk_t *cpk, const msk_t *sk) {
     write_lin_to_quartic(cpk->l1_Q2, sk->l1_F2, _O1_BYTE * _V1 * _O1);
 
     ///CHECK Q1
-    polynomial_print(N_QUARTIC_POLY, cpk->l1_Q1, 0, _full_e, "L1_Q1 ");
-    polynomial_print(N_QUARTIC_POLY, cpk->l1_Q1, sizeof(cpk->l1_Q1) * 2 - N_QUARTIC_POLY, _full_e, "L1_Q1 end");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l1_Q1, 0, _full_e, "L1_Q1 ");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l1_Q1, sizeof(cpk->l1_Q1) * 2 - N_QUARTIC_POLY, _full_e, "L1_Q1 end");
     ///
 
     quartic_batch_trimat_madd(cpk->l1_Q2, sk->l1_F1, sk->t1, _V1, _V1_BYTE, _O1, _O1_BYTE); // Q2 += F1*T1
@@ -211,23 +210,19 @@ void quartic_calculate_Q_from_F(ext_mpk_t *cpk, const msk_t *sk) {
 
     quartic_batch_matTr_madd(tempQ, sk->t1, _V1, _V1_BYTE, _O1, cpk->l1_Q2, _O1, _O1_BYTE); // t1_tr*(F1*T1 + F2)
 
-    polynomial_print(N_QUARTIC_POLY, tempQ, 0, _full_e, "tempQ5(0): ");
-    polynomial_print(N_QUARTIC_POLY, tempQ, size_tempQ * 2 - N_QUARTIC_POLY, _full_e, "tempQ5(end): ");
-
-
-    quartic_UpperTrianglize(cpk->l1_Q5, tempQ, _O1, _O1_BYTE);    // UT( ... )   // Q5 //TODO: copy?
+    quartic_UpperTrianglize(cpk->l1_Q5, tempQ, _O1, _O1_BYTE);    // UT( ... )   // Q5
 
     ///CHECK Q5
-    polynomial_print(N_QUARTIC_POLY, cpk->l1_Q5, 0, _full_e, "l1_Q5(0): ");
-    polynomial_print(N_QUARTIC_POLY, cpk->l1_Q5, sizeof(cpk->l1_Q5) * 2 - N_QUARTIC_POLY, _full_e, "L1_Q5 end");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l1_Q5, 0, _full_e, "l1_Q5(0): ");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l1_Q5, sizeof(cpk->l1_Q5) * 2 - N_QUARTIC_POLY, _full_e, "L1_Q5 end");
     ///
 
     quartic_batch_trimatTr_madd(cpk->l1_Q2, sk->l1_F1, sk->t1, _V1, _V1_BYTE, _O1, _O1_BYTE); // Q2
 
     ///CHECK Q2
-    polynomial_print(N_QUARTIC_POLY, cpk->l1_Q2, 0, _full_e, "L1_Q2_1: ");
-    polynomial_print(N_QUARTIC_POLY, cpk->l1_Q2, sizeof(cpk->l1_Q2) * 2 - N_QUARTIC_POLY, _full_e,
-                     "L1_Q2_2: "); //last position in Q2
+//    polynomial_print(N_QUARTIC_POLY, cpk->l1_Q2, 0, _full_e, "L1_Q2_1: ");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l1_Q2, sizeof(cpk->l1_Q2) * 2 - N_QUARTIC_POLY, _full_e,
+//                     "L1_Q2_2: "); //last position in Q2
     ///
 
 /*
@@ -251,17 +246,17 @@ void quartic_calculate_Q_from_F(ext_mpk_t *cpk, const msk_t *sk) {
     quartic_UpperTrianglize(cpk->l1_Q9, tempQ, _O2, _O1_BYTE);                                   // Q9
 
     ///CHECK Q9
-    polynomial_print(N_QUARTIC_POLY, cpk->l1_Q9, 0, _full_e, "l1_Q9(0): ");
-    polynomial_print(N_QUARTIC_POLY, cpk->l1_Q9, sizeof(cpk->l1_Q9) * 2 - N_QUARTIC_POLY, _full_e, "L1_Q9 end");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l1_Q9, 0, _full_e, "l1_Q9(0): ");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l1_Q9, sizeof(cpk->l1_Q9) * 2 - N_QUARTIC_POLY, _full_e, "L1_Q9 end");
     ///
 
     quartic_batch_trimatTr_madd(cpk->l1_Q3, sk->l1_F1, t2, _V1, _V1_BYTE, _O2,
                                 _O1_BYTE);        // F1_F1T_T2 + F2_T3  // Q3
 
     ///CHECK Q3
-    polynomial_print(N_QUARTIC_POLY, cpk->l1_Q3, 0, _full_e, "Q3:");
-    polynomial_print(N_QUARTIC_POLY, cpk->l1_Q3, sizeof(cpk->l1_Q3) * 2 - N_QUARTIC_POLY, _full_e,
-                     "L1_Q3 end: ");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l1_Q3, 0, _full_e, "Q3:");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l1_Q3, sizeof(cpk->l1_Q3) * 2 - N_QUARTIC_POLY, _full_e,
+//                     "L1_Q3 end: ");
     ///
 
     quartic_batch_bmatTr_madd(cpk->l1_Q6, sk->l1_F2, _O1, t2, _V1, _V1_BYTE, _O2, _O1_BYTE);       // F2tr*T2
@@ -270,9 +265,9 @@ void quartic_calculate_Q_from_F(ext_mpk_t *cpk, const msk_t *sk) {
                              _O1_BYTE);    // Q6
 
     ///CHECK Q6
-    polynomial_print(N_QUARTIC_POLY, cpk->l1_Q6, 0, _full_e, "Q6:");
-    polynomial_print(N_QUARTIC_POLY, cpk->l1_Q6, sizeof(cpk->l1_Q6) * 2 - N_QUARTIC_POLY, _full_e,
-                     "L1_Q6 end: ");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l1_Q6, 0, _full_e, "Q6:");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l1_Q6, sizeof(cpk->l1_Q6) * 2 - N_QUARTIC_POLY, _full_e,
+//                     "L1_Q6 end: ");
     ///
 
 
@@ -288,8 +283,8 @@ void quartic_calculate_Q_from_F(ext_mpk_t *cpk, const msk_t *sk) {
     write_lin_to_quartic(cpk->l2_Q1, sk->l2_F1, _O2_BYTE * N_TRIANGLE_TERMS(_V1));
 
     ///CHECK Q1
-    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q1, 0, _full_e, "L2_Q1 ");
-    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q1, sizeof(cpk->l2_Q1) * 2 - N_QUARTIC_POLY, _full_e, "L2_Q1 end");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q1, 0, _full_e, "L2_Q1 ");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q1, sizeof(cpk->l2_Q1) * 2 - N_QUARTIC_POLY, _full_e, "L2_Q1 end");
     ///
 
     write_lin_to_quartic(cpk->l2_Q2, sk->l2_F2, _O2_BYTE * _V1 * _O1);
@@ -303,16 +298,16 @@ void quartic_calculate_Q_from_F(ext_mpk_t *cpk, const msk_t *sk) {
                             _O2_BYTE);                             // UT( ... )   // Q5
 
     ///CHECK Q5
-    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q5, 0, _full_e, "l2_Q5(0): ");
-    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q5, sizeof(cpk->l2_Q5) * 2 - N_QUARTIC_POLY, _full_e, "L2_Q5 end");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q5, 0, _full_e, "l2_Q5(0): ");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q5, sizeof(cpk->l2_Q5) * 2 - N_QUARTIC_POLY, _full_e, "L2_Q5 end");
     ///
 
     quartic_batch_trimatTr_madd(cpk->l2_Q2, sk->l2_F1, sk->t1, _V1, _V1_BYTE, _O1, _O2_BYTE);    // Q2
 
     ///CHECK Q2
-    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q2, 0, _full_e, "L2_Q2_1: ");
-    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q2, sizeof(cpk->l2_Q2) * 2 - N_QUARTIC_POLY, _full_e,
-                     "L2_Q2_2: "); //last position in Q2
+//    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q2, 0, _full_e, "L2_Q2_1: ");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q2, sizeof(cpk->l2_Q2) * 2 - N_QUARTIC_POLY, _full_e,
+//                     "L2_Q2_2: "); //last position in Q2
     ///
 
 /*
@@ -344,24 +339,24 @@ void quartic_calculate_Q_from_F(ext_mpk_t *cpk, const msk_t *sk) {
     quartic_UpperTrianglize(cpk->l2_Q9, tempQ, _O2, _O2_BYTE);                                   // Q9
 
     ///CHECK Q9
-    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q9, 0, _full_e, "l2_Q9(0): ");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q9, 0, _full_e, "l2_Q9(0): ");
 
-    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q9, sizeof(cpk->l2_Q9) * 2 - N_QUARTIC_POLY * 4, _full_e,
-                     "L2_Q9 end -45");
-    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q9, sizeof(cpk->l2_Q9) * 2 - N_QUARTIC_POLY * 3, _full_e,
-                     "L2_Q9 end -30");
-    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q9, sizeof(cpk->l2_Q9) * 2 - N_QUARTIC_POLY * 2, _full_e,
-                     "L2_Q9 end -15");
-    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q9, sizeof(cpk->l2_Q9) * 2 - N_QUARTIC_POLY, _full_e, "L2_Q9 end");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q9, sizeof(cpk->l2_Q9) * 2 - N_QUARTIC_POLY * 4, _full_e,
+//                     "L2_Q9 end -45");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q9, sizeof(cpk->l2_Q9) * 2 - N_QUARTIC_POLY * 3, _full_e,
+//                     "L2_Q9 end -30");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q9, sizeof(cpk->l2_Q9) * 2 - N_QUARTIC_POLY * 2, _full_e,
+//                     "L2_Q9 end -15");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q9, sizeof(cpk->l2_Q9) * 2 - N_QUARTIC_POLY, _full_e, "L2_Q9 end");
     ///
 
     quartic_batch_trimatTr_madd(cpk->l2_Q3, sk->l2_F1, t2, _V1, _V1_BYTE, _O2,
                                 _O2_BYTE);        // F1_F1T_T2 + F2_T3 + F3 // Q3
 
     ///CHECK Q3
-    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q3, 0, _full_e, "L2_Q3:");
-    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q3, sizeof(cpk->l2_Q3) * 2 - N_QUARTIC_POLY, _full_e,
-                     "L2_Q3 end: ");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q3, 0, _full_e, "L2_Q3:");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q3, sizeof(cpk->l2_Q3) * 2 - N_QUARTIC_POLY, _full_e,
+//                     "L2_Q3 end: ");
     ///
 
     quartic_batch_bmatTr_madd(cpk->l2_Q6, sk->l2_F2, _O1, t2, _V1, _V1_BYTE, _O2,
@@ -371,9 +366,9 @@ void quartic_calculate_Q_from_F(ext_mpk_t *cpk, const msk_t *sk) {
     quartic_batch_matTr_madd(cpk->l2_Q6, sk->t1, _V1, _V1_BYTE, _O1, cpk->l2_Q3, _O2, _O2_BYTE);    // Q6
 
     ///CHECK Q6
-    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q6, 0, _full_e, "l2_Q6:");
-    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q6, sizeof(cpk->l2_Q6) * 2 - N_QUARTIC_POLY, _full_e,
-                     "L2_Q6 end: ");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q6, 0, _full_e, "l2_Q6:");
+//    polynomial_print(N_QUARTIC_POLY, cpk->l2_Q6, sizeof(cpk->l2_Q6) * 2 - N_QUARTIC_POLY, _full_e,
+//                     "L2_Q6 end: ");
     ///
 
     memset(tempQ, 0, size_tempQ + 32);

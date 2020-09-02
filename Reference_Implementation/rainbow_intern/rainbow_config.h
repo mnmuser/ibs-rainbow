@@ -9,10 +9,9 @@
 #ifndef _H_RAINBOW_CONFIG_H_
 #define _H_RAINBOW_CONFIG_H_
 
-#define _ID 2 //TODO: check if input-ID has correct length
+#define _ID 2
 
 // TODO Dependency on makefile for Levels
-/// the defined parameter
 #if (!defined(_RAINBOW16_32_32_32)) && (!defined(_RAINBOW256_68_36_36)) && (!defined(_RAINBOW256_92_48_48))
 #define _RAINBOW16_32_32_32 // Level I
 //#define _RAINBOW256_68_36_36 // Level III
@@ -22,7 +21,7 @@
 #if defined _RAINBOW16_32_32_32
 #define _USE_GF16
 #define _GFSIZE 16
-#define _V1 32
+#define _V1 36
 #define _O1 32
 #define _O2 32
 #define _HASH_LEN 32
@@ -93,7 +92,7 @@ error here.
 #define _SALT_BYTE 16
 
 /// length of a signature
-#define _SIGNATURE_BYTE (_PUB_N_BYTE + _SALT_BYTE ) //TODO: ATTENTION: signature size bleibt gleich
+#define _SIGNATURE_BYTE (_PUB_N_BYTE + _SALT_BYTE )
 
 
 

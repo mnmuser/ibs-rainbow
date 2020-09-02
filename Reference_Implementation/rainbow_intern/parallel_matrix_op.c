@@ -7,7 +7,6 @@
 
 #include "blas_comm.h"
 #include "blas.h"
-#include "rainbow_blas.h"
 
 #include "parallel_matrix_op.h"
 #include "rainbow_keypair.h"
@@ -15,7 +14,6 @@
 #include "string.h"
 
 #include "polynomial.h"
-#include "rainbow_keypair_computation.h"
 
 
 ////////////////    Section: triangle matrix <-> rectangle matrix   ///////////////////////////////////
@@ -90,7 +88,6 @@ void
 quartic_batch_trimat_madd_gf16(unsigned char *bC, const unsigned char *btriA, const unsigned char *B, unsigned Bheight,
                                unsigned size_Bcolvec, unsigned Bwidth,
                                unsigned size_batch) {
-    //TODO: this function is not correct!
     unsigned Awidth = Bheight;
     unsigned Aheight = Awidth;
     for (unsigned i = 0; i < Aheight; i++) {
@@ -457,8 +454,8 @@ void quartic_gf16v_madd(uint8_t *C, unsigned C_grade, unsigned C_structure_grade
     unsigned C_loop_offset = _grade_n_poly_terms(C_structure_grade);
 
     ///temporal variables to konow the structure of the product:
-    unsigned char tmp_product[(N_QUARTIC_POLY + 5) / 2];
-    unsigned tmp_e[N_QUARTIC_POLY + N_QUADRATIC_POLY]; //don't ask
+    unsigned char tmp_product[N_QUARTIC_POLY * 3];
+    unsigned tmp_e[N_QUARTIC_POLY * 3]; //TODO: find better solution for size
     unsigned tmp_o = 0;
 
     for (unsigned l = 0; l < size_batch * 2; l++) { // *2 for gf16 (size is in byte)
@@ -478,7 +475,7 @@ void calculate_values_public_key(unsigned char *upk, unsigned char *mpk, unsigne
 }
 
 void calculate_values_secret_key(unsigned char *usk, unsigned char *msk, unsigned char *id) {
-    memcpy(usk, msk, LEN_SKSEED); //TODO: SEC: we don't want the random seed in the user-key
+    memcpy(usk, msk, LEN_SKSEED); //TODO: SECURITY we don't want the master random seed in the user-key !
     usk += LEN_SKSEED;
     msk += LEN_SKSEED;
 
