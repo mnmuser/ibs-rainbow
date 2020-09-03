@@ -1,31 +1,42 @@
-# ID-Rainbow
+# ID-Rainbow 
+FOR RESEARCH PURPOSES ONLY
 
-based on the code of NIST-candidate Rainbow (Round 2)
+based on the code of NIST-candidate Rainbow (Round 2) with the adapted variables after the successful Band-Separation-Attack
 
-working currently only on Reference_Implementation
-
+only Reference_Implementation
 
 ## How-To
 
-You can use the compiled artifacts in this repository to try it on your linux machine (tested on Fedora 31).
-Download the artifacts and run them in your shell:
-
-### Generate Keys
+### Compiling
 ```
-./rainbow-genkey pk.txt sk.txt
+make all
+```
+
+### Generate Master-Keys
+```
+./rainbow-gen-masterkey mpk.txt msk.txt
+```
+
+### Generate a User-Secret-Key
+```
+./rainbow-gen-usersk msk.txt <YOUR_ID> usk.txt
+```
+### Generate a User-Public-Key
+```
+./rainbow-gen-userpk mpk.txt <YOUR_ID> upk.txt
 ```
 
 ### Sign a message
 (you need a message-file to sign (e.g. message.txt))
 ```
-./rainbow-sign sk.txt message.txt| tee signature.txt
+./rainbow-sign usk.txt message.txt| tee signature.txt
 ```
 
 ### Verify a signature
 ```
-./rainbow-genkey pk.txt signature.txt message.txt
+./rainbow-genkey upk.txt signature.txt message.txt
 ```
 
 ## Choose method
 
-At the moment you can choose security level and method in api.h and rainbow_config.h
+At the moment you can choose security parameters and ID-length (_ID) in api.h and rainbow_config.h
