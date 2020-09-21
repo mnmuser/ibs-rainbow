@@ -1,9 +1,11 @@
 # ID-Rainbow 
 FOR RESEARCH PURPOSES ONLY
 
-based on the code of NIST-candidate Rainbow (Round 2) with the adapted variables after the successful Band-Separation-Attack
+based on the code of NIST-candidate Rainbow (Round 2) with adapted variables after the successful Band-Separation-Attack
 
-only Reference_Implementation
+- only Reference_Implementation
+- only Level I (GF16)
+- works only with even ID-length
 
 ## How-To
 
